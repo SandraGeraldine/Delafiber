@@ -5,6 +5,7 @@ namespace App\Controllers;
 use App\Models\WhatsAppConversacionModel;
 use App\Models\WhatsAppMensajeModel;
 use App\Models\WhatsAppPlantillaModel;
+use App\Models\WhatsAppCuentaModel;
 use Twilio\Rest\Client;
 
 class WhatsApp extends BaseController
@@ -12,6 +13,7 @@ class WhatsApp extends BaseController
     protected $conversacionModel;
     protected $mensajeModel;
     protected $plantillaModel;
+    protected $cuentaModel;
     protected $twilioClient;
     protected $twilioConfig;
 
@@ -20,6 +22,7 @@ class WhatsApp extends BaseController
         $this->conversacionModel = new WhatsAppConversacionModel();
         $this->mensajeModel = new WhatsAppMensajeModel();
         $this->plantillaModel = new WhatsAppPlantillaModel();
+        $this->cuentaModel = new WhatsAppCuentaModel();
         
         // Configuración de Twilio
         $this->twilioConfig = new \Config\Twilio();
@@ -34,14 +37,53 @@ class WhatsApp extends BaseController
      */
     public function index()
     {
+        $usuario = session()->get('usuario');
+        
+        // Depuración: Mostrar datos del usuario
+        log_message('debug', 'Datos del usuario en sesión: ' . print_r($usuario, true));
+        
+        // Forzar acceso de administrador temporalmente
+        $esAdmin = true;
+        
+        // Obtener todas las cuentas
+        $cuentas = $this->cuentaModel->findAll();
+        
+        log_message('debug', 'Cuentas encontradas: ' . print_r($cuentas, true));
+        
+        // Si no hay cuentas, mostrar mensaje
+        if (empty($cuentas)) {
+            log_message('debug', 'No se encontraron cuentas de WhatsApp');
+            return view('whatsapp/sin_acceso', [
+                'title' => 'Sin cuentas configuradas',
+                'message' => 'No hay cuentas de WhatsApp configuradas en el sistema.'
+            ]);
+        }
+        
+        // Obtener conversaciones de las cuentas permitidas
+        $builder = $this->conversacionModel
+            ->select('whatsapp_conversaciones.*, usuarios.nombre as usuario_nombre, wc.nombre as nombre_cuenta')
+            ->join('usuarios', 'usuarios.idusuario = whatsapp_conversaciones.asignado_a', 'left')
+            ->join('whatsapp_cuentas wc', 'wc.id_cuenta = whatsapp_conversaciones.id_cuenta', 'left')
+            ->where('whatsapp_conversaciones.estado !=', 'cerrada');
+        
+        // Si no es admin, filtrar por cuentas asignadas
+        if (!$esAdmin) {
+            $cuentaIds = array_column($cuentas, 'id_cuenta');
+            if (!empty($cuentaIds)) {
+                $builder->whereIn('whatsapp_conversaciones.id_cuenta', $cuentaIds);
+            } else {
+                $builder->where('1', '0'); // No mostrar conversaciones si no hay cuentas
+            }
+        }
+        
+        $conversaciones = $builder->orderBy('whatsapp_conversaciones.fecha_ultimo_mensaje', 'DESC')
+                                ->findAll();
+        
         $data = [
             'title' => 'WhatsApp Business',
-            'conversaciones' => $this->conversacionModel
-                ->select('whatsapp_conversaciones.*, usuarios.nombre as usuario_nombre')
-                ->join('usuarios', 'usuarios.idusuario = whatsapp_conversaciones.asignado_a', 'left')
-                ->where('whatsapp_conversaciones.estado !=', 'cerrada')
-                ->orderBy('whatsapp_conversaciones.fecha_ultimo_mensaje', 'DESC')
-                ->findAll(),
+            'conversaciones' => $conversaciones,
+            'cuentas' => $cuentas,
+            'cuenta_actual' => $this->request->getGet('cuenta') ?: null,
             'no_leidos_total' => $this->conversacionModel
                 ->selectSum('no_leidos')
                 ->where('whatsapp_conversaciones.estado', 'activa')
@@ -272,15 +314,6 @@ class WhatsApp extends BaseController
     /**
      * Gestión de plantillas
      */
-    public function plantillas()
-    {
-        $data = [
-            'title' => 'Plantillas de WhatsApp',
-            'plantillas' => $this->plantillaModel->findAll()
-        ];
-
-        return view('whatsapp/plantillas', $data);
-    }
 
     /**
      * Guardar plantilla
@@ -330,5 +363,95 @@ class WhatsApp extends BaseController
         
         // No auto-responder para otros mensajes
         return null;
+    }
+
+    /**
+     * Enviar mensaje inicial sin esperar respuesta
+     */
+    public function enviarMensajeInicial()
+    {
+        $numero = $this->request->getPost('numero');
+        $mensaje = $this->request->getPost('mensaje');
+        
+        if (empty($numero) || empty($mensaje)) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Número y mensaje son requeridos'
+            ]);
+        }
+        
+        try {
+            // Asegurar que el número tenga el formato correcto
+            if (strpos($numero, 'whatsapp:') === false) {
+                $numero = 'whatsapp:' . $numero;
+            }
+            
+            // Obtener el ID de cuenta de WhatsApp (si se proporciona)
+            $idCuenta = $this->request->getPost('id_cuenta');
+            $fromNumber = $this->twilioConfig->whatsappNumber;
+            
+            // Si se especifica una cuenta, obtener su número
+            if ($idCuenta) {
+                $cuenta = $this->cuentaModel->find($idCuenta);
+                if ($cuenta) {
+                    $fromNumber = $cuenta['whatsapp_number'];
+                }
+            }
+            
+            // Enviar mensaje
+            $twilioMessage = $this->twilioClient->messages->create(
+                $numero,
+                [
+                    'from' => $fromNumber,
+                    'body' => $mensaje
+                ]
+            );
+            
+            // Buscar o crear conversación
+            $numeroLimpio = str_replace('whatsapp:', '', $numero);
+            $conversacion = $this->conversacionModel
+                ->where('numero_whatsapp', $numeroLimpio)
+                ->first();
+                
+            if (!$conversacion) {
+                // Crear nueva conversación
+                $this->conversacionModel->insert([
+                    'numero_whatsapp' => $numeroLimpio,
+                    'nombre_contacto' => $this->request->getPost('nombre') ?? 'Cliente',
+                    'estado' => 'activa',
+                    'ultimo_mensaje' => $mensaje,
+                    'fecha_ultimo_mensaje' => date('Y-m-d H:i:s'),
+                    'id_cuenta' => $idCuenta
+                ]);
+            }
+            
+            // Guardar mensaje
+            $this->mensajeModel->insert([
+                'id_conversacion' => $conversacion ? $conversacion['id_conversacion'] : $this->conversacionModel->getInsertID(),
+                'message_sid' => $twilioMessage->sid,
+                'direccion' => 'saliente',
+                'numero_origen' => $fromNumber,
+                'numero_destino' => $numero,
+                'tipo_mensaje' => 'text',
+                'contenido' => $mensaje,
+                'estado_envio' => 'enviado',
+                'enviado_por' => session()->get('usuario')['id'] ?? session()->get('idusuario') ?? 1,
+                'leido' => true,
+                'created_at' => date('Y-m-d H:i:s')
+            ]);
+            
+            return $this->response->setJSON([
+                'success' => true,
+                'message' => 'Mensaje enviado correctamente',
+                'message_id' => $twilioMessage->sid
+            ]);
+            
+        } catch (\Exception $e) {
+            log_message('error', 'Error al enviar mensaje inicial: ' . $e->getMessage());
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Error al enviar mensaje: ' . $e->getMessage()
+            ]);
+        }
     }
 }

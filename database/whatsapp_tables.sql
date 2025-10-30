@@ -256,3 +256,37 @@ CREATE TABLE IF NOT EXISTS `whatsapp_config` (
 -- =====================================================
 SELECT 'Tablas WhatsApp creadas exitosamente' as Resultado;
 SHOW TABLES LIKE 'whatsapp%';
+
+ALTER TABLE whatsapp_conversaciones DROP FOREIGN KEY IF EXISTS fk_conversacion_cuenta;
+ALTER TABLE whatsapp_conversaciones DROP COLUMN IF EXISTS id_cuenta;
+DROP TABLE IF EXISTS usuario_whatsapp_cuentas;
+DROP TABLE IF EXISTS whatsapp_cuentas;
+SET FOREIGN_KEY_CHECKS = 0;
+DROP TABLE IF EXISTS usuario_whatsapp_cuentas;
+DROP TABLE IF EXISTS whatsapp_cuentas;
+ALTER TABLE whatsapp_conversaciones DROP FOREIGN KEY IF EXISTS fk_conversacion_cuenta;
+ALTER TABLE whatsapp_conversaciones DROP COLUMN IF EXISTS id_cuenta;
+SET FOREIGN_KEY_CHECKS = 1;
+
+SELECT * FROM whatsapp_cuentas;
+
+-- Verifica tu usuario y roles
+SELECT idusuario, nombre, roles FROM usuarios WHERE idusuario = [tu_id];
+
+-- Verifica cuentas existentes
+SELECT idusuario, nombre, roles FROM usuarios WHERE idusuario = 1;
+SELECT * FROM whatsapp_cuentas;
+
+-- Verifica asignaciones de cuentas
+SELECT * FROM usuario_whatsapp_cuentas;
+
+-- Verifica tu usuario y roles (reemplaza 1 con tu ID de usuario)
+SELECT idusuario, nombre, roles FROM usuarios WHERE idusuario = 1;
+
+-- Verifica cuentas existentes
+SELECT * FROM whatsapp_cuentas;
+
+-- Verifica asignaciones de cuentas
+SELECT * FROM usuario_whatsapp_cuentas;
+
+DESCRIBE roles;

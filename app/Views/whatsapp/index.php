@@ -29,7 +29,12 @@
                             <h4 class="card-title mb-0">
                                 <i class="ti-comments"></i> Conversaciones
                             </h4>
-                            <span class="badge badge-success"><?= count($conversaciones) ?></span>
+                            <div>
+                                <button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEnviarMensaje">
+                                    <i class="fas fa-paper-plane"></i> Nuevo Mensaje
+                                </button>
+                                <span class="badge badge-success"><?= count($conversaciones) ?></span>
+                            </div>
                         </div>
 
                         <!-- Búsqueda -->
@@ -124,10 +129,131 @@
     </div>
 </div>
 
+<!-- Modal para enviar mensaje inicial -->
+<div class="modal fade" id="modalEnviarMensaje" tabindex="-1" aria-labelledby="modalEnviarMensajeLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header bg-primary text-white">
+                <h5 class="modal-title" id="modalEnviarMensajeLabel">
+                    <i class="fas fa-paper-plane me-2"></i>Enviar Mensaje
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <form id="formMensajeInicial">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="numeroDestino" class="form-label">Número de WhatsApp</label>
+                        <div class="input-group">
+                            <span class="input-group-text">+51</span>
+                            <input type="text" class="form-control" id="numeroDestino" name="numero" placeholder="987654321" required>
+                        </div>
+                        <small class="form-text text-muted">Ingresa el número sin el código de país (+51) ni espacios</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="nombreContacto" class="form-label">Nombre del contacto (opcional)</label>
+                        <input type="text" class="form-control" id="nombreContacto" name="nombre" placeholder="Nombre del destinatario">
+                    </div>
+                    
+                    <?php if (!empty($cuentas)): ?>
+                    <div class="mb-3">
+                        <label for="cuentaWhatsApp" class="form-label">Cuenta de WhatsApp</label>
+                        <select class="form-select" id="cuentaWhatsApp" name="id_cuenta">
+                            <?php foreach ($cuentas as $cuenta): ?>
+                                <option value="<?= $cuenta['id_cuenta'] ?>">
+                                    <?= esc($cuenta['nombre']) ?> (<?= $cuenta['numero_whatsapp'] ?>)
+                                </option>
+                            <?php endforeach; ?>
+                        </select>
+                    </div>
+                    <?php endif; ?>
+                    
+                    <div class="mb-3">
+                        <label for="mensaje" class="form-label">Mensaje</label>
+                        <textarea class="form-control" id="mensaje" name="mensaje" rows="4" required placeholder="Escribe tu mensaje aquí..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        <i class="fas fa-times me-1"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-paper-plane me-1"></i> Enviar Mensaje
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
 <script>
+// Enviar mensaje inicial
+const formMensajeInicial = document.getElementById('formMensajeInicial');
+if (formMensajeInicial) {
+    formMensajeInicial.addEventListener('submit', async function(e) {
+        e.preventDefault();
+        
+        const formData = new FormData(this);
+        const btnSubmit = this.querySelector('button[type="submit"]');
+        const btnOriginalText = btnSubmit.innerHTML;
+        
+        // Deshabilitar botón y mostrar carga
+        btnSubmit.disabled = true;
+        btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Enviando...';
+        
+        try {
+            const response = await fetch('<?= base_url('whatsapp/enviar-mensaje-inicial') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams(formData)
+            });
+            
+            const data = await response.json();
+            
+            if (data.success) {
+                // Mostrar mensaje de éxito
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Mensaje enviado!',
+                    text: 'El mensaje se ha enviado correctamente.',
+                    timer: 2000,
+                    showConfirmButton: false
+                });
+                
+                // Cerrar modal y limpiar formulario
+                const modal = bootstrap.Modal.getInstance(document.getElementById('modalEnviarMensaje'));
+                modal.hide();
+                this.reset();
+                
+                // Recargar la página después de 1.5 segundos
+                setTimeout(() => {
+                    window.location.reload();
+                }, 1500);
+            } else {
+                throw new Error(data.message || 'Error al enviar el mensaje');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message || 'Ocurrió un error al enviar el mensaje. Por favor, inténtalo de nuevo.'
+            });
+        } finally {
+            // Restaurar botón
+            btnSubmit.disabled = false;
+            btnSubmit.innerHTML = btnOriginalText;
+        }
+    });
+}
+
+
 // Búsqueda de conversaciones
 document.getElementById('buscar-conversacion')?.addEventListener('input', function(e) {
     const busqueda = e.target.value.toLowerCase();

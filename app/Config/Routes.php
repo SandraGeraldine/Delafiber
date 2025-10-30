@@ -22,15 +22,33 @@ $routes->post('whatsapp/webhook', 'WhatsApp::webhook');
 $routes->get('whatsapp/webhook', 'WhatsApp::webhook');
 $routes->get('test-whatsapp', 'WhatsAppTest::index');
 
+// === ADMIN - GESTIÓN DE CUENTAS WHATSAPP ===
+$routes->group('admin/whatsapp/cuentas', ['filter' => 'auth'], function($routes) {
+    $routes->get('/', 'Admin\WhatsAppCuentas::index');
+    $routes->get('nueva', 'Admin\WhatsAppCuentas::form');
+    $routes->get('editar/(:num)', 'Admin\WhatsAppCuentas::form/$1');
+    $routes->post('guardar', 'Admin\WhatsAppCuentas::guardar');
+    $routes->post('eliminar/(:num)', 'Admin\WhatsAppCuentas::eliminar/$1');
+});
+
 // === WHATSAPP (MÓDULO PRINCIPAL) ===
 $routes->group('whatsapp', ['filter' => 'auth'], function($routes) {
     $routes->get('/', 'WhatsApp::index');
     $routes->get('conversacion/(:num)', 'WhatsApp::conversacion/$1');
     $routes->post('enviarMensaje', 'WhatsApp::enviarMensaje');
+    $routes->post('enviar-mensaje-inicial', 'WhatsApp::enviarMensajeInicial');
     $routes->get('obtenerNuevosMensajes/(:num)/(:num)', 'WhatsApp::obtenerNuevosMensajes/$1/$2');
     $routes->get('obtenerNoLeidos', 'WhatsApp::obtenerNoLeidos');
-    $routes->get('plantillas', 'WhatsApp::plantillas');
-    $routes->post('guardarPlantilla', 'WhatsApp::guardarPlantilla');
+    
+    // Rutas para el módulo de plantillas
+    $routes->group('plantillas', function($routes) {
+        $routes->get('/', 'PlantillaWhatsApp::index');
+        $routes->post('guardar', 'PlantillaWhatsApp::guardar');
+        $routes->get('obtener/(:num)', 'PlantillaWhatsApp::obtener/$1');
+        $routes->post('eliminar', 'PlantillaWhatsApp::eliminar');
+        $routes->get('por-categoria/(:any)', 'PlantillaWhatsApp::porCategoria/$1');
+        $routes->post('incrementar-uso/(:num)', 'PlantillaWhatsApp::incrementarUso/$1');
+    });
 });
 
 // === DASHBOARD ===
