@@ -1,0 +1,12 @@
+/**
+ * Estilos para Reportes
+ */
+
+@media print {
+    .btn, .card-header, nav { 
+        display: none !important; 
+    }
+    .card { 
+        page-break-inside: avoid; 
+    }
+}

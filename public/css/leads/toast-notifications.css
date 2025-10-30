@@ -1,0 +1,30 @@
+/**
+ * Estilos para Toast Notifications
+ * Notificaciones pequeñas tipo nube
+ */
+
+.swal-toast-small {
+    font-size: 0.875rem !important;
+    padding: 0.75rem 1rem !important;
+}
+
+.swal-toast-small .swal2-title {
+    font-size: 0.95rem !important;
+    font-weight: 600 !important;
+    margin: 0 !important;
+}
+
+.swal-toast-small .swal2-html-container {
+    margin: 0.25rem 0 0 0 !important;
+    font-size: 0.8rem !important;
+}
+
+.swal-toast-small .swal2-icon {
+    width: 1.5rem !important;
+    height: 1.5rem !important;
+    margin: 0 0.5rem 0 0 !important;
+}
+
+.swal-toast-small .swal2-timer-progress-bar {
+    background: rgba(0, 0, 0, 0.2) !important;
+}

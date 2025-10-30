@@ -1,0 +1,334 @@
+/**
+ * Estilos Optimizados para Dropdowns del Header
+ * Sin interferencia con posicionamiento de Bootstrap
+ */
+
+/* ========================================
+   CONFIGURACIÓN BASE DE DROPDOWNS
+   ======================================== */
+
+/* Base para dropdowns - Posicionamiento correcto debajo del icono */
+.navbar-nav .dropdown-menu {
+    z-index: 9999 !important;
+    margin-top: 0.5rem !important;
+    margin-bottom: 0 !important;
+    border: none !important;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.12), 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px) scale(0.98) !important;
+    transition: opacity 0.15s ease, transform 0.15s ease, visibility 0.15s ease;
+    pointer-events: none;
+    top: 100% !important;
+    bottom: auto !important;
+    inset: auto !important;
+}
+
+/* Forzar posicionamiento hacia abajo (anular Popper) */
+.navbar-nav .dropdown-menu[data-popper-placement],
+.navbar-nav .dropdown-menu[style*="position: absolute"] {
+    top: 100% !important;
+    bottom: auto !important;
+    transform: translateY(10px) scale(0.98) !important;
+}
+
+.navbar-nav .dropdown-menu.show[data-popper-placement],
+.navbar-nav .dropdown-menu.show[style*="position: absolute"] {
+    transform: translateY(0) scale(1) !important;
+}
+
+/* Estado visible del dropdown */
+.navbar-nav .dropdown-menu.show {
+    opacity: 1 !important;
+    visibility: visible !important;
+    transform: translateY(0) scale(1) !important;
+    pointer-events: auto !important;
+}
+
+/* ========================================
+   DROPDOWN DE NOTIFICACIONES
+   ======================================== */
+
+#notificacionesDropdown + .dropdown-menu {
+    width: 380px;
+    max-width: calc(100vw - 40px);
+    min-width: 320px;
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.98);
+}
+
+/* Header del dropdown de notificaciones */
+#notificacionesDropdown + .dropdown-menu .dropdown-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 18px 20px;
+    border-radius: 12px 12px 0 0;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    color: white;
+    font-weight: 600;
+}
+
+/* Lista de notificaciones con scroll suave */
+#notificaciones-lista {
+    max-height: 380px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    background-color: #f8f9fa;
+    scrollbar-width: thin;
+    scrollbar-color: #cbd5e0 #f8f9fa;
+}
+
+/* Scroll personalizado para Webkit */
+#notificaciones-lista::-webkit-scrollbar {
+    width: 6px;
+}
+
+#notificaciones-lista::-webkit-scrollbar-track {
+    background: #f8f9fa;
+}
+
+#notificaciones-lista::-webkit-scrollbar-thumb {
+    background: #cbd5e0;
+    border-radius: 10px;
+}
+
+#notificaciones-lista::-webkit-scrollbar-thumb:hover {
+    background: #a0aec0;
+}
+
+/* Items de notificación */
+.notificacion-item {
+    transition: background-color 0.15s ease, border-left-color 0.15s ease;
+    border-left: 3px solid transparent;
+    background-color: white;
+    padding: 12px 16px;
+    cursor: pointer;
+}
+
+.notificacion-item:hover {
+    background-color: #f1f5f9 !important;
+    border-left-color: #667eea;
+}
+
+.notificacion-item.no-leida {
+    background-color: #eef2ff;
+    border-left-color: #667eea;
+    font-weight: 500;
+}
+
+.notificacion-item.no-leida:hover {
+    background-color: #e0e7ff !important;
+}
+
+/* Animación para notificaciones nuevas */
+.notificacion-nueva {
+    animation: slideInRight 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideInRight {
+    from {
+        opacity: 0;
+        transform: translateX(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0);
+    }
+}
+
+/* ========================================
+   DROPDOWN DE USUARIO
+   ======================================== */
+
+#profileDropdown + .dropdown-menu {
+    min-width: 260px;
+    border-radius: 12px;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.98);
+}
+
+#profileDropdown + .dropdown-menu .dropdown-header {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    padding: 16px 18px;
+    border-radius: 12px 12px 0 0;
+    color: white;
+    font-weight: 600;
+}
+
+#profileDropdown + .dropdown-menu .dropdown-item {
+    padding: 12px 18px;
+    transition: background-color 0.15s ease, border-left-color 0.15s ease;
+    border-left: 3px solid transparent;
+    font-size: 14px;
+}
+
+#profileDropdown + .dropdown-menu .dropdown-item:hover {
+    background-color: #f1f5f9;
+    border-left-color: #667eea;
+    text-decoration: none;
+}
+
+#profileDropdown + .dropdown-menu .dropdown-item.text-danger:hover {
+    background-color: #fee2e2;
+    border-left-color: #ef4444;
+}
+
+#profileDropdown + .dropdown-menu .dropdown-divider {
+    margin: 0.5rem 0;
+    opacity: 0.1;
+}
+
+/* ========================================
+   BADGE DE NOTIFICACIONES
+   ======================================== */
+
+#notificaciones-badge {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+    box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0.7);
+    }
+    50% {
+        transform: scale(1.05);
+        box-shadow: 0 0 0 6px rgba(220, 38, 38, 0);
+    }
+    100% {
+        transform: scale(1);
+        box-shadow: 0 0 0 0 rgba(220, 38, 38, 0);
+    }
+}
+
+/* ========================================
+   AVATAR DE USUARIO
+   ======================================== */
+
+.user-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    font-size: 16px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.nav-link:hover .user-avatar {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+/* ========================================
+   TOAST DE NOTIFICACIONES
+   ======================================== */
+
+.toast-notificacion {
+    position: fixed;
+    top: 80px;
+    right: 20px;
+    width: 350px;
+    max-width: calc(100vw - 40px);
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    z-index: 10000;
+    opacity: 0;
+    transform: translateX(400px);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    pointer-events: auto;
+}
+
+.toast-notificacion.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.toast-notificacion .toast-header {
+    padding: 12px 16px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 600;
+}
+
+.toast-notificacion .toast-body {
+    padding: 14px 16px;
+    font-size: 13px;
+    color: #4a5568;
+    line-height: 1.4;
+}
+
+/* ========================================
+   RESPONSIVE - AJUSTES INTELIGENTES
+   ======================================== */
+
+@media (max-width: 768px) {
+    /* Dropdowns en mobile: dejar ancho máximo, NO forzar posición */
+    #notificacionesDropdown + .dropdown-menu {
+        max-width: calc(100vw - 20px);
+    }
+    
+    #profileDropdown + .dropdown-menu {
+        max-width: calc(100vw - 20px);
+        min-width: 220px;
+    }
+    
+    .toast-notificacion {
+        width: calc(100vw - 20px);
+        right: 10px;
+    }
+}
+
+/* ========================================
+   MEJORAS DE ACCESIBILIDAD
+   ======================================== */
+
+.dropdown-item:focus,
+.dropdown-item:focus-visible {
+    outline: 2px solid #667eea;
+    outline-offset: -2px;
+}
+
+/* Reducir movimiento para usuarios con preferencias de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    .navbar-nav .dropdown-menu,
+    .notificacion-item,
+    .toast-notificacion,
+    #notificaciones-badge {
+        transition: none;
+        animation: none;
+    }
+}
+
+/* ========================================
+   PREVENIR SALTOS DE LAYOUT
+   ======================================== */
+
+.dropdown {
+    position: relative;
+}
+
+.dropdown-menu {
+    position: absolute;
+    display: none;
+}
+
+.dropdown-menu.show {
+    display: block;
+}

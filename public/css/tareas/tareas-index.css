@@ -1,0 +1,40 @@
+/**
+ * Estilos para el módulo de tareas
+ * Archivo: public/css/tareas/tareas-index.css
+ */
+
+/* Centrar modales de SweetAlert2 verticalmente - Configuración global */
+.swal2-container-center,
+.swal2-container {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
+}
+
+.swal2-center,
+.swal2-popup {
+    margin: 0 auto !important;
+}
+
+/* Ajustar el icono del modal */
+.swal2-icon {
+    margin: 1.5em auto 1em !important;
+}
+
+/* Mejorar el espaciado del título */
+.swal2-title {
+    padding: 0.5em 1em 0 !important;
+    font-size: 1.5em !important;
+}
+
+/* Mejorar el espaciado del texto */
+.swal2-html-container {
+    margin: 1em 1.6em 0.3em !important;
+}
+
+/* Mejorar los botones */
+.swal2-actions {
+    margin: 1.25em auto 0 !important;
+    padding: 0 1em 1em !important;
+}

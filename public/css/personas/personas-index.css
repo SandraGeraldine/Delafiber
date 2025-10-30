@@ -1,0 +1,32 @@
+/**
+ * Estilos para el Listado de Personas
+ */
+
+.main-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    width: 100%;
+    max-width: 1200px;
+}
+
+.person-avatar {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 14px;
+}
+
+.small-muted {
+    color: #6c757d;
+    font-size: 0.875rem;
+}
+
+.btn-group-actions .btn {
+    margin: 0 2px;
+}

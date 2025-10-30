@@ -1,0 +1,23 @@
+/**
+ * Estilos para Vista de Lead
+ */
+
+.timeline-item {
+    position: relative;
+    padding-left: 35px;
+    padding-bottom: 20px;
+    border-left: 2px solid #e0e0e0;
+}
+
+.timeline-item:last-child {
+    border-left: none;
+}
+
+.timeline-marker {
+    position: absolute;
+    left: -7px;
+    top: 5px;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+}

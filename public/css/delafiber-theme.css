@@ -1,0 +1,999 @@
+/**
+ * Tema Corporativo Delafiber
+ * Variables CSS globales para todo el sistema
+ * 
+ * @version 1.0
+ * @date 2025-10-29
+ */
+
+:root {
+    /* ============================================
+       COLORES CORPORATIVOS DELAFIBER
+       ============================================ */
+    
+    /* Morados Principales */
+    --delafiber-primary: #4A1A6B;        /* Morado principal */
+    --delafiber-secondary: #32005A;      /* Persian Indigo */
+    --delafiber-dark: #2A0045;           /* Morado oscuro */
+    
+    /* Rosas/Fucsias */
+    --delafiber-accent: #E85D9A;         /* Rosa suavizado */
+    --delafiber-pink-light: #FFE5F0;     /* Rosa muy claro */
+    --delafiber-pink-soft: #F5E6FF;      /* Morado muy claro */
+    
+    /* Grises y Neutros */
+    --delafiber-gray-light: #F8F9FA;
+    --delafiber-gray: #E0E6ED;
+    --delafiber-gray-dark: #6C757D;
+    --delafiber-text: #2C3E50;
+    
+    /* Estados */
+    --delafiber-success: #28A745;
+    --delafiber-warning: #FFC107;
+    --delafiber-danger: #DC3545;
+    --delafiber-info: #17A2B8;
+    
+    /* ============================================
+       APLICAR A COMPONENTES BOOTSTRAP
+       ============================================ */
+    
+    /* Botones Primarios */
+    --bs-primary: var(--delafiber-primary);
+    --bs-primary-rgb: 74, 26, 107;
+    
+    /* Links */
+    --bs-link-color: var(--delafiber-accent);
+    --bs-link-hover-color: var(--delafiber-primary);
+}
+
+/* ============================================
+   SIDEBAR (Menú Lateral) - FIJO DEBAJO DEL NAVBAR
+   ============================================ */
+.sidebar {
+    background: linear-gradient(180deg, var(--delafiber-dark) 0%, var(--delafiber-primary) 100%) !important;
+    position: fixed !important;
+    top: 70px; /* Debajo del navbar */
+    left: 0;
+    bottom: 0;
+    width: 250px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 100;
+    height: calc(100vh - 70px); /* Altura menos el navbar */
+    transition: all 0.3s ease-in-out; /* Animación suave */
+    box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+/* Sidebar colapsado (cuando se presiona hamburguesa) */
+.sidebar-icon-only .sidebar {
+    width: 70px;
+}
+
+/* Ajustar contenido cuando sidebar está colapsado */
+.sidebar-icon-only .main-panel {
+    margin-left: 70px !important;
+    width: calc(100% - 70px) !important;
+}
+
+/* Ocultar texto cuando está colapsado */
+.sidebar-icon-only .sidebar .nav-item .nav-link .menu-title {
+    display: none;
+}
+
+/* Centrar iconos cuando está colapsado */
+.sidebar-icon-only .sidebar .nav-item .nav-link {
+    justify-content: center;
+    padding: 1rem 0.5rem;
+}
+
+.sidebar-icon-only .sidebar .nav-item .nav-link i {
+    margin-right: 0;
+    font-size: 1.5rem;
+}
+
+/* Ocultar flechas de submenú cuando está colapsado */
+.sidebar-icon-only .sidebar .nav-item .nav-link .menu-arrow {
+    display: none;
+}
+
+/* Scrollbar del sidebar */
+.sidebar::-webkit-scrollbar {
+    width: 6px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+    background: rgba(232, 93, 154, 0.5);
+    border-radius: 3px;
+}
+
+.sidebar::-webkit-scrollbar-thumb:hover {
+    background: rgba(232, 93, 154, 0.7);
+}
+
+.sidebar .nav-item .nav-link {
+    color: rgba(255, 255, 255, 0.8) !important;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-item .nav-link:hover,
+.sidebar .nav-item .nav-link.active {
+    background-color: rgba(232, 93, 154, 0.2) !important;
+    color: white !important;
+}
+
+.sidebar .nav-item .nav-link i {
+    color: var(--delafiber-accent);
+    transition: all 0.3s ease;
+}
+
+/* Tooltip para mostrar texto cuando está colapsado */
+.sidebar-icon-only .sidebar .nav-item .nav-link {
+    position: relative;
+}
+
+.sidebar-icon-only .sidebar .nav-item .nav-link:hover::after {
+    content: attr(data-title);
+    position: absolute;
+    left: 70px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: var(--delafiber-primary);
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 5px;
+    white-space: nowrap;
+    z-index: 1000;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-50%) translateX(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(-50%) translateX(0);
+    }
+}
+
+/* Ajustar el contenido principal para que no quede detrás del sidebar */
+.main-panel {
+    margin-left: 250px !important;
+    width: calc(100% - 250px) !important;
+}
+
+/* El navbar ocupa todo el ancho */
+.navbar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    z-index: 1000;
+    margin-left: 0 !important;
+}
+
+/* Ajustar el contenido para que no quede detrás del navbar */
+.page-body-wrapper {
+    padding-top: 70px;
+}
+
+/* Responsive: En móviles el sidebar no es fijo */
+@media (max-width: 991px) {
+    .sidebar {
+        position: relative !important;
+        top: 0 !important;
+        width: 100% !important;
+        height: auto !important;
+    }
+    
+    .main-panel {
+        margin-left: 0 !important;
+        width: 100% !important;
+    }
+    
+    .navbar {
+        position: relative !important;
+    }
+    
+    .page-body-wrapper {
+        padding-top: 0;
+    }
+}
+
+/* ============================================
+   NAVBAR (Header Superior)
+   ============================================ */
+.navbar {
+    background: white !important;
+    border-bottom: 2px solid var(--delafiber-pink-light);
+}
+
+.navbar .navbar-brand {
+    color: var(--delafiber-primary) !important;
+}
+
+/* Botón hamburguesa mejorado */
+.navbar-toggler,
+.navbar .navbar-menu-wrapper .navbar-toggler {
+    border: 2px solid var(--delafiber-accent) !important;
+    border-radius: 8px;
+    padding: 0.5rem;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.navbar-toggler:hover,
+.navbar .navbar-menu-wrapper .navbar-toggler:hover {
+    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
+    border-color: var(--delafiber-primary) !important;
+    transform: scale(1.05);
+}
+
+.navbar-toggler:focus,
+.navbar .navbar-menu-wrapper .navbar-toggler:focus {
+    box-shadow: 0 0 0 0.25rem rgba(232, 93, 154, 0.25);
+}
+
+.navbar-toggler i,
+.navbar .navbar-menu-wrapper .navbar-toggler i {
+    color: var(--delafiber-accent);
+    font-size: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.navbar-toggler:hover i,
+.navbar .navbar-menu-wrapper .navbar-toggler:hover i {
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* Animación del icono hamburguesa */
+.sidebar-icon-only .navbar-toggler i {
+    transform: rotate(180deg);
+}
+
+/* ============================================
+   BOTONES
+   ============================================ */
+.btn-primary {
+    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-secondary) 100%);
+    border: none;
+    box-shadow: 0 4px 15px rgba(74, 26, 107, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, var(--delafiber-secondary) 0%, var(--delafiber-dark) 100%);
+    box-shadow: 0 6px 20px rgba(74, 26, 107, 0.4);
+}
+
+.btn-outline-primary {
+    color: var(--delafiber-primary);
+    border-color: var(--delafiber-primary);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--delafiber-primary);
+    border-color: var(--delafiber-primary);
+}
+
+/* Botón de acento (rosa) */
+.btn-accent {
+    background: linear-gradient(135deg, var(--delafiber-accent) 0%, #FF2B80 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 4px 15px rgba(232, 93, 154, 0.3);
+}
+
+.btn-accent:hover {
+    background: linear-gradient(135deg, #FF2B80 0%, var(--delafiber-accent) 100%);
+    box-shadow: 0 6px 20px rgba(232, 93, 154, 0.4);
+    color: white;
+}
+
+/* ============================================
+   CARDS (Tarjetas)
+   ============================================ */
+.card {
+    border: 1px solid var(--delafiber-gray);
+    border-radius: 10px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.card-header {
+    background: linear-gradient(135deg, var(--delafiber-pink-soft) 0%, white 100%);
+    border-bottom: 2px solid var(--delafiber-pink-light);
+    color: var(--delafiber-primary);
+    font-weight: 600;
+}
+
+/* ============================================
+   BADGES (Etiquetas)
+   ============================================ */
+.badge-primary {
+    background-color: var(--delafiber-primary) !important;
+}
+
+.badge-accent {
+    background-color: var(--delafiber-accent) !important;
+    color: white;
+}
+
+/* ============================================
+   TABLAS
+   ============================================ */
+.table thead th {
+    background-color: var(--delafiber-pink-soft);
+    color: var(--delafiber-primary);
+    border-bottom: 2px solid var(--delafiber-accent);
+}
+
+.table-hover tbody tr:hover {
+    background-color: var(--delafiber-pink-light);
+}
+
+/* ============================================
+   FORMULARIOS
+   ============================================ */
+.form-control:focus {
+    border-color: var(--delafiber-accent);
+    box-shadow: 0 0 0 0.25rem rgba(232, 93, 154, 0.15);
+}
+
+.form-check-input:checked {
+    background-color: var(--delafiber-accent);
+    border-color: var(--delafiber-accent);
+}
+
+/* ============================================
+   LINKS
+   ============================================ */
+a {
+    color: var(--delafiber-accent);
+}
+
+a:hover {
+    color: var(--delafiber-primary);
+}
+
+/* ============================================
+   ALERTAS
+   ============================================ */
+.alert-primary {
+    background-color: var(--delafiber-pink-soft);
+    border-color: var(--delafiber-accent);
+    color: var(--delafiber-primary);
+}
+
+/* ============================================
+   PAGINACIÓN
+   ============================================ */
+.pagination .page-item.active .page-link {
+    background-color: var(--delafiber-primary);
+    border-color: var(--delafiber-primary);
+}
+
+.pagination .page-link {
+    color: var(--delafiber-primary);
+}
+
+.pagination .page-link:hover {
+    background-color: var(--delafiber-pink-light);
+    color: var(--delafiber-primary);
+}
+
+/* ============================================
+   PROGRESS BARS
+   ============================================ */
+.progress-bar {
+    background: linear-gradient(90deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
+}
+
+/* ============================================
+   MODALES
+   ============================================ */
+.modal-header {
+    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-secondary) 100%);
+    color: white;
+}
+
+.modal-header .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+/* ============================================
+   BREADCRUMBS
+   ============================================ */
+.breadcrumb-item.active {
+    color: var(--delafiber-primary);
+}
+
+.breadcrumb-item a {
+    color: var(--delafiber-accent);
+}
+
+/* ============================================
+   DROPDOWNS
+   ============================================ */
+.dropdown-item:hover,
+.dropdown-item:focus {
+    background-color: var(--delafiber-pink-light);
+    color: var(--delafiber-primary);
+}
+
+.dropdown-item.active {
+    background-color: var(--delafiber-primary);
+}
+
+/* ============================================
+   TABS (Pestañas)
+   ============================================ */
+.nav-tabs .nav-link.active {
+    color: var(--delafiber-primary);
+    border-bottom: 3px solid var(--delafiber-accent);
+}
+
+.nav-tabs .nav-link:hover {
+    border-color: var(--delafiber-pink-light);
+    color: var(--delafiber-accent);
+}
+
+/* ============================================
+   SPINNERS (Cargando)
+   ============================================ */
+.spinner-border-primary {
+    color: var(--delafiber-primary);
+}
+
+/* ============================================
+   SCROLLBAR PERSONALIZADO
+   ============================================ */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--delafiber-gray-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(180deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(180deg, var(--delafiber-accent) 0%, var(--delafiber-primary) 100%);
+}
+
+/* ============================================
+   MÓDULO: CAMPAÑAS
+   ============================================ */
+
+/* Cards de estadísticas */
+.card.bg-primary,
+.card.bg-success,
+.card.bg-info,
+.card.bg-warning {
+    border: none;
+    border-radius: 15px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.card.bg-primary {
+    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-secondary) 100%) !important;
+}
+
+.card.bg-success {
+    background: linear-gradient(135deg, #28A745 0%, #20C997 100%) !important;
+}
+
+.card.bg-info {
+    background: linear-gradient(135deg, #17A2B8 0%, #00B4D8 100%) !important;
+}
+
+.card.bg-warning {
+    background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%) !important;
+}
+
+.card.bg-primary:hover,
+.card.bg-success:hover,
+.card.bg-info:hover,
+.card.bg-warning:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+/* Tabla de campañas */
+.table {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.table thead {
+    background: linear-gradient(135deg, var(--delafiber-pink-soft) 0%, white 100%);
+}
+
+.table thead th {
+    color: var(--delafiber-primary);
+    font-weight: 600;
+    border-bottom: 2px solid var(--delafiber-accent);
+    padding: 1rem;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+    border-bottom: 1px solid var(--delafiber-gray);
+}
+
+.table tbody tr:hover {
+    background-color: var(--delafiber-pink-light);
+    transform: scale(1.01);
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* Badges de estado */
+.badge {
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.badge.bg-success {
+    background: linear-gradient(135deg, #28A745 0%, #20C997 100%) !important;
+}
+
+.badge.bg-warning {
+    background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%) !important;
+    color: #333 !important;
+}
+
+.badge.bg-danger {
+    background: linear-gradient(135deg, #DC3545 0%, #C92A2A 100%) !important;
+}
+
+.badge.bg-info {
+    background: linear-gradient(135deg, #17A2B8 0%, #00B4D8 100%) !important;
+}
+
+/* ============================================
+   MÓDULO: LEADS
+   ============================================ */
+
+/* Pipeline de leads */
+.pipeline-column {
+    background: var(--delafiber-gray-light);
+    border-radius: 15px;
+    padding: 1.5rem;
+    min-height: 500px;
+    transition: all 0.3s ease;
+}
+
+.pipeline-column:hover {
+    background: var(--delafiber-pink-light);
+    box-shadow: 0 5px 20px rgba(232, 93, 154, 0.1);
+}
+
+.pipeline-column h4 {
+    color: var(--delafiber-primary);
+    font-weight: 700;
+    margin-bottom: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 3px solid var(--delafiber-accent);
+}
+
+/* Lead card en pipeline */
+.lead-card {
+    background: white;
+    border-radius: 10px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    border-left: 4px solid var(--delafiber-accent);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+    transition: all 0.3s ease;
+    cursor: move;
+}
+
+.lead-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 20px rgba(74, 26, 107, 0.15);
+    border-left-color: var(--delafiber-primary);
+}
+
+.lead-card .lead-name {
+    color: var(--delafiber-primary);
+    font-weight: 600;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.lead-card .lead-info {
+    color: var(--delafiber-gray-dark);
+    font-size: 0.85rem;
+}
+
+/* Filtros de leads */
+.filter-section {
+    background: var(--delafiber-pink-soft);
+    border-radius: 10px;
+    padding: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.filter-section .form-control,
+.filter-section .form-select {
+    border: 2px solid var(--delafiber-gray);
+    border-radius: 8px;
+}
+
+.filter-section .form-control:focus,
+.filter-section .form-select:focus {
+    border-color: var(--delafiber-accent);
+    box-shadow: 0 0 0 0.25rem rgba(232, 93, 154, 0.15);
+}
+
+/* ============================================
+   MÓDULO: COTIZACIONES
+   ============================================ */
+
+/* Card de cotización */
+.cotizacion-card {
+    border: 2px solid var(--delafiber-gray);
+    border-radius: 15px;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.cotizacion-card:hover {
+    border-color: var(--delafiber-accent);
+    box-shadow: 0 10px 30px rgba(232, 93, 154, 0.15);
+    transform: translateY(-3px);
+}
+
+.cotizacion-card .cotizacion-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--delafiber-pink-light);
+}
+
+.cotizacion-card .cotizacion-numero {
+    color: var(--delafiber-primary);
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.cotizacion-card .cotizacion-total {
+    color: var(--delafiber-accent);
+    font-weight: 700;
+    font-size: 1.5rem;
+}
+
+/* ============================================
+   MÓDULO: TAREAS
+   ============================================ */
+
+/* Lista de tareas */
+.tarea-item {
+    background: white;
+    border-left: 4px solid var(--delafiber-gray);
+    border-radius: 8px;
+    padding: 1rem;
+    margin-bottom: 1rem;
+    transition: all 0.3s ease;
+}
+
+.tarea-item:hover {
+    border-left-color: var(--delafiber-accent);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateX(5px);
+}
+
+.tarea-item.prioridad-alta {
+    border-left-color: #DC3545;
+}
+
+.tarea-item.prioridad-media {
+    border-left-color: #FFC107;
+}
+
+.tarea-item.prioridad-baja {
+    border-left-color: #28A745;
+}
+
+.tarea-item.completada {
+    opacity: 0.6;
+    background-color: var(--delafiber-gray-light);
+}
+
+.tarea-item .tarea-titulo {
+    color: var(--delafiber-primary);
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+/* Calendario de tareas */
+.fc-event {
+    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
+    border: none;
+    border-radius: 5px;
+    padding: 0.25rem 0.5rem;
+}
+
+.fc-event:hover {
+    background: linear-gradient(135deg, var(--delafiber-accent) 0%, var(--delafiber-primary) 100%);
+}
+
+/* ============================================
+   MÓDULO: DASHBOARD
+   ============================================ */
+
+/* Stats cards mejorados */
+.stats-card {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+    border-left: 5px solid var(--delafiber-accent);
+}
+
+.stats-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(74, 26, 107, 0.15);
+}
+
+.stats-card .stats-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
+    color: white;
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+}
+
+.stats-card .stats-number {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--delafiber-primary);
+    margin-bottom: 0.5rem;
+}
+
+.stats-card .stats-label {
+    color: var(--delafiber-gray-dark);
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Gráficos */
+.chart-container {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.chart-container h4 {
+    color: var(--delafiber-primary);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 2px solid var(--delafiber-pink-light);
+}
+
+/* ============================================
+   MÓDULO: USUARIOS
+   ============================================ */
+
+/* Card de usuario */
+.usuario-card {
+    background: white;
+    border-radius: 15px;
+    padding: 1.5rem;
+    text-align: center;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+    transition: all 0.3s ease;
+}
+
+.usuario-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(74, 26, 107, 0.15);
+}
+
+.usuario-card .usuario-avatar {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: 4px solid var(--delafiber-accent);
+    margin: 0 auto 1rem;
+}
+
+.usuario-card .usuario-nombre {
+    color: var(--delafiber-primary);
+    font-weight: 700;
+    font-size: 1.1rem;
+    margin-bottom: 0.5rem;
+}
+
+.usuario-card .usuario-rol {
+    color: var(--delafiber-gray-dark);
+    font-size: 0.9rem;
+}
+
+/* ============================================
+   MÓDULO: REPORTES
+   ============================================ */
+
+/* Filtros de reportes */
+.reporte-filtros {
+    background: linear-gradient(135deg, var(--delafiber-pink-soft) 0%, white 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border: 2px solid var(--delafiber-pink-light);
+}
+
+.reporte-filtros h5 {
+    color: var(--delafiber-primary);
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+}
+
+/* Tabla de reportes */
+.reporte-tabla {
+    background: white;
+    border-radius: 15px;
+    padding: 2rem;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+}
+
+.reporte-tabla .table-responsive {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+/* ============================================
+   COMPONENTES GENERALES MEJORADOS
+   ============================================ */
+
+/* Botón de acción flotante */
+.btn-float {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
+    color: white;
+    border: none;
+    box-shadow: 0 10px 30px rgba(74, 26, 107, 0.3);
+    font-size: 1.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    z-index: 1000;
+}
+
+.btn-float:hover {
+    transform: scale(1.1) rotate(90deg);
+    box-shadow: 0 15px 40px rgba(74, 26, 107, 0.4);
+}
+
+/* Search bar mejorado */
+.search-bar {
+    position: relative;
+}
+
+.search-bar input {
+    border: 2px solid var(--delafiber-gray);
+    border-radius: 25px;
+    padding: 0.75rem 1.5rem 0.75rem 3rem;
+    transition: all 0.3s ease;
+}
+
+.search-bar input:focus {
+    border-color: var(--delafiber-accent);
+    box-shadow: 0 0 0 0.25rem rgba(232, 93, 154, 0.15);
+    background-color: white;
+}
+
+.search-bar i {
+    position: absolute;
+    left: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--delafiber-accent);
+}
+
+/* Empty state */
+.empty-state {
+    text-align: center;
+    padding: 4rem 2rem;
+}
+
+.empty-state i {
+    font-size: 4rem;
+    color: var(--delafiber-accent);
+    margin-bottom: 1rem;
+    opacity: 0.5;
+}
+
+.empty-state h4 {
+    color: var(--delafiber-primary);
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+.empty-state p {
+    color: var(--delafiber-gray-dark);
+}
+
+/* Loading spinner personalizado */
+.spinner-delafiber {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--delafiber-pink-light);
+    border-top: 5px solid var(--delafiber-accent);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Toast notifications */
+.toast {
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+}
+
+.toast-header {
+    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
+    color: white;
+    border-radius: 10px 10px 0 0;
+}
+
+/* Page header mejorado */
+.page-header {
+    background: linear-gradient(135deg, var(--delafiber-pink-soft) 0%, white 100%);
+    border-radius: 15px;
+    padding: 2rem;
+    margin-bottom: 2rem;
+    border-left: 5px solid var(--delafiber-accent);
+}
+
+.page-header h1 {
+    color: var(--delafiber-primary);
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.page-header p {
+    color: var(--delafiber-gray-dark);
+    margin: 0;
+}

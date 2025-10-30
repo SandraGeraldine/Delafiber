@@ -1,0 +1,83 @@
+/**
+ * Estilos para el Dashboard
+ * Archivo: public/css/dashboard/dashboard.css
+ */
+
+.welcome-banner {
+    padding: 1rem 0;
+}
+
+.border-left-primary {
+    border-left: 4px solid #4e73df;
+}
+
+.border-left-warning {
+    border-left: 4px solid #f6c23e;
+}
+
+.border-left-success {
+    border-left: 4px solid #1cc88a;
+}
+
+.border-left-danger {
+    border-left: 4px solid #e74a3b;
+}
+
+.task-item {
+    transition: all 0.3s ease;
+}
+
+.task-item:hover {
+    background-color: #f8f9fc;
+    transform: translateX(5px);
+}
+
+.lead-card {
+    transition: all 0.3s ease;
+}
+
+.lead-card:hover {
+    background-color: #f8f9fc;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.activity-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: #f8f9fc;
+    border-radius: 50%;
+}
+
+.fab-container {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    z-index: 999;
+}
+
+.fab-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 50%;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+    text-decoration: none;
+    transition: all 0.3s ease;
+}
+
+.fab-button:hover {
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+    color: white;
+}
+
+.fab-button i {
+    font-size: 24px;
+}

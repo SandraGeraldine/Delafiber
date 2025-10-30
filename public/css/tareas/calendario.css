@@ -1,0 +1,110 @@
+/**
+ * Estilos para el Calendario de Tareas
+ * Versión Corporativa Mejorada
+ */
+
+/* ========================================
+   HEADER CORPORATIVO
+   ======================================== */
+.calendar-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    padding: 2rem;
+    border-radius: 10px;
+    margin-bottom: 1.5rem;
+}
+
+.calendar-stats {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.stat-card {
+    background: rgba(255,255,255,0.2);
+    padding: 1rem;
+    border-radius: 8px;
+    flex: 1;
+    text-align: center;
+}
+
+.stat-card h4 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: bold;
+}
+
+.stat-card p {
+    margin: 0.5rem 0 0 0;
+    font-size: 0.9rem;
+    opacity: 0.9;
+}
+
+/* ========================================
+   CALENDARIO
+   ======================================== */
+#calendar {
+    max-width: 100%;
+    margin: 0 auto;
+}
+
+.fc-event {
+    cursor: pointer;
+    border-radius: 4px;
+    padding: 2px 4px;
+}
+
+.fc-event:hover {
+    opacity: 0.9;
+    transform: scale(1.02);
+    transition: all 0.2s;
+}
+
+.fc-daygrid-event {
+    white-space: normal !important;
+}
+
+/* ========================================
+   INDICADORES VISUALES
+   ======================================== */
+.fc-event-importante {
+    border: 2px solid #ff0000 !important;
+    font-weight: bold !important;
+    box-shadow: 0 2px 8px rgba(255,0,0,0.3) !important;
+}
+
+.fc-event-importante::before {
+    content: "⭐ ";
+}
+
+.fc-event-reunion::after {
+    content: " 👥";
+}
+
+/* ========================================
+   MODAL
+   ======================================== */
+.modal-header-custom {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+.modal-header-custom .btn-close {
+    filter: brightness(0) invert(1);
+}
+
+.participantes-section {
+    background: #f8f9fa;
+    padding: 1rem;
+    border-radius: 8px;
+    margin-top: 1rem;
+}
+
+/* ========================================
+   BADGES Y ETIQUETAS
+   ======================================== */
+.badge {
+    padding: 4px 8px;
+    font-size: 11px;
+    font-weight: 500;
+}

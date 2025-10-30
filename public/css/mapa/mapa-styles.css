@@ -1,0 +1,296 @@
+/**
+ * Estilos CSS para el Mapa Interactivo
+ * Todos los estilos personalizados del mapa organizados
+ */
+
+/* Estilos base del contenedor del mapa */
+.mapa-container {
+    height: calc(100vh - 60px);
+}
+
+.mapa-container .row {
+    height: 100%;
+}
+
+/* Panel lateral de controles */
+.mapa-panel-lateral {
+    height: 100%;
+    overflow-y: auto;
+    background: #fff;
+    border-right: 1px solid #dee2e6;
+}
+
+.mapa-panel-lateral .card-header {
+    font-size: 0.9rem;
+    padding: 0.75rem 1rem;
+}
+
+.mapa-panel-lateral .card-body {
+    padding: 1rem;
+}
+
+/* Área del mapa */
+.mapa-area {
+    height: 100%;
+    position: relative;
+}
+
+#map {
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+}
+
+/* Loading Overlay */
+.mapa-loading-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(255, 255, 255, 0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(2px);
+}
+
+.mapa-loading-content {
+    text-align: center;
+    color: #6c757d;
+}
+
+.mapa-loading-content .spinner-border {
+    width: 3rem;
+    height: 3rem;
+}
+
+/* Estilos personalizados para Leaflet */
+.leaflet-popup-content {
+    margin: 10px;
+    line-height: 1.4;
+}
+
+.leaflet-popup-content h6 {
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.leaflet-popup-content .badge {
+    font-size: 0.75em;
+}
+
+.leaflet-popup-content hr {
+    margin: 0.5rem 0;
+    border-color: #dee2e6;
+}
+
+.leaflet-popup-content .btn {
+    font-size: 0.8rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Marcadores personalizados */
+.custom-marker {
+    background: transparent !important;
+    border: none !important;
+}
+
+.custom-marker div {
+    transition: transform 0.2s ease;
+}
+
+.custom-marker div:hover {
+    transform: scale(1.1);
+}
+
+/* Clusters personalizados */
+.marker-cluster-small {
+    background-color: rgba(0, 123, 255, 0.6) !important;
+    border: 2px solid rgba(0, 123, 255, 0.8) !important;
+}
+
+.marker-cluster-small div {
+    background-color: rgba(0, 123, 255, 0.8) !important;
+    color: white !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+}
+
+.marker-cluster-medium {
+    background-color: rgba(253, 126, 20, 0.6) !important;
+    border: 2px solid rgba(253, 126, 20, 0.8) !important;
+}
+
+.marker-cluster-medium div {
+    background-color: rgba(253, 126, 20, 0.8) !important;
+    color: white !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+}
+
+.marker-cluster-large {
+    background-color: rgba(220, 53, 69, 0.6) !important;
+    border: 2px solid rgba(220, 53, 69, 0.8) !important;
+}
+
+.marker-cluster-large div {
+    background-color: rgba(220, 53, 69, 0.8) !important;
+    color: white !important;
+    font-weight: bold !important;
+    font-size: 12px !important;
+}
+
+/* Leyenda de colores */
+.mapa-leyenda-color {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    margin-right: 10px;
+    border: 2px solid #fff;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+}
+
+/* Estadísticas del panel */
+.mapa-estadisticas h5 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #495057;
+    margin: 0;
+}
+
+.mapa-estadisticas .text-muted {
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+}
+
+/* Controles de capa */
+.mapa-controles-capa .form-check {
+    padding-left: 2.5rem;
+}
+
+.mapa-controles-capa .form-check-input {
+    margin-left: -2.5rem;
+}
+
+.mapa-controles-capa .form-check-label {
+    font-size: 0.9rem;
+    cursor: pointer;
+    user-select: none;
+}
+
+/* Botones del mapa */
+.mapa-btn-recargar {
+    transition: all 0.2s ease;
+    font-weight: 500;
+}
+
+.mapa-btn-recargar:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .mapa-container {
+        height: calc(100vh - 60px);
+    }
+    
+    .mapa-panel-lateral {
+        position: absolute;
+        z-index: 1000;
+        width: 300px;
+        height: 100%;
+        left: -300px;
+        transition: left 0.3s ease;
+        box-shadow: 2px 0 10px rgba(0,0,0,0.1);
+    }
+    
+    .mapa-panel-lateral.show {
+        left: 0;
+    }
+    
+    .mapa-area {
+        width: 100% !important;
+    }
+    
+    /* Botón para mostrar panel en móviles */
+    .mapa-btn-toggle-panel {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        z-index: 1001;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        border-radius: 4px;
+        padding: 8px 12px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        cursor: pointer;
+    }
+}
+
+@media (max-width: 576px) {
+    .mapa-panel-lateral {
+        width: 280px;
+        left: -280px;
+    }
+    
+    .leaflet-popup-content {
+        min-width: 200px !important;
+    }
+    
+    .mapa-estadisticas h5 {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animaciones */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.mapa-fade-in {
+    animation: fadeIn 0.3s ease-in;
+}
+
+/* Estados de carga */
+.mapa-loading .mapa-btn-recargar {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.mapa-loading .mapa-btn-recargar i {
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+}
+
+/* Mejoras de accesibilidad */
+.form-check-input:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.btn:focus {
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+/* Print styles */
+@media print {
+    .mapa-panel-lateral {
+        display: none;
+    }
+    
+    .mapa-area {
+        width: 100% !important;
+    }
+    
+    .mapa-loading-overlay {
+        display: none !important;
+    }
+}

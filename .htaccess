@@ -1,0 +1,19 @@
+# Protección de archivos sensibles en la raíz del proyecto
+# Este archivo protege .env, composer.json, etc.
+
+# Denegar acceso a archivos de configuración
+<FilesMatch "^\.env">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+<FilesMatch "(composer\.(json|lock)|package(-lock)?\.json|phpunit\.xml|\.git)">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Redirigir todo al directorio public/
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(.*)$ public/$1 [L]
+</IfModule>

@@ -1,0 +1,12 @@
+.btn-check:checked + .btn-outline-success {
+    background-color: #28a745;
+    color: white;
+}
+.btn-check:checked + .btn-outline-warning {
+    background-color: #ffc107;
+    color: #212529;
+}
+.btn-check:checked + .btn-outline-secondary {
+    background-color: #6c757d;
+    color: white;
+}

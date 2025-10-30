@@ -1,0 +1,181 @@
+/**
+ * Estilos para el formulario de creación de Leads
+ */
+
+/* Animación de rotación para el loading */
+.rotating {
+    animation: rotate 1s linear infinite;
+}
+
+@keyframes rotate {
+    from { 
+        transform: rotate(0deg); 
+    }
+    to { 
+        transform: rotate(360deg); 
+    }
+}
+
+/* Animación para campos dinámicos */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.campo-dinamico {
+    animation: fadeIn 0.3s ease-out;
+}
+
+/* Estilos para alertas de cobertura */
+#alertCobertura {
+    transition: opacity 0.3s ease;
+}
+
+/* Mejoras visuales para el formulario */
+.card-header {
+    font-weight: 600;
+}
+
+.form-group label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+}
+
+.form-control:focus {
+    border-color: #4e73df;
+    box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+}
+
+/* Estilos para el botón de búsqueda DNI */
+#btnBuscarDni:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+/* Loading indicator */
+#dni-loading {
+    font-size: 0.9rem;
+    color: #4e73df;
+}
+
+/* Estilos personalizados para toast de cobertura */
+.swal-toast-cobertura {
+    font-family: inherit !important;
+    border-radius: 8px !important;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15) !important;
+    min-width: 320px !important;
+}
+
+.swal-toast-cobertura .swal2-title {
+    font-size: 14px !important;
+    font-weight: 600 !important;
+    margin-bottom: 5px !important;
+}
+
+.swal-toast-cobertura .swal2-html-container {
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+/* Estilos para Select2 de búsqueda de clientes */
+.select2-result-cliente {
+    padding: 8px 0;
+}
+
+.cliente-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-size: 20px;
+}
+
+.cliente-info {
+    flex: 1;
+}
+
+.cliente-nombre {
+    font-size: 14px;
+    margin-bottom: 4px;
+}
+
+.cliente-detalles {
+    font-size: 12px;
+    color: #6c757d;
+}
+
+.cliente-detalles span {
+    margin-right: 12px;
+}
+
+.cliente-direccion {
+    font-size: 11px;
+    margin-top: 4px;
+}
+
+/* Mejorar apariencia de Select2 */
+.select2-container--bootstrap-5 .select2-selection {
+    min-height: 45px;
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.select2-container--bootstrap-5 .select2-selection--single .select2-selection__rendered {
+    line-height: 43px;
+    padding-left: 12px;
+}
+
+.select2-container--bootstrap-5 .select2-dropdown {
+    border: 1px solid #ced4da;
+    border-radius: 0.25rem;
+}
+
+.select2-container--bootstrap-5 .select2-results__option--highlighted {
+    background-color: #4e73df !important;
+    color: white;
+}
+
+/* Badge en resultados */
+.badge-warning {
+    background-color: #f6c23e;
+    color: #1f2d3d;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 10px;
+    font-weight: 600;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .card-header h5 {
+        font-size: 1rem;
+    }
+    
+    .btn-group {
+        flex-direction: column;
+    }
+    
+    .swal-toast-cobertura {
+        min-width: 280px !important;
+    }
+    
+    .cliente-avatar {
+        width: 35px;
+        height: 35px;
+        font-size: 16px;
+    }
+    
+    .cliente-nombre {
+        font-size: 13px;
+    }
+}
