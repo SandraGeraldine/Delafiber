@@ -1,52 +1,78 @@
 # Delafiber - Sistema de Gestión
 
-## Requisitos Previos
+## 🚀 Instalación Rápida
 
-- PHP 7.4 o superior
-- MySQL 5.7 o superior / MariaDB 10.3 o superior
+### Requisitos
+- PHP 8.1+
+- MySQL 5.7+ / MariaDB 10.3+
 - Composer
-- Servidor web (Apache/Nginx) con mod_rewrite habilitado
-- Cuenta de Twilio (para funcionalidad de WhatsApp)
+- Servidor web (Apache/Nginx) con mod_rewrite
 
-## Instalación
+### Pasos para Configuración
 
 1. **Clonar el repositorio**
    ```bash
-   git clone [URL_DEL_REPOSITORIO]
+   git clone [URL_DEL_REPOSITORIO] Delafiber
    cd Delafiber
    ```
 
-2. **Instalar dependencias**
+2. **Instalar dependencias PHP**
    ```bash
    composer install
    ```
 
-3. **Configuración del entorno**
-   - Copiar el archivo `.env.example` a `.env`
-   - Configurar las variables de entorno en `.env`:
+3. **Configurar el entorno**
+   ```bash
+   # Copiar archivo de configuración
+   copy .env.example .env
+   
+   # Generar clave de aplicación
+   php spark key:generate
+   ```
+
+4. **Configurar base de datos**
+   - Crear base de datos vacía en MySQL
+   - Editar archivo `.env` con tus credenciales:
      ```env
-     # Configuración de la aplicación
-     CI_ENVIRONMENT = development
-     
-     # Configuración de la base de datos
      database.default.hostname = localhost
-     database.default.database = nombre_base_datos
+     database.default.database = nombre_bd
      database.default.username = usuario
      database.default.password = contraseña
      database.default.DBDriver = MySQLi
-     
-     # Configuración de Twilio (para WhatsApp)
-     TWILIO_ACCOUNT_SID=tu_account_sid
-     TWILIO_AUTH_TOKEN=tu_auth_token
-     TWILIO_WHATSAPP_NUMBER=+1234567890
      ```
 
-4. **Configuración de la base de datos**
-   - Crear una base de datos vacía
-   - Importar la estructura de la base de datos:
+5. **Importar base de datos**
+   - Importar el archivo SQL proporcionado:
      ```bash
-     # En Windows
-     mysql -u usuario -p nombre_base_datos < database/delafiber.sql
+     mysql -u usuario -p nombre_bd < database/delafiber.sql
+     ```
+
+6. **Configurar permisos**
+   ```bash
+   # En Linux/macOS
+   chmod -R 755 writable/
+   chmod -R 755 public/
+   
+   # En Windows (ejecutar como administrador)
+   icacls writable /grant "IUSR:(OI)(CI)F"
+   icacls public /grant "IUSR:(OI)(CI)F"
+   ```
+
+7. **Configurar servidor web**
+   - Asegúrate de que el DocumentRoot apunte a la carpeta `public/`
+   - Habilita el módulo `mod_rewrite`
+
+### 🔍 Solución de problemas
+
+- **Si los estilos no se cargan**:
+  - Verifica que la URL base en `.env` sea correcta
+  - Asegúrate de que los archivos en `public/` tengan los permisos correctos
+  - Revisa la consola del navegador (F12) para ver errores 404
+
+- **Si hay problemas de base de datos**:
+  - Verifica las credenciales en `.env`
+  - Asegúrate de que el servidor MySQL esté en ejecución
+  - Verifica que el usuario tenga permisos sobre la base de datos
      
      # O usando PHPMyAdmin
      # Importar el archivo database/delafiber.sql
