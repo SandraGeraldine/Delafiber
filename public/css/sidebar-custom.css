@@ -1,0 +1,111 @@
+/* Estilos personalizados para el menú lateral */
+
+/* Color de fondo del menú lateral */
+.sidebar {
+    background: #ffffff;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Estilo para los ítems del menú */
+.sidebar .nav-item .nav-link {
+    color: #5d33d6; /* Color morado para el texto */
+    font-weight: 500;
+    padding: 12px 25px;
+    transition: all 0.3s ease;
+    border-left: 3px solid transparent;
+    display: flex;
+    align-items: center;
+}
+
+/* Color del texto en hover */
+.sidebar .nav-item .nav-link:hover {
+    color: #3a1d8a; /* Morado más oscuro al pasar el ratón */
+    background-color: rgba(93, 51, 214, 0.1);
+}
+
+/* Estilo para el ítem activo */
+.sidebar .nav-item.active .nav-link {
+    color: #3a1d8a; /* Morado más oscuro para activo */
+    font-weight: 600;
+    background-color: rgba(93, 51, 214, 0.1);
+    border-left-color: #5d33d6;
+}
+
+/* Estilo para los iconos */
+.sidebar .nav-item .nav-link i {
+    color: #5d33d6; /* Color morado para los iconos */
+    font-size: 1.25rem;
+    width: 24px;
+    text-align: center;
+    margin-right: 12px;
+    transition: all 0.3s ease;
+}
+
+/* Color del icono en hover y activo */
+.sidebar .nav-item .nav-link:hover i,
+.sidebar .nav-item.active .nav-link i {
+    color: #3a1d8a; /* Morado más oscuro al pasar el ratón */
+    transform: scale(1.1);
+}
+
+/* Estilo para las categorías del menú */
+.sidebar .nav-category .nav-link {
+    color: #7e6bc4 !important; /* Morado más claro para categorías */
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 15px 25px 5px;
+    margin-top: 15px;
+    opacity: 0.8;
+}
+
+/* Estilo para el submenú */
+.sidebar .sub-menu {
+    background-color: rgba(93, 51, 214, 0.03);
+    padding-left: 15px;
+}
+
+.sidebar .sub-menu .nav-link {
+    padding: 10px 25px 10px 15px;
+    font-size: 0.9rem;
+    color: #6c7293; /* Color más suave para submenús */
+}
+
+.sidebar .sub-menu .nav-link:hover {
+    color: #5d33d6;
+    background-color: rgba(93, 51, 214, 0.05);
+}
+
+/* Ajuste para el ícono de flecha */
+.sidebar .menu-arrow {
+    color: #a7a8bb;
+    right: 25px;
+    transition: all 0.3s ease;
+}
+
+.sidebar .nav-link[aria-expanded="true"] .menu-arrow {
+    transform: rotate(90deg);
+    color: #5d33d6;
+}
+
+/* Asegurar que los iconos de Font Awesome se muestren correctamente */
+.sidebar .nav-link i[class^="ti-"]:before {
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+}
+
+/* Ajustar el espaciado para los elementos del menú */
+.sidebar .nav-item {
+    margin: 2px 0;
+}
+
+/* Mejorar la legibilidad del menú activo */
+.sidebar .nav-item.active {
+    background-color: rgba(93, 51, 214, 0.05);
+}
+
+/* Ajustar el hover en los elementos del menú */
+.sidebar .nav-item:hover {
+    background-color: rgba(93, 51, 214, 0.03);
+}

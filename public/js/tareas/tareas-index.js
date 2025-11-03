@@ -1,53 +1,135 @@
 /**
  * JavaScript para Listado de Tareas
  * Archivo: public/js/tareas/tareas-index.js
+ * 
  */
 
-// Usar baseUrl global si existe, si no, obtenerlo del meta tag
-if (typeof baseUrl === 'undefined') {
-    var baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || '';
+// Configuración global
+const config = {
+    baseUrl: typeof baseUrl !== 'undefined' ? baseUrl : document.querySelector('meta[name="base-url"]')?.getAttribute('content') || '',
+    endpoints: {
+        buscarLeads: '/leads/buscarClienteAjax',
+        guardarTarea: '/tareas/guardar',
+        completarTarea: '/tareas/completar',
+        eliminarTarea: '/tareas/eliminar'
+    },
+    selectors: {
+        modalNuevaTarea: '#modalNuevaTarea',
+        formNuevaTarea: '#formNuevaTarea',
+        selectLead: '#selectLead',
+        tablaTareas: '#tablaPendientes',
+        btnGuardarTarea: '#btnGuardarTarea'
+    },
+    mensajes: {
+        exito: '¡Operación exitosa!',
+        error: 'Ha ocurrido un error',
+        confirmacion: '¿Estás seguro?',
+        cargando: 'Procesando...',
+        tareaCompletada: 'Tarea marcada como completada',
+        tareaEliminada: 'Tarea eliminada correctamente'
+    }
+};
+
+// Estado de la aplicación
+const state = {
+    tareasSeleccionadas: new Set(),
+    isLoading: false
+};
+
+/**
+ * Inicialización del módulo
+ */
+function init() {
+    console.log('🚀 Inicializando módulo de tareas...');
+    
+    // Inicializar eventos
+    initEventListeners();
+    
+    // Inicializar componentes
+    initComponents();
+    
+    // Cargar datos iniciales si es necesario
+    loadInitialData();
 }
 
-// Inicializar Select2 cuando se abre el modal
-$(document).ready(function() {
-    console.log('✅ Inicializando módulo de tareas...');
+/**
+ * Inicializar event listeners
+ */
+function initEventListeners() {
+    // Eventos del modal de nueva tarea
+    $(config.selectors.modalNuevaTarea).on('shown.bs.modal', onModalShow);
+    $(config.selectors.formNuevaTarea).on('submit', guardarTarea);
     
-    // Inicializar cuando se muestra el modal
-    $('#modalNuevaTarea').on('shown.bs.modal', function () {
-        console.log('✅ Modal de nueva tarea abierto');
-        
-        // Usar el componente de búsqueda de leads si está disponible
-        if (typeof inicializarBuscadorLeads === 'function') {
-            console.log('✅ Inicializando buscador de leads con componente');
-            inicializarBuscadorLeads('#selectLead', {
-                placeholder: 'Buscar lead por nombre, teléfono o DNI...',
-                dropdownParent: $('#modalNuevaTarea')
-            });
-        } else {
-            // Fallback al método anterior
-            console.log('Componente no disponible, usando Select2 básico');
-            if (!$('#selectLead').hasClass('select2-hidden-accessible')) {
-                $('#selectLead').select2({
-                    theme: 'bootstrap-5',
-                    placeholder: 'Buscar lead por nombre, teléfono o DNI...',
-                    allowClear: true,
-                    dropdownParent: $('#modalNuevaTarea'),
-                    ajax: {
-                        url: baseUrl + '/leads/buscarClienteAjax',
-                        dataType: 'json',
-                        delay: 300,
-                        data: function (params) {
-                            return {
-                                q: params.term,
-                                page: params.page || 1
-                            };
-                        },
-                        processResults: function (data, params) {
-                            params.page = params.page || 1;
-                            return {
-                                results: data.leads.map(lead => ({
-                                    id: lead.idlead,
-                                    text: `${lead.nombre_completo} - ${lead.telefono}`,
+    // Eventos de la tabla de tareas
+    $(document)
+        .on('click', '.btn-completar', onCompletarTarea)
+        .on('click', '.btn-eliminar', onEliminarTarea)
+        .on('click', '.btn-editar', onEditarTarea);
+    
+    // Selección múltiple
+    $('#selectAll').on('change', toggleSelectAll);
+    $(document).on('change', '.tarea-check', toggleAccionesMasivas);
+    
+    // Acciones masivas
+    $('#btnCompletarSeleccionadas').on('click', completarSeleccionadas);
+    $('#btnEliminarSeleccionadas').on('click', eliminarSeleccionadas);
+}
+
+/**
+ * Inicializar componentes de la interfaz
+ */
+function initComponents() {
+    // Inicializar datepickers
+    $('.datepicker').daterangepicker({
+        singleDatePicker: true,
+        locale: {
+            format: 'DD/MM/YYYY',
+            applyLabel: 'Aceptar',
+            cancelLabel: 'Cancelar',
+            daysOfWeek: ['Dom', 'Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb'],
+            monthNames: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+            firstDay: 1
+        }
+    });
+    
+    // Inicializar select2 para búsqueda de leads
+    initSelect2();
+}
+
+/**
+ * Inicializar el componente Select2 para búsqueda de leads
+ */
+function initSelect2() {
+    // Usar el componente de búsqueda de leads si está disponible
+    if (typeof inicializarBuscadorLeads === 'function') {
+        console.log('🔍 Inicializando buscador de leads con componente');
+        inicializarBuscadorLeads(config.selectors.selectLead, {
+            placeholder: 'Buscar lead por nombre, teléfono o DNI...',
+            dropdownParent: $(config.selectors.modalNuevaTarea),
+            minimumInputLength: 2,
+            delay: 300
+        });
+    } else {
+        // Fallback a implementación básica
+        console.log('ℹ️ Usando implementación básica de Select2');
+        $(config.selectors.selectLead).select2({
+            theme: 'bootstrap-5',
+            placeholder: 'Buscar lead por nombre, teléfono o DNI...',
+            allowClear: true,
+            dropdownParent: $(config.selectors.modalNuevaTarea),
+            ajax: {
+                url: config.baseUrl + config.endpoints.buscarLeads,
+                dataType: 'json',
+                delay: 300,
+                data: function(params) {
+                    return { q: params.term, page: params.page || 1 };
+                },
+                processResults: function(data, params) {
+                    params.page = params.page || 1;
+                    return {
+                        results: (data.leads || []).map(lead => ({
+                            id: lead.idlead,
+                            text: `${lead.nombre_completo} - ${lead.telefono || 'Sin teléfono'}`
                                     lead: lead
                                 })),
                                 pagination: {

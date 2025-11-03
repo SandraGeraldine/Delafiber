@@ -14,7 +14,14 @@ class ServicioModel extends Model
         'precio',
         'caracteristicas',
         'estado',
-        'orden'
+        'orden',
+        'codigo_gst',
+        'tipo',
+        'velocidad_descarga',
+        'velocidad_subida',
+        'activo',
+        'creado_en',
+        'actualizado_en'
     ];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';

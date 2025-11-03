@@ -3,7 +3,166 @@
  * Archivo: public/css/tareas/tareas-index.css
  */
 
-/* Centrar modales de SweetAlert2 verticalmente - Configuración global */
+/* ===== ESTILOS GENERALES ===== */
+.tareas-container {
+    padding: 1.5rem 0;
+}
+
+/* ===== TARJETAS DE RESUMEN ===== */
+.card-resumen {
+    border-radius: 0.75rem;
+    border: none;
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    transition: all 0.3s ease;
+    margin-bottom: 1.5rem;
+}
+
+.card-resumen:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.card-resumen .card-body {
+    padding: 1.5rem;
+}
+
+.card-resumen i {
+    font-size: 2.5rem;
+    opacity: 0.7;
+}
+
+/* Colores para las tarjetas */
+.card-resumen.bg-warning { background: linear-gradient(135deg, #ffc107 0%, #ffab00 100%) !important; }
+.card-resumen.bg-info { background: linear-gradient(135deg, #17a2b8 0%, #138496 100%) !important; }
+.card-resumen.bg-danger { background: linear-gradient(135deg, #dc3545 0%, #c82333 100%) !important; }
+.card-resumen.bg-success { background: linear-gradient(135deg, #28a745 0%, #218838 100%) !important; }
+
+/* ===== PESTAÑAS ===== */
+.nav-tabs .nav-link {
+    font-weight: 500;
+    color: #495057;
+    border: none;
+    border-bottom: 3px solid transparent;
+    padding: 0.75rem 1.25rem;
+    transition: all 0.3s ease;
+}
+
+.nav-tabs .nav-link.active {
+    color: var(--delafiber-primary);
+    background: transparent;
+    border-bottom: 3px solid var(--delafiber-primary);
+}
+
+.nav-tabs .nav-link:hover:not(.active) {
+    color: var(--delafiber-primary);
+    border-color: transparent;
+    border-bottom: 3px solid var(--delafiber-pink-light);
+}
+
+/* ===== TABLAS ===== */
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.table thead th {
+    background-color: var(--delafiber-pink-soft);
+    color: var(--delafiber-primary);
+    font-weight: 600;
+    text-transform: uppercase;
+    font-size: 0.75rem;
+    letter-spacing: 0.5px;
+    border: none;
+    padding: 1rem 1.5rem;
+}
+
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody tr:hover {
+    background-color: rgba(232, 93, 154, 0.05);
+    transform: translateX(5px);
+}
+
+.table td {
+    padding: 1rem 1.5rem;
+    vertical-align: middle;
+    border-color: #f0f0f0;
+}
+
+/* ===== BADGES ===== */
+.badge {
+    font-weight: 500;
+    padding: 0.4em 0.8em;
+    border-radius: 50px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* ===== BOTONES DE ACCIÓN ===== */
+.btn-action {
+    width: 32px;
+    height: 32px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border-radius: 50%;
+    margin: 0 2px;
+    opacity: 0.8;
+    transition: all 0.2s ease;
+}
+
+.btn-action:hover {
+    opacity: 1;
+    transform: scale(1.1);
+}
+
+/* ===== MODALES ===== */
+.modal-content {
+    border: none;
+    border-radius: 0.75rem;
+    box-shadow: 0 0.5rem 1.5rem rgba(0, 0, 0, 0.15);
+}
+
+.modal-header {
+    border-bottom: 1px solid #f0f0f0;
+    padding: 1.25rem 1.5rem;
+}
+
+.modal-body {
+    padding: 1.5rem;
+}
+
+.modal-footer {
+    border-top: 1px solid #f0f0f0;
+    padding: 1rem 1.5rem;
+}
+
+/* ===== FORMULARIOS ===== */
+.form-label {
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+    color: #495057;
+}
+
+.form-control, .form-select {
+    border: 1px solid #e0e0e0;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    transition: all 0.3s ease;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--delafiber-primary);
+    box-shadow: 0 0 0 0.25rem rgba(74, 26, 107, 0.15);
+}
+
+/* ===== SWEETALERT2 ===== */
 .swal2-container-center,
 .swal2-container {
     display: flex !important;
@@ -12,29 +171,31 @@
     padding: 0 !important;
 }
 
-.swal2-center,
 .swal2-popup {
-    margin: 0 auto !important;
+    border-radius: 0.75rem !important;
+    padding: 2rem !important;
 }
 
-/* Ajustar el icono del modal */
-.swal2-icon {
-    margin: 1.5em auto 1em !important;
-}
-
-/* Mejorar el espaciado del título */
 .swal2-title {
-    padding: 0.5em 1em 0 !important;
-    font-size: 1.5em !important;
+    font-size: 1.5rem !important;
+    font-weight: 600 !important;
+    color: var(--delafiber-primary) !important;
 }
 
-/* Mejorar el espaciado del texto */
-.swal2-html-container {
-    margin: 1em 1.6em 0.3em !important;
-}
-
-/* Mejorar los botones */
-.swal2-actions {
-    margin: 1.25em auto 0 !important;
-    padding: 0 1em 1em !important;
+/* ===== RESPONSIVE ===== */
+@media (max-width: 768px) {
+    .card-resumen {
+        margin-bottom: 1rem;
+    }
+    
+    .table-responsive {
+        border-radius: 0.5rem;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .btn-action {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
 }
