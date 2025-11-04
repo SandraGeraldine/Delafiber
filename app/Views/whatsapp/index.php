@@ -161,7 +161,7 @@
                         <select class="form-select" id="cuentaWhatsApp" name="id_cuenta">
                             <?php foreach ($cuentas as $cuenta): ?>
                                 <option value="<?= $cuenta['id_cuenta'] ?>">
-                                    <?= esc($cuenta['nombre']) ?> (<?= $cuenta['numero_whatsapp'] ?>)
+                                    <?= esc($cuenta['nombre']) ?> (<?= $cuenta['whatsapp_number'] ?? 'N/A' ?>)
                                 </option>
                             <?php endforeach; ?>
                         </select>
