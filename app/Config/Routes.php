@@ -275,3 +275,14 @@ $routes->group('whatsapptest', ['filter' => 'auth'], function($routes) {
     $routes->post('enviarPrueba', 'WhatsAppTest::enviarPrueba');
     $routes->get('verificarConfig', 'WhatsAppTest::verificarConfig');
 });
+
+//Rustas de interacion del mapa de gestion gst.delafiber. 
+$routes->get('api/controller/listarCajas', 'api\Controller::listarCajas');
+$routes->get('api/controller/listarAntenas', 'api\Controller::listarAntenas');
+$routes->get('api/controller/listarSectores', 'api\Controller::listarSectores');
+$routes->get('api/controller/listarMufas', 'api\Controller::listarMufas');
+$routes->get('api/controller/imagenesRecursos', 'api\Controller::imagenesRecursos');
+$routes->get('api/controller/listarLineas', 'api\Controller::listarLineas');
+
+$routes->get('api/mapa/listarCajas', 'MapaController::listarCajas');
+$routes->get('api/mapa/listarAntenas', 'MapaController::listarAntenas');

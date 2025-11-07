@@ -4,8 +4,11 @@
 
 <link rel="stylesheet" href="<?= base_url('css/leads/create.css') ?>">
 <link rel="stylesheet" href="<?= base_url('css/leads/toast-notifications.css') ?>">
+
 <!-- Select2 CSS -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
     /* Estilos personalizados para Select2 */
     .select2-container--default .select2-selection--single {
@@ -313,7 +316,6 @@
                                 </div>
 
                                 <!-- Contenedor para mensaje de cobertura de zonas -->
-                                <div id="alerta-cobertura-zona" style="display: none;"></div>
                                 <div class="card border-warning mb-4">
                                     <div class="card-header bg-warning text-dark">
                                         <h6 class="mb-0">
@@ -329,42 +331,37 @@
                                         </div>
                                         
                                         <!-- Layout en dos columnas -->
-                                        <div class="row">
-                                            <!-- Columna izquierda: Botón del mapa -->
-                                            <div class="col-md-6">
-                                                <div class="text-center p-4" style="border: 2px solid #ffc107; border-radius: 5px; background: #fff3cd; height: 100%;">
-                                                    <i class="icon-map" style="font-size: 40px; color: #856404;"></i>
-                                                    <h6 class="mt-2 mb-2">Validar Cobertura en Sistema de Gestión</h6>
-                                                    <p class="text-muted small mb-3">
-                                                        Haz clic en el botón para abrir el mapa de cobertura en una nueva pestaña
-                                                    </p>
-                                                    <a href="http://gst.delafiber.com/public/views/" 
-                                                       target="_blank" 
-                                                       class="btn btn-warning">
-                                                        <i class="icon-map"></i> Abrir Mapa de Cobertura
-                                                    </a>
-                                                    <p class="text-muted mt-2 mb-0">
-                                                        <small>
-                                                            <i class="icon-info"></i> 
-                                                            El mapa se abrirá en una nueva pestaña. Valida la cobertura y regresa aquí para continuar.
-                                                        </small>
-                                                    </p>
-                                                </div>
-                                            </div>
-                                            
-                                            <!-- Columna derecha: Instrucciones -->
-                                            <div class="col-md-6">
-                                                <div class="alert alert-warning mb-0" style="height: 100%;">
-                                                    <strong><i class="icon-check"></i> Instrucciones:</strong>
-                                                    <ol class="mb-0 mt-2">
-                                                        <li>Busca la dirección del cliente en el mapa superior</li>
-                                                        <li>Verifica que haya cajas/mufas cercanas (iconos en el mapa)</li>
-                                                        <li>Si HAY cobertura → Continúa llenando el formulario abajo</li>
-                                                        <li>Si NO HAY cobertura → Informa al cliente que no hay servicio disponible</li>
-                                                    </ol>
-                                                </div>
-                                            </div>
+                                        <div class="container py-4">
+                                            <select name="tipoServicio" id="slcTipoServicio">
+                                            <option value="1">Cajas</option>
+                                            <option value="2">Antenas</option>
+                                            </select>
+                                            <button id="openModalBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mapModal">
+                                            Abrir modal
+                                            </button>
                                         </div>
+
+                                        <!-- Bootstrap Modal -->
+                                        <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-dialog-centered modal-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                <h5 class="modal-title" id="mapModalLabel">Mapa / Contenido</h5>
+                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                                                </div>
+                                                <div class="modal-body">
+                                                <!-- Aquí va el contenido del modal (mapa, formularios, etc.) -->
+                                                <div id="mapContainer" style="width:100%; height:400px; background:#f5f5f5;">
+                                                    <!-- El script ./api/Mapa.js puede inicializar el mapa dentro de #mapContainer -->
+                                                </div>
+                                                </div>
+                                                <div class="modal-footer">
+                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+                                                <button type="button" id="btnGuardarModalMapa" class="btn btn-success" disabled>
+                                                    <i class="icon-check"></i> Usar coordenadas seleccionadas
+                                                </button>
+                                            </div>
+                                         </div>
                                     </div>
                                 </div>
 
@@ -566,8 +563,105 @@
     </div>
 </div>
 
-<!-- Select2 JS - DEBE CARGARSE ANTES DE USARLO -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+  <!-- Botones de Acción   -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Turf (si lo necesitas) -->
+<script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
+
+<!-- cargaremos el módulo de mapa desde el import del script type=module más abajo (ruta absoluta para evitar 404 relativo) -->
+
+
+  <script>
+    (g => {
+      var h, a, k, p = "The Google Maps JavaScript API",
+        c = "google",
+        l = "importLibrary",
+        q = "__ib__",
+        m = document,
+        b = window;
+      b = b[c] || (b[c] = {});
+      var d = b.maps || (b.maps = {}),
+        r = new Set,
+        e = new URLSearchParams,
+        u = () => h || (h = new Promise(async (f, n) => {
+          await (a = m.createElement("script"));
+          e.set("libraries", [...r] + "");
+          for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]);
+          e.set("callback", c + ".maps." + q);
+          a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
+          d[q] = f;
+          a.onerror = () => h = n(Error(p + " could not load."));
+          a.nonce = m.querySelector("script[nonce]")?.nonce || "";
+          m.head.append(a)
+        }));
+      d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n))
+    })({
+      key: "AIzaSyBA67_KIivquHysjNqVjC3rrl17hjzfj-k",
+      v: "weekly",
+    });
+  </script>
+
+    <script type="module">
+    // Import the map module using absolute URL to avoid relative-path 404s
+    import * as mapa from '<?= base_url("js/api/Mapa.js") ?>';
+
+    const mapModalEl = document.getElementById('mapModal');
+    const btnGuardar = document.getElementById('btnGuardarModalMapa');
+    const slcTipoServicio = document.getElementById('slcTipoServicio');
+
+    // When modal opens, initialize the map for the selected tipo (Cajas/Antenas)
+    mapModalEl.addEventListener('shown.bs.modal', async () => {
+        const tipo = (slcTipoServicio && slcTipoServicio.value === '2') ? 'Antenas' : 'Cajas';
+        try {
+            await mapa.iniciarMapa(tipo, 'mapContainer', 'modal');
+            // enable selection on click
+            await mapa.eventoMapa(true);
+            mapa.obtenerCoordenadasClick();
+        } catch (err) {
+            console.error('Error al iniciar mapa:', err);
+        }
+    });
+
+    // When modal closes, remove map resources to avoid duplicate state
+    mapModalEl.addEventListener('hidden.bs.modal', async () => {
+        try {
+            await mapa.eliminarMapa();
+        } catch (err) {
+            console.error('Error al eliminar mapa:', err);
+        }
+    });
+
+    // Save selected coordinates into the form
+    btnGuardar.addEventListener('click', () => {
+        const c = mapa.ultimaCoordenada || {};
+        const lat = c.latitud ?? c.lat ?? null;
+        const lng = c.longitud ?? c.lng ?? null;
+        if (lat && lng) {
+            document.getElementById('coordenadas_servicio').value = `${lat},${lng}`;
+            document.getElementById('coordenadas-texto').textContent = `${lat}, ${lng}`;
+            // close modal programmatically
+            const bsModal = bootstrap.Modal.getInstance(mapModalEl);
+            if (bsModal) bsModal.hide();
+        } else {
+            // fallback: inform user
+            Swal.fire('Seleccionar coordenada', 'No se ha seleccionado una coordenada en el mapa.', 'warning');
+        }
+    });
+
+        if (slcTipoServicio) {
+            slcTipoServicio.addEventListener('change', async (e) => {
+                const tipo = (e.target.value === '2') ? 'Antenas' : 'Cajas';
+                try {
+                    // clear visible markers and re-init map layer for the new tipo
+                    if (typeof mapa.limpiarMarcadoresVisibles === 'function') mapa.limpiarMarcadoresVisibles();
+                    await mapa.iniciarMapa(tipo, 'mapContainer', 'modal');
+                } catch (err) {
+                    console.error('Error al cambiar tipo de mapa:', err);
+                }
+            });
+        }
+    </script>
 
 <script>
 const BASE_URL = '<?= base_url() ?>';
@@ -591,3 +685,5 @@ const campanias = <?= json_encode($campanias ?? []) ?>;
 <script src="<?= base_url('js/leads/filtrar-paquetes.js') ?>"></script>
 
 <?= $this->endSection() ?>
+<!-- Select2 JS - DEBE CARGARSE ANTES DE USARLO -->
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
