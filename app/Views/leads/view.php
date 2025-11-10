@@ -223,6 +223,96 @@ $historial = $historial ?? [];
                     </div>
                 </div>
 
+                <!-- Documentos del Lead -->
+                <div class="card mb-4">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h5 class="mb-0">📎 Documentos</h5>
+                        <?php if (!empty($resumen_documentos)): ?>
+                        <div>
+                            <span class="badge badge-secondary mr-1">Total: <?= (int)($resumen_documentos['total'] ?? 0) ?></span>
+                            <span class="badge badge-success mr-1">Verificados: <?= (int)($resumen_documentos['verificados'] ?? 0) ?></span>
+                            <span class="badge badge-warning">Pendientes: <?= (int)($resumen_documentos['pendientes'] ?? 0) ?></span>
+                            <?php if (!empty($resumen_documentos['completo'])): ?>
+                                <span class="badge badge-primary ml-2">Completo</span>
+                            <?php endif; ?>
+                        </div>
+                        <?php endif; ?>
+                    </div>
+                    <div class="card-body">
+                        <!-- Formulario subir documento -->
+                        <form action="<?= base_url('leads/subirDocumento/' . ($lead['idlead'] ?? 0)) ?>" method="post" enctype="multipart/form-data" class="mb-3">
+                            <?= csrf_field() ?>
+                            <div class="form-row">
+                                <div class="form-group col-md-4">
+                                    <label>Tipo de documento</label>
+                                    <select name="tipo_documento" class="form-control" required>
+                                        <option value="dni_frontal">DNI - Frontal</option>
+                                        <option value="dni_reverso">DNI - Reverso</option>
+                                        <option value="recibo_luz">Recibo de Luz</option>
+                                        <option value="recibo_agua">Recibo de Agua</option>
+                                        <option value="foto_domicilio">Foto de Domicilio</option>
+                                        <option value="otro">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Archivo</label>
+                                    <input type="file" name="archivo" class="form-control" accept="image/*,.pdf" required>
+                                    <small class="text-muted">Formatos: JPG, PNG o PDF. Máx 3MB.</small>
+                                </div>
+                                <div class="form-group col-md-2 d-flex align-items-end">
+                                    <button type="submit" class="btn btn-primary btn-block">
+                                        <i class="icon-cloud-upload"></i> Subir
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+
+                        <!-- Lista de documentos -->
+                        <?php if (!empty($documentos)): ?>
+                            <div class="table-responsive">
+                                <table class="table table-sm">
+                                    <thead>
+                                        <tr>
+                                            <th>Tipo</th>
+                                            <th>Nombre</th>
+                                            <th>Tamaño</th>
+                                            <th>Estado</th>
+                                            <th>Fecha</th>
+                                            <th>Acciones</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        <?php foreach ($documentos as $doc): ?>
+                                        <tr>
+                                            <td><?= esc($doc['tipo_documento']) ?></td>
+                                            <td><?= esc($doc['nombre_archivo']) ?></td>
+                                            <td><?= isset($doc['tamano_kb']) ? (int)$doc['tamano_kb'] . ' KB' : '-' ?></td>
+                                            <td>
+                                                <?php if (!empty($doc['verificado'])): ?>
+                                                    <span class="badge badge-success">Verificado</span>
+                                                <?php else: ?>
+                                                    <span class="badge badge-warning">Pendiente</span>
+                                                <?php endif; ?>
+                                            </td>
+                                            <td><?= isset($doc['created_at']) ? date('d/m/Y H:i', strtotime($doc['created_at'])) : '-' ?></td>
+                                            <td>
+                                                <?php if (!empty($doc['ruta_archivo'])): ?>
+                                                    <a class="btn btn-sm btn-outline-primary" target="_blank" href="<?= base_url($doc['ruta_archivo']) ?>">
+                                                        <i class="icon-eye"></i> Ver
+                                                    </a>
+                                                <?php endif; ?>
+                                            </td>
+                                        </tr>
+                                        <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php else: ?>
+                            <p class="text-muted mb-0">Aún no se han subido documentos.</p>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
                 <!-- Seguimientos -->
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">

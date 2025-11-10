@@ -252,6 +252,11 @@ class Leads extends BaseController
                 'idorigen' => $this->request->getPost('idorigen'),
                 'idcampania' => $this->request->getPost('idcampania') ?: null,
                 'nota_inicial' => $this->request->getPost('nota_inicial') ?: null,
+                // Campos de la solicitud de servicio
+                'tipo_solicitud' => $this->request->getPost('tipo_solicitud') ?: null,
+                'plan_interes' => $this->request->getPost('plan_interes') ?: null,
+                'direccion_servicio' => $this->request->getPost('direccion') ?: null,
+                'distrito_servicio' => $this->request->getPost('iddistrito') ?: null,
                 'estado' => 'activo'
             ];
             $leadId = $this->leadModel->insert($leadData);
@@ -465,6 +470,11 @@ class Leads extends BaseController
         // Obtener seguimientos (interacciones con el lead)
         $seguimientos = $this->seguimientoModel->getHistorialLead($leadId);
         
+        // Documentos del lead (resumen y listado)
+        $docModel = new \App\Models\DocumentoLeadModel();
+        $resumenDocs = $docModel->getResumenDocumentos($leadId);
+        $docs = $docModel->getDocumentosByLead($leadId);
+        
         $data = [
             'title' => 'Lead: ' . $lead['nombres'] . ' ' . $lead['apellidos'],
             'lead' => $lead,
@@ -474,7 +484,9 @@ class Leads extends BaseController
             'tareas' => $this->leadModel->getTareasLead($leadId),
             'etapas' => $this->etapaModel->getEtapasActivas(),
             'modalidades' => $this->modalidadModel->getModalidadesActivas(),
-            'user_name' => session()->get('user_name')
+            'user_name' => session()->get('user_name'),
+            'resumen_documentos' => $resumenDocs,
+            'documentos' => $docs
         ];
         return view('leads/view', $data);
     }
@@ -779,8 +791,12 @@ class Leads extends BaseController
     private function geocodificarDireccion($direccion, $iddistrito = null)
     {
         try {
-            // API Key de Google Maps (la misma que usas en el mapa)
-            $apiKey = 'AIzaSyAACo2qyElsl8RwIqW3x0peOA_20f7SEHA';
+            // API Key de Google Maps (leer desde variables de entorno)
+            $apiKey = env('google.maps.key');
+            if (empty($apiKey)) {
+                log_message('error', 'Google Maps API key no configurada (google.maps.key).');
+                return null;
+            }
             
             // Obtener nombre del distrito para mejor precisión
             $contextoGeografico = 'Chincha, Ica, Perú';

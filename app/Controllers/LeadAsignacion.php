@@ -100,7 +100,7 @@ class LeadAsignacion extends BaseController
             $this->notificacionModel->crearNotificacion(
                 $nuevoUsuarioId,
                 'lead_reasignado',
-                '📋 Lead reasignado a ti',
+                'Lead reasignado a ti',
                 $mensajeNotif,
                 base_url('leads/view/' . $idlead)
             );

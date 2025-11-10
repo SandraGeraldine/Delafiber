@@ -675,15 +675,78 @@ const campanias = <?= json_encode($campanias ?? []) ?>;
 <script src="<?= base_url('js/leads/campos-dinamicos-origen.js') ?>"></script>
 <script src="<?= base_url('js/leads/documentos-geolocalizacion.js') ?>"></script>
 
-<!-- Datos para filtrado de paquetes -->
-<div id="filtro-paquetes-data" 
-     data-paquetes='<?= json_encode($paquetes ?? []) ?>'
-     data-servicios='<?= json_encode($servicios ?? []) ?>'
-     style="display:none;"></div>
-
-<!-- Script de filtrado de paquetes -->
-<script src="<?= base_url('js/leads/filtrar-paquetes.js') ?>"></script>
+<!-- (El filtrado de paquetes por datos embebidos ha sido reemplazado por la API GST) -->
 
 <?= $this->endSection() ?>
 <!-- Select2 JS - DEBE CARGARSE ANTES DE USARLO -->
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+
+<?= $this->section('scripts') ?>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const selServicio = document.getElementById('tipo_servicio');
+  const selPlan = document.getElementById('plan_interes');
+  const planInfo = document.getElementById('plan_info');
+
+  async function cargarPlanes() {
+    try {
+      selPlan.disabled = true;
+      selPlan.innerHTML = '<option>Cargando planes...</option>';
+      // Obtener código del tipo de servicio desde el option seleccionado (data-tipo), ej: FIBR
+      const opt = selServicio?.selectedOptions?.[0];
+      const tipo = opt ? (opt.getAttribute('data-tipo') || '').trim() : '';
+      const url = tipo ? `/api/catalogo/planes?tipo=${encodeURIComponent(tipo)}` : '/api/catalogo/planes';
+      const res = await fetch(url);
+      const planes = await res.json();
+      selPlan.innerHTML = '<option value="">Seleccione un plan</option>';
+      if (Array.isArray(planes)) {
+        planes.forEach(p => {
+          const vel = (p.velocidad && p.velocidad !== '[]') ? (p.velocidad + ' Mbps') : '';
+          const nombre = [p.nombre, vel, (p.precio ? ('S/ ' + p.precio) : '')]
+            .filter(Boolean).join(' - ');
+          const opt = document.createElement('option');
+          opt.value = (p.id ?? p.codigo ?? p.nombre ?? '').toString();
+          opt.textContent = nombre || 'Plan';
+          selPlan.appendChild(opt);
+        });
+      }
+      selPlan.disabled = false;
+      if (planInfo) planInfo.textContent = 'Seleccione un plan disponible';
+      if (typeof $ !== 'undefined' && $.fn && $.fn.select2) {
+        try {
+          const $sel = $(selPlan);
+          if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
+          $sel.select2({ 
+            placeholder: 'Buscar plan...', 
+            width: '100%',
+            dropdownAutoWidth: false,
+            dropdownParent: $sel.closest('.form-group').length ? $sel.closest('.form-group') : $sel.parent()
+          });
+        } catch(_) {}
+      }
+    } catch (e) {
+      selPlan.innerHTML = '<option value="">No se pudo cargar planes</option>';
+      selPlan.disabled = false;
+      if (planInfo) planInfo.textContent = 'No se pudo cargar planes';
+    }
+  }
+
+  // Cargar planes al seleccionar un tipo de servicio
+  if (selServicio) {
+    selServicio.addEventListener('change', (e) => {
+      if (e.target.value) {
+        cargarPlanes();
+      } else {
+        selPlan.innerHTML = '<option value="">Primero seleccione un servicio</option>';
+        selPlan.disabled = true;
+        if (planInfo) planInfo.textContent = 'Seleccione un tipo de servicio primero';
+      }
+    });
+    // Si ya viene un servicio seleccionado, cargar planes de inmediato
+    if (selServicio.value) {
+      cargarPlanes();
+    }
+  }
+});
+</script>
+<?= $this->endSection() ?>

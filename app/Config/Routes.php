@@ -78,8 +78,10 @@ $routes->group('leads', ['filter' => 'auth'], function($routes) {
     $routes->post('crearTarea', 'Leads::crearTarea');
     $routes->post('completarTarea', 'Leads::completarTarea');
     $routes->get('verificar-cobertura', 'Leads::verificarCobertura');
+    $routes->get('verificarClienteExistente', 'Leads::verificarClienteExistente');
     $routes->get('buscarClienteAjax', 'Leads::buscarClienteAjax'); // Búsqueda con Select2
     $routes->get('exportar', 'Leads::exportar');
+    $routes->post('subirDocumento/(:num)', 'Leads::subirDocumento/$1');
     // Comentarios
     $routes->get('getComentarios/(:num)', 'Leads::getComentarios/$1');
     $routes->post('crearComentario', 'Leads::crearComentario');
@@ -286,3 +288,5 @@ $routes->get('api/controller/listarLineas', 'api\Controller::listarLineas');
 
 $routes->get('api/mapa/listarCajas', 'MapaController::listarCajas');
 $routes->get('api/mapa/listarAntenas', 'MapaController::listarAntenas');
+// Catálogo GST
+$routes->get('api/catalogo/planes', 'CatalogoGSTController::planes');

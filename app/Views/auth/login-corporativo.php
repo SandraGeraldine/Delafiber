@@ -22,21 +22,15 @@
 <body>
     <div class="auth-wrapper">
         <div class="login-card">
-            <!-- ============================================
-                 HEADER CORPORATIVO
-                 ============================================ -->
+            <!-- HEADER CORPORATIVO-->
             <div class="login-header">
-                <img src="<?= base_url('images/logo-delafiber.png') ?>" 
-                     alt="Delafiber Logo" 
-                     class="company-logo">
+                <img src="<?= base_url('images/logo-delafiber.png') ?>"  alt="Delafiber Logo" class="company-logo">
                 <h3>CRM Delafiber</h3>
                 <p>Sistema de Gestión de Clientes</p>
                 <span class="tagline">Conectando el futuro de las telecomunicaciones</span>
             </div>
             
-            <!-- ============================================
-                 CUERPO DEL FORMULARIO
-                 ============================================ -->
+            <!-- CUERPO DEL FORMULARIO -->
             <div class="login-body">
                 <!-- Mensajes de error/éxito -->
                 <?php if (session()->getFlashdata('error')): ?>
@@ -77,15 +71,7 @@
                         </label>
                         <div class="input-group-icon">
                             <i class="ti-user"></i>
-                            <input type="text" 
-                                   class="form-control" 
-                                   id="usuario" 
-                                   name="usuario" 
-                                   placeholder="usuario o email"
-                                   value="<?= old('usuario') ?>"
-                                   required
-                                   autofocus
-                                   autocomplete="username">
+                            <input type="text" class="form-control" id="usuario" name="usuario" placeholder="usuario o email"value="<?= old('usuario') ?>"required autofocus autocomplete="username">
                         </div>
                     </div>
                     
@@ -96,13 +82,7 @@
                         </label>
                         <div class="input-group-icon password-field">
                             <i class="ti-lock"></i>
-                            <input type="password" 
-                                   class="form-control" 
-                                   id="password" 
-                                   name="password" 
-                                   placeholder="contraseña"
-                                   required
-                                   autocomplete="current-password">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="contraseña" requiredautocomplete="current-password">
                             <button type="button" class="password-toggle-btn" id="togglePassword" title="Mostrar contraseña">
                                 <i class="ti-eye" id="toggleIcon"></i>
                             </button>
@@ -112,17 +92,10 @@
                     <!-- Recordar y Recuperar Contraseña -->
                     <div class="form-group d-flex justify-content-between align-items-center mb-4">
                         <div class="form-check">
-                            <input type="checkbox" 
-                                   class="form-check-input" 
-                                   id="recordar"
-                                   name="recordar">
-                            <label class="form-check-label" for="recordar">
-                                Recordarme
-                            </label>
+                            <input type="checkbox" class="form-check-input" id="recordar" name="recordar">
+                            <label class="form-check-label" for="recordar"> Recordarme </label>
                         </div>
-                        <a href="#" 
-                           class="text-muted small"
-                           onclick="alert('Funcionalidad en desarrollo. Contacta al administrador: soporte@delafiber.com'); return false;">
+                        <a href="#" class="text-muted small" onclick="alert('Funcionalidad en desarrollo. Contacta al administrador: soporte@delafiber.com'); return false;">
                             <i class="ti-help-alt"></i> ¿Olvidaste tu contraseña?
                         </a>
                     </div>
