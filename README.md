@@ -4,9 +4,9 @@
 
 ### Requisitos
 - PHP 8.1+
-- MySQL 5.7+ / MariaDB 10.3+
+- MySQL 5.7+ 
 - Composer
-- Servidor web (Apache/Nginx) con mod_rewrite
+- Servidor web 
 
 ### Pasos para Configuración
 
@@ -37,7 +37,7 @@
      database.default.hostname = localhost
      database.default.database = nombre_bd
      database.default.username = usuario
-     database.default.password = contraseña
+     database.default.password = 
      database.default.DBDriver = MySQLi
      ```
 
@@ -49,10 +49,6 @@
 
 6. **Configurar permisos**
    ```bash
-   # En Linux/macOS
-   chmod -R 755 writable/
-   chmod -R 755 public/
-   
    # En Windows (ejecutar como administrador)
    icacls writable /grant "IUSR:(OI)(CI)F"
    icacls public /grant "IUSR:(OI)(CI)F"
@@ -73,9 +69,6 @@
   - Verifica las credenciales en `.env`
   - Asegúrate de que el servidor MySQL esté en ejecución
   - Verifica que el usuario tenga permisos sobre la base de datos
-     
-     # O usando PHPMyAdmin
-     # Importar el archivo database/delafiber.sql
      ```
 
 5. **Permisos de archivos**
@@ -97,27 +90,13 @@
    php spark migrate
    ```
 
-## Configuración de WhatsApp
-
-1. Crear una cuenta en [Twilio](https://www.twilio.com/)
-2. Obtener las credenciales (Account SID y Auth Token)
-3. Configurar un número de WhatsApp en la consola de Twilio
-4. Configurar el webhook para recibir mensajes:
-   - URL: `https://tudominio.com/whatsapp/webhook`
-   - Método: POST
-
 ## Solución de Problemas Comunes
-
-### Error de credenciales de Twilio
-Asegúrate de que las variables de entorno `TWILIO_ACCOUNT_SID` y `TWILIO_AUTH_TOKEN` estén correctamente configuradas en el archivo `.env`.
 
 ### Error de base de datos
 - Verifica que el usuario tenga permisos sobre la base de datos
 - Asegúrate de que la base de datos existe y tiene la estructura correcta
 - Verifica que los datos de conexión en `.env` sean correctos
 
-### Permisos de archivos
-Si hay errores al subir archivos o escribir en el sistema de archivos, verifica que la carpeta `writable/` tenga los permisos correctos.
 
 ## Estructura del Proyecto
 
@@ -131,6 +110,5 @@ Delafiber/
 └── .env                # Variables de entorno (no incluido en el repositorio)
 ```
 
-## Soporte
-
-Para soporte técnico, contactar al equipo de desarrollo.
+## Autor
+Desarrollado por Sandra De La Cruz - Proyecto final. 
