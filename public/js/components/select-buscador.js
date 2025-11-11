@@ -13,7 +13,7 @@ function inicializarBuscadorUsuarios(selector, options = {}) {
         placeholder: 'Escribe para buscar usuario...',
         allowClear: true,
         width: '100%',
-        dropdownAutoWidth: true,
+        dropdownAutoWidth: false,
         language: {
             noResults: function() {
                 return "No se encontraron usuarios";

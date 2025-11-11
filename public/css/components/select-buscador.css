@@ -31,9 +31,11 @@
     border-radius: 0.375rem;
     box-shadow: 0 0.25rem 0.75rem rgba(0, 0, 0, 0.1);
     margin-top: 4px;
-    width: auto !important;        /* permitir que el menú se adapte al contenido */
-    min-width: 100% !important;     /* al menos del tamaño del select */
-    max-width: none !important;     /* evitar recortes horizontales */
+    /* No forzar el ancho: dejar que Select2 lo calcule según el control */
+    width: auto !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    box-sizing: border-box;
 }
 
 .select2-results__options {
@@ -123,12 +125,13 @@
     border: 1px solid #ced4da;
     border-radius: 0.25rem;
     padding: 8px 12px;
-    width: 100%;
+    width: 100% !important;
     font-size: 14px;
     background-color: #ffffff;
     text-align: left;
     line-height: 1.5;
     color: #495057;
+    box-sizing: border-box;         /* evitar que el padding desborde el ancho */
 }
 
 .select2-search--dropdown .select2-search__field:focus {
@@ -166,6 +169,25 @@
 
 .modal .select2-dropdown {
     z-index: 10001 !important;
+}
+
+/* Host dedicado para dropdown anclado */
+.select2-host { position: relative; width: 100%; }
+.select2-host .select2-container { width: 100% !important; }
+.select2-host .select2-dropdown { max-width: 100% !important; }
+
+/* Asegurar que el contenedor no herede display inline */
+.select2-container { display: block; }
+
+/* Estilos específicos para Cotizaciones (clases aplicadas vía Select2 options) */
+.s2-host { width: 100% !important; }
+.s2-host .select2-container { width: 100% !important; }
+.s2-dd.select2-dropdown {
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: 100% !important;
+  left: 0 !important;
+  right: auto !important;
 }
 
 /* Focus state */
@@ -225,4 +247,13 @@
         opacity: 1;
         transform: translateY(0);
     }
+    
 }
+.select2-container {
+  z-index: 9999 !important;
+}
+
+.select2-dropdown {
+  z-index: 9999 !important;
+}
+

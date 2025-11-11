@@ -694,7 +694,9 @@ document.addEventListener('DOMContentLoaded', () => {
       selPlan.innerHTML = '<option>Cargando planes...</option>';
       // Obtener código del tipo de servicio desde el option seleccionado (data-tipo), ej: FIBR
       const opt = selServicio?.selectedOptions?.[0];
-      const tipo = opt ? (opt.getAttribute('data-tipo') || '').trim() : '';
+      const tipoRaw = opt ? (opt.getAttribute('data-tipo') || '').trim() : '';
+      // Normalizar tipo: enviar solo el prefijo antes de ':' (p. ej., 'CABL' de 'CABL:1')
+      const tipo = (tipoRaw || '').split(':')[0].trim();
       const url = tipo ? `/api/catalogo/planes?tipo=${encodeURIComponent(tipo)}` : '/api/catalogo/planes';
       const res = await fetch(url);
       const planes = await res.json();
@@ -716,11 +718,13 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
           const $sel = $(selPlan);
           if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
-          $sel.select2({ 
-            placeholder: 'Buscar plan...', 
+          // Buscar un contenedor visible y cercano para alojar el dropdown
+          const $parent = $sel.closest('.modal, .offcanvas, .card, .form-group, .container, .content-wrapper').first();
+          $sel.select2({
+            placeholder: 'Buscar plan...',
             width: '100%',
             dropdownAutoWidth: false,
-            dropdownParent: $sel.closest('.form-group').length ? $sel.closest('.form-group') : $sel.parent()
+            dropdownParent: $parent.length ? $parent : $sel.parent()
           });
         } catch(_) {}
       }

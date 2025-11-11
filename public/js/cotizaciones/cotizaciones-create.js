@@ -108,15 +108,25 @@ $(document).ready(function() {
     
     // Solo inicializar si el select existe y no tiene lead preseleccionado
     if ($('#idlead').length && !$('#idlead').is('[type="hidden"]')) {
-        // Obtener base URL
         const baseUrl = $('meta[name="base-url"]').attr('content') || window.location.origin;
         const ajaxUrl = baseUrl + '/cotizaciones/buscarLeads';
-        
-        $('#idlead').select2({
+
+        const $selLead = $('#idlead');
+
+        // Destruir instancia previa si existe
+        if ($selLead.hasClass('select2-hidden-accessible')) {
+            try { $selLead.select2('destroy'); } catch (e) {}
+        }
+
+        $selLead.select2({
             theme: 'bootstrap-5',
             placeholder: 'Buscar cliente por nombre, teléfono o DNI...',
             allowClear: true,
             width: '100%',
+            dropdownAutoWidth: false, // fijar ancho al contenedor
+            dropdownParent: $('#idlead').closest('.mb-3'), // anclar al bloque del campo
+            containerCssClass: 's2-host',
+            dropdownCssClass: 's2-dd',
             ajax: {
                 url: ajaxUrl,
                 dataType: 'json',
@@ -135,7 +145,7 @@ $(document).ready(function() {
                         console.error('Error del servidor:', data.error);
                         return { results: [] };
                     }
-                    
+
                     params.page = params.page || 1;
                     return {
                         results: data.results || [],
@@ -170,17 +180,16 @@ $(document).ready(function() {
             },
             templateResult: function(lead) {
                 if (lead.loading) return lead.text;
-                
-                var dniInfo = lead.dni ? '<small class="text-info">DNI: ' + lead.dni + '</small><br>' : '';
+
+                var dniInfo = lead.dni ? '<small class="text-info d-block">DNI: ' + lead.dni + '</small>' : '';
                 var etapaInfo = lead.etapa ? '<small class="text-muted">Etapa: ' + lead.etapa + '</small>' : '';
                 var usuarioInfo = lead.usuario_asignado ? '<small class="text-warning"> | Asignado a: ' + lead.usuario_asignado + '</small>' : '';
-                
+
                 var $container = $(
-                    '<div class="select2-result-lead">' +
+                    '<div class="select2-result-lead py-1">' +
                         '<div><strong>' + lead.text + '</strong></div>' +
                         dniInfo +
-                        etapaInfo +
-                        usuarioInfo +
+                        '<div>' + etapaInfo + usuarioInfo + '</div>' +
                     '</div>'
                 );
                 return $container;
