@@ -60,7 +60,7 @@ class CreateNotificacionesTable extends Migration
         
         $this->forge->addForeignKey('idusuario', 'usuarios', 'idusuario', 'CASCADE', 'CASCADE');
         
-        $this->forge->createTable('notificaciones');
+        $this->forge->createTable('notificaciones', true);
     }
 
     public function down()

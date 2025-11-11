@@ -43,16 +43,25 @@ class CreateCamposDinamicosOrigenTable extends Migration
         // Crear índice compuesto para búsquedas rápidas
         $this->forge->addKey(['idlead', 'campo']);
         
-        $this->forge->createTable('campos_dinamicos_origen');
+        $this->forge->createTable('campos_dinamicos_origen', true);
         
-        // Agregar foreign key
-        $this->db->query('
-            ALTER TABLE campos_dinamicos_origen
-            ADD CONSTRAINT fk_campos_dinamicos_lead
-            FOREIGN KEY (idlead) REFERENCES leads(idlead)
-            ON DELETE CASCADE
-            ON UPDATE CASCADE
-        ');
+        // Agregar foreign key si no existe
+        $constraint = $this->db->query(
+            "SELECT CONSTRAINT_NAME FROM information_schema.TABLE_CONSTRAINTS 
+             WHERE TABLE_SCHEMA = DATABASE() 
+               AND TABLE_NAME = 'campos_dinamicos_origen' 
+               AND CONSTRAINT_NAME = 'fk_campos_dinamicos_lead'"
+        )->getRow();
+        
+        if (!$constraint) {
+            $this->db->query(
+                'ALTER TABLE `campos_dinamicos_origen`
+                 ADD CONSTRAINT `fk_campos_dinamicos_lead`
+                 FOREIGN KEY (`idlead`) REFERENCES `leads`(`idlead`)
+                 ON DELETE CASCADE
+                 ON UPDATE CASCADE'
+            );
+        }
     }
 
     public function down()

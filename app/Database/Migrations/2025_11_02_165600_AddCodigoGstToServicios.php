@@ -17,11 +17,15 @@ class AddCodigoGstToServicios extends Migration
             ]
         ];
 
-        $this->forge->addColumn('servicios', $fields);
+        if (!$this->db->fieldExists('codigo_gst', 'servicios')) {
+            $this->forge->addColumn('servicios', $fields);
+        }
     }
 
     public function down()
     {
-        $this->forge->dropColumn('servicios', 'codigo_gst');
+        if ($this->db->fieldExists('codigo_gst', 'servicios')) {
+            $this->forge->dropColumn('servicios', 'codigo_gst');
+        }
     }
 }

@@ -120,7 +120,6 @@ class SyncServicios extends BaseCommand
                 CLI::write("$key: " . (is_string($value) ? $value : json_encode($value)), 'white');
             }
         }
-        ytfhbc vffffffffrderbv
         CLI::write('================================', 'yellow');
         CLI::newLine();
     }

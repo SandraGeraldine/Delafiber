@@ -180,13 +180,20 @@
             return;
         }
 
+        // Encontrar un contenedor cercano para alojar el dropdown y evitar que se pinte sobre el mapa
+        const $container = $(selectElement).closest('.modal, .offcanvas, .card, .form-group, .container, .content-wrapper').first();
+        const dropdownHost = $container.length ? $container : $(selectElement).parent();
+
         $(selectElement).select2({
             placeholder: 'Buscar plan...',
             allowClear: true,
             minimumResultsForSearch: 0,
             dropdownAutoWidth: false,
             width: '100%',
-            dropdownParent: $(selectElement).parent(),
+            // Adjuntar el dropdown a un contenedor cercano para que no se superponga al mapa
+            dropdownParent: dropdownHost,
+            // Usar tema Bootstrap 5 (el CSS ya está incluido en el layout)
+            theme: 'bootstrap-5',
             language: {
                 noResults: function() {
                     return "No se encontraron resultados";
@@ -220,10 +227,26 @@
     /**
      * Inicializar cuando el DOM esté listo
      */
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', inicializarFiltroPaquetes);
-    } else {
+    function onReady() {
         inicializarFiltroPaquetes();
+
+        // Evitar superposición del Select2 sobre el mapa cerrando cualquier dropdown al abrir el modal del mapa
+        const mapModalEl = document.getElementById('mapModal');
+        if (mapModalEl) {
+            mapModalEl.addEventListener('show.bs.modal', function () {
+                if (typeof $ !== 'undefined' && typeof $.fn.select2 !== 'undefined') {
+                    $('.select2-hidden-accessible').each(function () {
+                        try { $(this).select2('close'); } catch (e) {}
+                    });
+                }
+            });
+        }
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', onReady);
+    } else {
+        onReady();
     }
 
 })();
