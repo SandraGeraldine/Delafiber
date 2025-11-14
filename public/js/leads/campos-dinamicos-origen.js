@@ -3,8 +3,6 @@
  * Muestra campos adicionales contextuales según el origen seleccionado
  */
 
-//
-
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializando campos dinámicos de origen
     initCamposDinamicosOrigen();
@@ -41,20 +39,23 @@ function initCamposDinamicosOrigen() {
         return;
     }
     
-    origenSelect.addEventListener('change', function() {
-        const selectedOption = this.options[this.selectedIndex];
-        const nombreOrigen = selectedOption.getAttribute('data-nombre');
-        
-    // Origen seleccionado: nombreOrigen
-        
+    // Centralizar el manejo de la selección en una función para soportar
+    // tanto el evento nativo `change` como `select2:select` si existe.
+    function procesarSeleccionOrigen(optionElement) {
+        if (!optionElement) return;
+
+        // Obtener nombre desde data-nombre (viene escapado en el HTML como entidades)
+        // y decodificarlo para que coincida con las claves de `camposConfig`.
+        const rawNombre = optionElement.getAttribute('data-nombre') || optionElement.textContent || '';
+        const nombreOrigen = decodeHtml(rawNombre).trim();
+
         // Limpiar campos anteriores
         camposDinamicos.innerHTML = '';
-        
+
         if (!nombreOrigen) {
-            // No hay origen seleccionado
             return;
         }
-        
+
         // Configuración de campos según origen
         const camposConfig = {
             'Campaña': {
@@ -182,34 +183,68 @@ function initCamposDinamicosOrigen() {
             }
         };
         
-        // Mostrar campos correspondientes
-    // Buscando configuración para origen
-        
         // Intentar búsqueda directa
         let config = camposConfig[nombreOrigen];
-        
+
         // Si no encuentra, intentar normalizar (quitar tildes y comparar)
         if (!config) {
             const nombreNormalizado = nombreOrigen.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
-            // Intentando con nombre normalizado
-            
             for (let clave in camposConfig) {
                 const claveNormalizada = clave.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
                 if (claveNormalizada === nombreNormalizado) {
                     config = camposConfig[clave];
-                    // Encontrado con normalización
                     break;
                 }
             }
         }
-        
+
         if (config) {
-            // Mostrando campos para el origen
             camposDinamicos.innerHTML = config.html;
-        } else {
-            // No hay configuración para el origen
         }
+    }
+
+    // Escuchar eventos nativos `change`
+    origenSelect.addEventListener('change', function() {
+        const selectedOption = this.options[this.selectedIndex];
+        procesarSeleccionOrigen(selectedOption);
     });
+
+    // Intentar conectar el listener de Select2. Algunos casos inicializan Select2
+    // después de que este script corre, por eso reintentamos durante un corto periodo.
+    function attachSelect2Listener() {
+        if (!window.jQuery || typeof jQuery !== 'function') return false;
+
+        try {
+            const $sel = $(origenSelect);
+            if ($sel.data('select2')) {
+                // Usar namespace para evitar duplicados
+                $sel.off('select2:select.camposDinamicos');
+                $sel.on('select2:select.camposDinamicos', function(e) {
+                    const elem = e && e.params && e.params.data && e.params.data.element ? e.params.data.element : null;
+                    const optionEl = elem && elem.nodeType ? elem : (elem && elem[0] ? elem[0] : null);
+                    procesarSeleccionOrigen(optionEl || origenSelect.options[origenSelect.selectedIndex]);
+                });
+                return true;
+            }
+        } catch (err) {
+            // silencioso
+        }
+
+        return false;
+    }
+
+    // Intento inmediato
+    if (!attachSelect2Listener()) {
+        // Reintentar cada 150ms hasta 2s
+        let attempts = 0;
+        const maxAttempts = 2000 / 150; // ~13
+        const intervalId = setInterval(function() {
+            attempts++;
+            if (attachSelect2Listener() || attempts >= maxAttempts) {
+                clearInterval(intervalId);
+            }
+        }, 150);
+    }
     
     // Event listener agregado correctamente
 
@@ -222,6 +257,15 @@ function initCamposDinamicosOrigen() {
     } catch (err) {
         // No se pudo disparar evento inicial de origen
     }
+}
+
+/**
+ * Decodificar entidades HTML (por ejemplo: "Campa&#241;a" -> "Campaña").
+ */
+function decodeHtml(html) {
+    const txt = document.createElement('textarea');
+    txt.innerHTML = html;
+    return txt.value;
 }
 
 /**

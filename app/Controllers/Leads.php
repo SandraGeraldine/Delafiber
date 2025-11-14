@@ -230,6 +230,9 @@ class Leads extends BaseController
         }
 
         $db = \Config\Database::connect();
+        // Iniciar marca de tiempo para diagnóstico de rendimiento
+        $t_start = microtime(true);
+        log_message('info', "[PERF] Leads::store start: {$t_start}");
         $db->transStart();
 
         try {
@@ -319,6 +322,7 @@ class Leads extends BaseController
             $promotorNombre = session()->get('nombre');
 
             if (!empty($usuariosActivos)) {
+                $t_before_notifs = microtime(true);
                 foreach ($usuariosActivos as $usuario) {
                     $idUsuarioNotif = is_array($usuario) ? ($usuario['idusuario'] ?? null) : ($usuario->idusuario ?? null);
                     if (!$idUsuarioNotif) {
@@ -333,6 +337,8 @@ class Leads extends BaseController
                         base_url('leads/view/' . $leadId)
                     );
                 }
+                $t_after_notifs = microtime(true);
+                log_message('info', "[PERF] crearNotificacion loop (campoStore) took: " . round(($t_after_notifs - $t_before_notifs), 3) . "s for " . count($usuariosActivos) . " users");
             }
 
             // Auditoría básica
@@ -352,6 +358,8 @@ class Leads extends BaseController
             );
 
             $db->transComplete();
+            $t_end = microtime(true);
+            log_message('info', "[PERF] Leads::campoStore total time: " . round(($t_end - $t_start), 3) . "s");
             if ($db->transStatus() === false) {
                 throw new \Exception('Error en la transacción al crear lead de campo');
             }
@@ -438,6 +446,9 @@ class Leads extends BaseController
                 ->with('errors', $this->validator->getErrors());
         }
         $db = \Config\Database::connect();
+        // Iniciar marca de tiempo para diagnóstico de rendimiento (store)
+        $t_start = microtime(true);
+        log_message('info', "[PERF] Leads::store start: {$t_start}");
         $db->transStart();
         try {
             // Verificar si viene desde conversión de persona existente
@@ -474,7 +485,10 @@ class Leads extends BaseController
                 // Geocodificar dirección si existe
                 if (!empty($personaData['direccion']) && !empty($iddistrito)) {
                     try {
+                        $t_before_geo = microtime(true);
                         $coordenadas = $this->geocodificarDireccion($personaData['direccion'], $iddistrito);
+                        $t_after_geo = microtime(true);
+                        log_message('info', "[PERF] geocodificarDireccion took: " . round(($t_after_geo - $t_before_geo), 3) . "s");
                         if ($coordenadas) {
                             $personaData['coordenadas'] = $coordenadas;
                             
@@ -520,7 +534,10 @@ class Leads extends BaseController
                 'distrito_servicio' => $this->request->getPost('iddistrito') ?: null,
                 'estado' => 'activo'
             ];
+            $t_before_lead = microtime(true);
             $leadId = $this->leadModel->insert($leadData);
+            $t_after_lead = microtime(true);
+            log_message('info', "[PERF] leadModel->insert took: " . round(($t_after_lead - $t_before_lead), 3) . "s");
             if (!$leadId) {
                 $errors = $this->leadModel->errors();
                 $errorMsg = !empty($errors) ? implode(', ', $errors) : 'Error desconocido';
@@ -545,6 +562,7 @@ class Leads extends BaseController
             );
             
             // Procesar documentos adjuntos
+            $t_before_docs = microtime(true);
             $documentoModel = new \App\Models\DocumentoLeadModel();
             $documentosSubidos = [];
             
@@ -612,6 +630,8 @@ class Leads extends BaseController
                     $documentosSubidos[] = 'Foto Domicilio';
                 }
             }
+            $t_after_docs = microtime(true);
+            log_message('info', "[PERF] procesar documentos took: " . round(($t_after_docs - $t_before_docs), 3) . "s");
             
             // Guardar coordenadas y ubicación de WhatsApp si existen
             $coordenadas = $this->request->getPost('coordenadas_servicio');
@@ -659,6 +679,8 @@ class Leads extends BaseController
             }
             
             $db->transComplete();
+            $t_end = microtime(true);
+            log_message('info', "[PERF] Leads::store total time: " . round(($t_end - $t_start), 3) . "s");
             if ($db->transStatus() === false) throw new \Exception('Error en la transacción');
             
             $mensajeExito = $usuarioAsignado == session()->get('idusuario') 

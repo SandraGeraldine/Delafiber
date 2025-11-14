@@ -3,110 +3,10 @@
 <?= $this->section('styles') ?>
 <link rel="stylesheet" href="<?= base_url('css/leads/create.css') ?>">
 <link rel="stylesheet" href="<?= base_url('css/leads/toast-notifications.css') ?>">
+<link rel="stylesheet" href="<?= base_url('css/leads/select2.css') ?>">
 <?= $this->endSection() ?>
 
 <?= $this->section('content') ?>
-
-<style>
-    /* Estilos personalizados para Select2 */
-    .select2-container--default .select2-selection--single {
-        height: 38px;
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-    }
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        line-height: 36px;
-        color: #495057;
-        padding-left: 12px;
-        padding-right: 20px;
-    }
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 36px;
-        right: 8px;
-    }
-    .select2-container--default.select2-container--disabled .select2-selection--single {
-        background-color: #e9ecef;
-        cursor: not-allowed;
-    }
-    .select2-container {
-        width: 100% !important;
-    }
-    .select2-dropdown {
-        border: 1px solid #ced4da;
-        border-radius: 0.25rem;
-        /* Mantener el dropdown por debajo del sidebar (z-index 100 en el tema) */
-        z-index: 50 !important;
-    }
-    .select2-container--open .select2-dropdown {
-        left: 0 !important;
-        z-index: 50 !important;
-    }
-    .select2-container--open { z-index: 49 !important; }
-    .select2-search--dropdown {
-        padding: 12px;
-        background-color: #f8f9fa;
-        border-bottom: 1px solid #dee2e6;
-        position: sticky;
-        top: 0;
-        z-index: 10;
-    }
-    .select2-search--dropdown .select2-search__field {
-        border: 2px solid #ced4da;
-        border-radius: 0.25rem;
-        padding: 10px 15px;
-        font-size: 14px;
-        width: 100%;
-        background-color: white;
-    }
-    .select2-search--dropdown .select2-search__field:focus {
-        border-color: #007bff;
-        outline: 0;
-        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
-    }
-    .select2-search--dropdown .select2-search__field::placeholder {
-        color: #6c757d;
-        font-style: italic;
-    }
-    .select2-results {
-        max-height: 300px;
-        overflow-y: auto;
-        padding-top: 0;
-        margin-top: 0;
-    }
-    .select2-results__options {
-        max-height: 300px;
-        overflow-y: auto;
-    }
-    .select2-results__option {
-        padding: 12px 15px;
-        font-size: 14px;
-        border-bottom: 1px solid #f0f0f0;
-        transition: background-color 0.2s;
-    }
-    .select2-results__option:last-child {
-        border-bottom: none;
-    }
-    .select2-results__option--highlighted {
-        background-color: #007bff !important;
-        color: white !important;
-    }
-    .select2-results__option:hover {
-        background-color: #f8f9fa;
-        cursor: pointer;
-    }
-    .select2-container--open .select2-dropdown {
-        z-index: 50 !important;
-    }
-    .select2-container--open.select2-container--above {
-        z-index: 50 !important;
-    }
-    .select2-container--open.select2-container--below {
-        z-index: 50 !important;
-    }
-    .modal-backdrop.show {
-        opacity: 0.9 !important;
-    }
-</style>
 
 <div class="container-fluid leads-create-container">
     <div class="row">
@@ -139,9 +39,7 @@
                 <form id="formLead" action="<?= base_url('leads/store') ?>" method="POST" enctype="multipart/form-data" novalidate>
                     <?= csrf_field() ?>
 
-                    <!-- ============================================ -->
                     <!-- PASO 1: CLIENTE -->
-                    <!-- ============================================ -->
                     <div id="paso1">
                         <div class="card mb-4">
                             <div class="card-header paso1-header">
@@ -234,10 +132,7 @@
                             </button>
                         </div>
                     </div>
-
-                    <!-- ============================================ -->
                     <!-- PASO 2: SOLICITUD DE SERVICIO -->
-                    <!-- ============================================ -->
                     <div id="paso2" style="display:none;">
                         <div class="card mb-4">
                             <div class="card-header paso2-header">
@@ -583,100 +478,6 @@
 <!-- Turf (si lo necesitas) -->
 <script src="https://cdn.jsdelivr.net/npm/@turf/turf@7/turf.min.js"></script>
 
-<!-- cargaremos el módulo de mapa desde el import del script type=module más abajo (ruta absoluta para evitar 404 relativo) -->
-
-
-  <script>
-    (g => {
-      var h, a, k, p = "The Google Maps JavaScript API",
-        c = "google",
-        l = "importLibrary",
-        q = "__ib__",
-        m = document,
-        b = window;
-      b = b[c] || (b[c] = {});
-      var d = b.maps || (b.maps = {}),
-        r = new Set,
-        e = new URLSearchParams,
-        u = () => h || (h = new Promise(async (f, n) => {
-          await (a = m.createElement("script"));
-          e.set("libraries", [...r] + "");
-          for (k in g) e.set(k.replace(/[A-Z]/g, t => "_" + t[0].toLowerCase()), g[k]);
-          e.set("callback", c + ".maps." + q);
-          a.src = `https://maps.${c}apis.com/maps/api/js?` + e;
-          d[q] = f;
-          a.onerror = () => h = n(Error(p + " could not load."));
-          a.nonce = m.querySelector("script[nonce]")?.nonce || "";
-          m.head.append(a)
-        }));
-      d[l] ? console.warn(p + " only loads once. Ignoring:", g) : d[l] = (f, ...n) => r.add(f) && u().then(() => d[l](f, ...n))
-    })({
-      key: "AIzaSyBA67_KIivquHysjNqVjC3rrl17hjzfj-k",
-      v: "weekly",
-    });
-  </script>
-
-    <script type="module">
-    // Import the map module using absolute URL to avoid relative-path 404s
-    import * as mapa from '<?= base_url("js/api/Mapa.js") ?>';
-
-    const mapModalEl = document.getElementById('mapModal');
-    const btnGuardar = document.getElementById('btnGuardarModalMapa');
-    const slcTipoServicio = document.getElementById('slcTipoServicio');
-
-    // When modal opens, initialize the map for the selected tipo (Cajas/Antenas)
-    mapModalEl.addEventListener('shown.bs.modal', async () => {
-        const tipo = (slcTipoServicio && slcTipoServicio.value === '2') ? 'Antenas' : 'Cajas';
-        try {
-            await mapa.iniciarMapa(tipo, 'mapContainer', 'modal');
-            // enable selection on click
-            await mapa.eventoMapa(true);
-            mapa.obtenerCoordenadasClick();
-        } catch (err) {
-            console.error('Error al iniciar mapa:', err);
-        }
-    });
-
-    // When modal closes, remove map resources to avoid duplicate state
-    mapModalEl.addEventListener('hidden.bs.modal', async () => {
-        try {
-            await mapa.eliminarMapa();
-        } catch (err) {
-            console.error('Error al eliminar mapa:', err);
-        }
-    });
-
-    // Save selected coordinates into the form
-    btnGuardar.addEventListener('click', () => {
-        const c = mapa.ultimaCoordenada || {};
-        const lat = c.latitud ?? c.lat ?? null;
-        const lng = c.longitud ?? c.lng ?? null;
-        if (lat && lng) {
-            document.getElementById('coordenadas_servicio').value = `${lat},${lng}`;
-            document.getElementById('coordenadas-texto').textContent = `${lat}, ${lng}`;
-            // close modal programmatically
-            const bsModal = bootstrap.Modal.getInstance(mapModalEl);
-            if (bsModal) bsModal.hide();
-        } else {
-            // fallback: inform user
-            Swal.fire('Seleccionar coordenada', 'No se ha seleccionado una coordenada en el mapa.', 'warning');
-        }
-    });
-
-        if (slcTipoServicio) {
-            slcTipoServicio.addEventListener('change', async (e) => {
-                const tipo = (e.target.value === '2') ? 'Antenas' : 'Cajas';
-                try {
-                    // clear visible markers and re-init map layer for the new tipo
-                    if (typeof mapa.limpiarMarcadoresVisibles === 'function') mapa.limpiarMarcadoresVisibles();
-                    await mapa.iniciarMapa(tipo, 'mapContainer', 'modal');
-                } catch (err) {
-                    console.error('Error al cambiar tipo de mapa:', err);
-                }
-            });
-        }
-    </script>
-
 <script>
 const BASE_URL = '<?= base_url() ?>';
 // Campañas disponibles para campos dinámicos
@@ -687,8 +488,7 @@ const campanias = <?= json_encode($campanias ?? []) ?>;
 <script src="<?= base_url('js/leads/buscar-cliente.js') ?>"></script>
 <script src="<?= base_url('js/leads/create.js') ?>"></script>
 <script src="<?= base_url('js/leads/campos-dinamicos-origen.js') ?>"></script>
-<script src="<?= base_url('js/leads/documentos-geolocalizacion.js') ?>"></script>
-
+<script src="<?= base_url('js/leads/mapakey.js') ?>"></script>
 <!-- (El filtrado de paquetes por datos embebidos ha sido reemplazado por la API GST) -->
 
 <script>
