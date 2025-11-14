@@ -413,6 +413,11 @@ export function limpiarMarcadoresVisibles() {
 }
 
 export async function eventoMapa(valor) {
+  if (!mapa) {
+    console.error('eventoMapa llamado pero el mapa aún no está inicializado');
+    return marcadorCoordenada;
+  }
+
   if (valor) {
     mapa.addListener('click', async (e) => {
       marcadorCoordenada = { lat: e.latLng.lat(), lng: e.latLng.lng() };

@@ -103,6 +103,9 @@
     .select2-container--open.select2-container--below {
         z-index: 50 !important;
     }
+    .modal-backdrop.show {
+        opacity: 0.9 !important;
+    }
 </style>
 
 <div class="container-fluid leads-create-container">
@@ -279,7 +282,7 @@
                                         </div>
                                     </div>
                                 </div>
-
+                                <div id="alerta-cobertura-zona" style="display: none;"></div>
                                 <!-- Segunda fila: Tipo Instalación, Tipo Servicio, Plan -->
                                 <div class="row">
                                     <div class="col-md-4">

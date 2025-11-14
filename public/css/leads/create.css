@@ -8,6 +8,11 @@
     background-color: #f5f7fb;
 }
 
+/* Dar un poco más de aire debajo del Select2 de origen para que el dropdown no se vea tan pegado al siguiente campo */
+#idorigen.select2-hidden-accessible + .select2-container {
+    margin-bottom: 0.75rem;
+}
+
 /* Encabezado destacado para Paso 1 */
 .paso1-header {
     background: linear-gradient(90deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
@@ -191,16 +196,17 @@
     font-weight: 700;
 }
 
-/* Limitar altura del dropdown de Select2 para planes */
+/* Contenedor del Select2, incluso cuando está abierto */
+.select2-container.select2-container--bootstrap-5,
+.select2-container.select2-container--bootstrap-5.select2-container--open {
+    position: relative;
+    z-index: 1020 !important; /* menor que 1040/1050 */
+}
+
+/* Dropdown (lista de opciones) del Select2: limitar altura del listado */
 .select2-container--bootstrap-5 .select2-dropdown {
     max-height: 350px;
 }
-
-.select2-container--bootstrap-5 .select2-results__options {
-    max-height: 280px;
-    overflow-y: auto;
-}
-
 /* Asegurar que el dropdown de planes no ocupe toda la pantalla */
 #select2-plan_interes-results {
     max-height: 280px !important;
