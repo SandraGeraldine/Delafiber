@@ -91,6 +91,7 @@ class CatalogoGSTController extends ResourceController
                 $id = $item['id']
                     ?? $item['id_plan']
                     ?? $item['idPaquete']
+                    ?? $item['id_paquete']
                     ?? $item['idpaquete']
                     ?? $item['idPlan']
                     ?? null;
@@ -115,8 +116,8 @@ class CatalogoGSTController extends ResourceController
                 if (is_string($velocidad)) {
                     $decodedVel = json_decode($velocidad, true);
                     if (json_last_error() === JSON_ERROR_NONE && is_array($decodedVel)) {
-                        $b = $decodedVel['bajada'] ?? null;
-                        $s = $decodedVel['subida'] ?? null;
+                        $b = $decodedVel['bajada']['maxima'] ?? ($decodedVel['bajada'] ?? null);
+                        $s = $decodedVel['subida']['maxima'] ?? ($decodedVel['subida'] ?? null);
                         if ($b !== null && $s !== null) {
                             $velocidad = $b . '/' . $s; // ej: 100/50
                         }
@@ -157,6 +158,11 @@ class CatalogoGSTController extends ResourceController
                 // Log de apoyo: recortar respuesta para no saturar logs
                 $snippet = substr($response, 0, 400);
                 log_message('debug', 'CatalogoGSTController::planes respuesta sin items. Snippet upstream: ' . $snippet);
+
+                // Fallback: si la respuesta decodificada es una lista no vacía, devolverla tal cual
+                if (is_array($decoded) && !empty($decoded)) {
+                    return $this->respond($decoded);
+                }
             }
 
             return $this->respond($uniforme);

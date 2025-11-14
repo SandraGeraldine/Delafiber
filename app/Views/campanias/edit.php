@@ -10,13 +10,13 @@
                 <p class="text-muted mb-0">ID: <?= $campania['idcampania'] ?> | Creada: <?= date('d/m/Y', strtotime($campania['fecha_creacion'] ?? 'now')) ?></p>
             </div>
             <a href="<?= base_url('campanias') ?>" class="btn btn-outline-secondary">
-                <i class="icon-arrow-left"></i> Volver
+                <i class="ti-arrow-left"></i> Volver
             </a>
         </div>
 
         <?php if (session()->getFlashdata('error')): ?>
         <div class="alert alert-danger alert-dismissible fade show">
-            <i class="icon-alert-circle me-2"></i>
+            <i class="ti-alert me-2"></i>
             <?= session()->getFlashdata('error') ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -24,7 +24,7 @@
 
         <?php if (session()->getFlashdata('success')): ?>
         <div class="alert alert-success alert-dismissible fade show">
-            <i class="icon-check-circle me-2"></i>
+            <i class="ti-check me-2"></i>
             <?= session()->getFlashdata('success') ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -76,7 +76,7 @@
                                 </div>
                                 <?php if (!empty($campania['total_invertido'])): ?>
                                 <small class="form-text text-info">
-                                    <i class="icon-info"></i> 
+                                    <i class="ti-info-alt"></i> 
                                     Ya invertido: S/ <?= number_format($campania['total_invertido'], 2) ?>
                                 </small>
                                 <?php endif; ?>
@@ -97,6 +97,38 @@
                         </div>
                     </div>
 
+                    <!-- Objetivos y métricas -->
+                    <h5 class="mb-3 mt-4 text-primary">Objetivos y métricas</h5>
+
+                    <div class="form-group mb-3">
+                        <label for="objetivo" class="form-label">Objetivo principal</label>
+                        <input type="text" class="form-control" id="objetivo" name="objetivo"
+                               value="<?= old('objetivo', $campania['objetivo'] ?? '') ?>"
+                               placeholder="Ej: Captar 50 nuevos leads de fibra en Chincha">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="leads_esperados" class="form-label">Leads esperados</label>
+                                <input type="number" class="form-control" id="leads_esperados" name="leads_esperados"
+                                       value="<?= old('leads_esperados', $campania['leads_esperados'] ?? '') ?>" min="0" step="1"
+                                       placeholder="Ej: 50">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="cpl_objetivo" class="form-label">CPL objetivo (S/ por lead)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">S/</span>
+                                    <input type="number" class="form-control" id="cpl_objetivo" name="cpl_objetivo"
+                                           value="<?= old('cpl_objetivo', $campania['cpl_objetivo'] ?? '') ?>" min="0" step="0.01"
+                                           placeholder="Ej: 15.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Estado y Fechas -->
                     <h5 class="mb-3 mt-4 text-primary">Estado y Período</h5>
 
@@ -108,19 +140,19 @@
                                     <input type="radio" class="btn-check" name="estado" id="estadoActiva" 
                                            value="Activa" <?= old('estado', $campania['estado'] ?? '') == 'Activa' ? 'checked' : '' ?>>
                                     <label class="btn btn-outline-success" for="estadoActiva">
-                                        <i class="icon-check-circle"></i> Activa
+                                        <i class="ti-check"></i> Activa
                                     </label>
                                     
                                     <input type="radio" class="btn-check" name="estado" id="estadoInactiva" 
                                            value="Inactiva" <?= old('estado', $campania['estado'] ?? '') == 'Inactiva' ? 'checked' : '' ?>>
                                     <label class="btn btn-outline-warning" for="estadoInactiva">
-                                        <i class="icon-pause-circle"></i> Inactiva
+                                        <i class="ti-control-pause"></i> Inactiva
                                     </label>
                                     
                                     <input type="radio" class="btn-check" name="estado" id="estadoFinalizada" 
                                            value="Finalizada" <?= old('estado', $campania['estado'] ?? '') == 'Finalizada' ? 'checked' : '' ?>>
                                     <label class="btn btn-outline-secondary" for="estadoFinalizada">
-                                        <i class="icon-x-circle"></i> Finalizada
+                                        <i class="ti-close"></i> Finalizada
                                     </label>
                                 </div>
                             </div>
@@ -129,7 +161,7 @@
                         <div class="col-md-6">
                             <div class="alert alert-info mb-3">
                                 <small>
-                                    <i class="icon-info"></i>
+                                    <i class="ti-info-alt"></i>
                                     <strong>Leads asociados:</strong> <?= $campania['total_leads'] ?? 0 ?>
                                 </small>
                             </div>
@@ -157,14 +189,14 @@
                     </div>
 
                     <div class="alert alert-info mt-2" id="duracionCampania" style="display: none;">
-                        <i class="icon-calendar"></i> <strong>Duración:</strong> <span id="textoDuracion"></span>
+                        <i class="ti-calendar"></i> <strong>Duración:</strong> <span id="textoDuracion"></span>
                     </div>
 
                     <!-- Información adicional -->
                     <?php if (isset($campania['updated_at'])): ?>
                     <div class="alert alert-light mt-4">
                         <small class="text-muted">
-                            <i class="icon-clock"></i>
+                            <i class="ti-time"></i>
                             <strong>Última modificación:</strong> 
                             <?= date('d/m/Y H:i', strtotime($campania['updated_at'])) ?>
                         </small>
@@ -176,14 +208,14 @@
                     <!-- Botones de acción -->
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="<?= base_url('campanias') ?>" class="btn btn-secondary">
-                            <i class="icon-x"></i> Cancelar
+                            <i class="ti-close"></i> Cancelar
                         </a>
                         <div>
                             <button type="button" class="btn btn-outline-danger me-2" id="btnEliminar">
-                                <i class="icon-trash-2"></i> Eliminar
+                                <i class="ti-trash"></i> Eliminar
                             </button>
                             <button type="submit" class="btn btn-primary" id="btnGuardar">
-                                <i class="icon-check"></i> Guardar Cambios
+                                <i class="ti-check"></i> Guardar Cambios
                             </button>
                         </div>
                     </div>
@@ -195,7 +227,7 @@
         <?php if (($campania['total_leads'] ?? 0) > 0): ?>
         <div class="card mt-3">
             <div class="card-header">
-                <h5 class="mb-0"><i class="icon-bar-chart-2"></i> Estadísticas de la Campaña</h5>
+                <h5 class="mb-0"><i class="ti-bar-chart-2"></i> Estadísticas de la Campaña</h5>
             </div>
             <div class="card-body">
                 <div class="row text-center">
@@ -234,7 +266,7 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">
-                    <i class="icon-alert-triangle me-2"></i>
+                    <i class="ti-alert me-2"></i>
                     Confirmar Eliminación
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -242,7 +274,7 @@
             <div class="modal-body">
                 <p class="mb-2">¿Estás seguro de que deseas eliminar esta campaña?</p>
                 <div class="alert alert-warning">
-                    <i class="icon-alert-circle me-2"></i>
+                    <i class="ti-alert me-2"></i>
                     <strong>Advertencia:</strong> Esta acción no se puede deshacer. 
                     <?php if (($campania['total_leads'] ?? 0) > 0): ?>
                         Se eliminarán también los <strong><?= $campania['total_leads'] ?> leads</strong> asociados.
@@ -251,11 +283,11 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="icon-x"></i> Cancelar
+                    <i class="ti-close"></i> Cancelar
                 </button>
                 <a href="<?= base_url('campanias/delete/' . $campania['idcampania']) ?>" 
                    class="btn btn-danger" id="btnConfirmarEliminar">
-                    <i class="icon-trash-2"></i> Sí, eliminar
+                    <i class="ti-trash"></i> Sí, eliminar
                 </a>
             </div>
         </div>

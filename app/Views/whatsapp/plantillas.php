@@ -11,7 +11,7 @@
                 <div class="card-body">
                     <div class="row mb-3">
                         <div class="col-12 text-right">
-                            <button class="btn btn-primary" data-toggle="modal" data-target="#modalNuevaPlantilla">
+                            <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#modalNuevaPlantilla">
                                 <i class="fas fa-plus"></i> Nueva Plantilla
                             </button>
                         </div>
@@ -66,9 +66,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Nueva Plantilla</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="formPlantilla" action="<?= base_url('whatsapp/guardarPlantilla') ?>" method="post">
                 <input type="hidden" name="id_plantilla" id="id_plantilla" value="">
@@ -86,7 +84,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cerrar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
@@ -112,7 +110,7 @@ $(document).ready(function() {
     });
 
     // Nueva plantilla
-    $('[data-target="#modalNuevaPlantilla"]').on('click', function() {
+    $('[data-bs-target="#modalNuevaPlantilla"]').on('click', function() {
         $('#formPlantilla')[0].reset();
         $('#id_plantilla').val('');
         $('.modal-title').text('Nueva Plantilla');

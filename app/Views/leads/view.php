@@ -47,7 +47,7 @@ $historial = $historial ?? [];
                     <i class="icon-check"></i> Convertir a Cliente
                 </a>
                 <?php endif; ?>
-                <button class="btn btn-danger" data-toggle="modal" data-target="#modalDescartar">
+                <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#modalDescartar">
                     <i class="icon-close"></i> Descartar
                 </button>
                 
@@ -317,7 +317,7 @@ $historial = $historial ?? [];
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Seguimientos</h5>
-                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalSeguimiento">
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalSeguimiento">
                             <i class="icon-plus"></i> Agregar
                         </button>
                     </div>
@@ -459,7 +459,7 @@ $historial = $historial ?? [];
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Tareas</h5>
-                        <button class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalTarea">
+                        <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalTarea">
                             <i class="icon-plus"></i>
                         </button>
                     </div>
@@ -519,9 +519,7 @@ $historial = $historial ?? [];
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Agregar Seguimiento</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="formSeguimiento">
                 <div class="modal-body">
@@ -540,7 +538,7 @@ $historial = $historial ?? [];
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
@@ -554,9 +552,7 @@ $historial = $historial ?? [];
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title">Nueva Tarea</h5>
-                <button type="button" class="close" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form id="formTarea">
                 <div class="modal-body">
@@ -590,7 +586,7 @@ $historial = $historial ?? [];
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Crear Tarea</button>
                 </div>
             </form>
@@ -604,9 +600,7 @@ $historial = $historial ?? [];
         <div class="modal-content">
             <div class="modal-header bg-success text-white">
                 <h5 class="modal-title">Convertir a Cliente</h5>
-                <button type="button" class="close text-white" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= base_url('leads/convertir/' . $lead['idlead']) ?>" method="POST">
                 <?= csrf_field() ?>
@@ -618,7 +612,7 @@ $historial = $historial ?? [];
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-success">Convertir</button>
                 </div>
             </form>
@@ -632,9 +626,7 @@ $historial = $historial ?? [];
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">Descartar Lead</h5>
-                <button type="button" class="close text-white" data-dismiss="modal">
-                    <span>&times;</span>
-                </button>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form action="<?= base_url('leads/descartar/' . $lead['idlead']) ?>" method="POST">
                 <?= csrf_field() ?>
@@ -645,7 +637,7 @@ $historial = $historial ?? [];
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-danger">Descartar</button>
                 </div>
             </form>

@@ -6,32 +6,34 @@
 <?php if (session()->getFlashdata('success')): ?>
     <div class="alert alert-success alert-dismissible fade show" role="alert">
         <?= session()->getFlashdata('success') ?>
-        <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
 <?php endif; ?>
 
 <?php if (session()->getFlashdata('error')): ?>
 <div class="alert alert-danger alert-dismissible fade show" role="alert">
     <?= session()->getFlashdata('error') ?>
-    <button type="button" class="close" data-dismiss="alert"><span>&times;</span></button>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
 </div>
 <?php endif; ?>
 
 <div class="row">
     <div class="col-md-12">
         <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-4">
+            <div class="card-header header-corporativo">
+                <div class="d-flex justify-content-between align-items-center">
                     <h4 class="card-title mb-0"><i class="ti-target"></i> Gestión de Leads</h4>
                     <div>
-                        <a href="<?= base_url('leads/pipeline') ?>" class="btn btn-outline-info">
+                        <a href="<?= base_url('leads/pipeline') ?>" class="btn btn-outline-light">
                             <i class="ti-layout-grid2"></i> Pipeline
                         </a>
-                        <a href="<?= base_url('leads/create') ?>" class="btn btn-primary">
+                        <a href="<?= base_url('leads/create') ?>" class="btn btn-light">
                             <i class="ti-plus"></i> Nuevo Lead
                         </a>
                     </div>
                 </div>
+            </div>
+            <div class="card-body">
 
                 <!-- Filtros -->
                 <div class="card bg-light mb-4">

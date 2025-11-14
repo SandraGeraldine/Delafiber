@@ -128,7 +128,7 @@
 <script>
 $(document).ready(function() {
     // Inicializar tooltips
-    $('[data-toggle="tooltip"]').tooltip();
+    $('[data-bs-toggle="tooltip"]').tooltip();
     
     // Formato de número de teléfono
     $('#numero_whatsapp').inputmask({

@@ -160,6 +160,267 @@ class Leads extends BaseController
     
         return view('leads/create', $data);
     }
+
+    /**
+     * Formulario simplificado para promotores de campo
+     */
+    public function campo()
+    {
+        // Solo Promotor Campo o supervisores/admin pueden usar esta vista
+        $rol = session()->get('nombreRol');
+        if ($rol !== 'Promotor Campo' && !function_exists('es_supervisor') ? false : !es_supervisor()) {
+            return redirect()->to('/leads')
+                ->with('error', 'No tienes permisos para acceder al formulario de campo');
+        }
+
+        // Cargar planes/paquetes desde sistema de gestión externo
+        $paquetes = [];
+        try {
+            $dbGestion = \Config\Database::connect('gestion');
+            $paquetes = $dbGestion->query(
+                "SELECT * FROM tb_paquetes WHERE inactive_at IS NULL ORDER BY precio ASC"
+            )->getResultArray();
+        } catch (\Exception $e) {
+            log_message('error', 'No se pudieron cargar paquetes para campo: ' . $e->getMessage());
+            if (ENVIRONMENT === 'development') {
+                echo "<!-- ERROR AL CARGAR PAQUETES CAMPO: " . $e->getMessage() . " -->";
+            }
+        }
+
+        // Orígenes disponibles (el promotor puede elegir uno, ej. CAMPO)
+        $origenes = $this->origenModel->getOrigenesActivos();
+
+        $data = [
+            'title' => 'Registro Rápido de Campo - Delafiber CRM',
+            'paquetes' => $paquetes,
+            'origenes' => $origenes,
+            'user_name' => session()->get('user_name'),
+        ];
+
+        return view('leads/campo_form', $data);
+    }
+
+    /**
+     * Guardar lead creado desde la vista simplificada de campo
+     */
+    public function campoStore()
+    {
+        // Solo Promotor Campo o supervisores/admin pueden registrar desde esta vista
+        $rol = session()->get('nombreRol');
+        if ($rol !== 'Promotor Campo' && !function_exists('es_supervisor') ? false : !es_supervisor()) {
+            return redirect()->to('/leads')
+                ->with('error', 'No tienes permisos para registrar leads desde campo');
+        }
+
+        // Validación básica para campo
+        $rules = [
+            'dni' => 'required|min_length[8]|max_length[8]',
+            'nombres' => 'required|min_length[2]',
+            'apellidos' => 'required|min_length[2]',
+            'telefono' => 'required|min_length[9]|max_length[9]',
+            'direccion' => 'required|min_length[5]',
+            'idorigen' => 'required|numeric',
+            'plan_interes' => 'required',
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', $this->validator->getErrors());
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            $dni = $this->request->getPost('dni');
+
+            // Buscar persona existente por DNI
+            $persona = null;
+            if (!empty($dni)) {
+                $persona = $this->personaModel->where('dni', $dni)->first();
+            }
+
+            if ($persona) {
+                // Normalizar a array
+                if (is_object($persona)) {
+                    if (method_exists($persona, 'toArray')) {
+                        $persona = $persona->toArray();
+                    } else {
+                        $persona = (array)$persona;
+                    }
+                }
+                $personaId = $persona['idpersona'];
+            } else {
+                // Crear nueva persona básica desde campo
+                $personaData = [
+                    'dni' => $dni,
+                    'nombres' => $this->request->getPost('nombres'),
+                    'apellidos' => $this->request->getPost('apellidos'),
+                    'telefono' => $this->request->getPost('telefono'),
+                    'correo' => $this->request->getPost('correo') ?: null,
+                    'direccion' => $this->request->getPost('direccion'),
+                    'referencias' => $this->request->getPost('referencias') ?: null,
+                    'iddistrito' => null,
+                    'coordenadas' => $this->request->getPost('coordenadas_servicio') ?: null,
+                ];
+
+                $personaId = $this->personaModel->insert($personaData);
+                if (!$personaId) {
+                    $errors = $this->personaModel->errors();
+                    $errorMsg = !empty($errors) ? implode(', ', $errors) : 'Error desconocido';
+                    throw new \Exception('Error al crear la persona desde campo: ' . $errorMsg);
+                }
+            }
+
+            $nombreCompleto = $this->request->getPost('nombres') . ' ' . $this->request->getPost('apellidos');
+
+            // Usuario que registra es el promotor de campo
+            $usuarioRegistro = session()->get('idusuario');
+
+            $leadData = [
+                'idpersona' => $personaId,
+                'idetapa' => 1, // CAPTACION por defecto
+                'idusuario' => $usuarioRegistro,
+                'idusuario_registro' => $usuarioRegistro,
+                'idorigen' => $this->request->getPost('idorigen'),
+                'idcampania' => null,
+                'nota_inicial' => $this->request->getPost('nota_inicial') ?: null,
+                'tipo_solicitud' => $this->request->getPost('tipo_solicitud') ?: 'casa',
+                'plan_interes' => $this->request->getPost('plan_interes'),
+                'direccion_servicio' => $this->request->getPost('direccion'),
+                'distrito_servicio' => null,
+                'coordenadas_servicio' => $this->request->getPost('coordenadas_servicio') ?: null,
+                'estado' => 'activo',
+            ];
+
+            $leadId = $this->leadModel->insert($leadData);
+            if (!$leadId) {
+                $errors = $this->leadModel->errors();
+                $errorMsg = !empty($errors) ? implode(', ', $errors) : 'Error desconocido';
+                throw new \Exception('Error al crear el lead desde campo: ' . $errorMsg);
+            }
+
+            // Registrar en historial de leads
+            $historialModel = new HistorialLeadModel();
+            $historialModel->registrarCambio(
+                $leadId,
+                $usuarioRegistro,
+                null,
+                $leadData['idetapa'],
+                'Lead creado desde formulario de campo'
+            );
+
+            // Crear notificación para todos los usuarios activos
+            $usuarioModel = new \App\Models\UsuarioModel();
+            $usuariosActivos = $usuarioModel->getUsuariosActivos();
+            $notificacionModel = new \App\Models\NotificacionModel();
+
+            $promotorNombre = session()->get('nombre');
+
+            if (!empty($usuariosActivos)) {
+                foreach ($usuariosActivos as $usuario) {
+                    $idUsuarioNotif = is_array($usuario) ? ($usuario['idusuario'] ?? null) : ($usuario->idusuario ?? null);
+                    if (!$idUsuarioNotif) {
+                        continue;
+                    }
+
+                    $notificacionModel->crearNotificacion(
+                        $idUsuarioNotif,
+                        'lead_campo_nuevo',
+                        'Nuevo registro desde campo',
+                        "$promotorNombre ha registrado un nuevo lead desde campo: $nombreCompleto",
+                        base_url('leads/view/' . $leadId)
+                    );
+                }
+            }
+
+            // Auditoría básica
+            log_auditoria(
+                'Crear Lead Campo',
+                'leads',
+                $leadId,
+                null,
+                [
+                    'lead_id' => $leadId,
+                    'persona_id' => $personaId,
+                    'nombre' => $nombreCompleto,
+                    'origen' => $this->request->getPost('idorigen'),
+                    'plan_interes' => $this->request->getPost('plan_interes'),
+                    'coordenadas_servicio' => $this->request->getPost('coordenadas_servicio') ?: null,
+                ]
+            );
+
+            $db->transComplete();
+            if ($db->transStatus() === false) {
+                throw new \Exception('Error en la transacción al crear lead de campo');
+            }
+
+            return redirect()->to('/leads/campo')
+                ->with('success', "Lead de campo para '$nombreCompleto' creado exitosamente")
+                ->with('swal_success', true);
+
+        } catch (\Exception $e) {
+            $db->transRollback();
+            log_message('error', 'Error en campoStore: ' . $e->getMessage());
+            return redirect()->back()
+                ->withInput()
+                ->with('error', 'Error al crear el lead desde campo: ' . $e->getMessage())
+                ->with('swal_error', true);
+        }
+    }
+
+    /**
+     * Buscar persona existente por DNI para autocompletar en formulario de campo (AJAX)
+     */
+    public function campoBuscarDni()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setStatusCode(404);
+        }
+
+        $dni = $this->request->getGet('dni');
+        if (!$dni || strlen($dni) < 8) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'DNI inválido'
+            ]);
+        }
+
+        $persona = $this->personaModel->where('dni', $dni)->first();
+
+        if ($persona) {
+            // Normalizar a array
+            if (is_object($persona)) {
+                if (method_exists($persona, 'toArray')) {
+                    $persona = $persona->toArray();
+                } else {
+                    $persona = (array)$persona;
+                }
+            }
+
+            return $this->response->setJSON([
+                'success'    => true,
+                'encontrado' => true,
+                'persona'    => [
+                    'nombres'     => $persona['nombres']     ?? '',
+                    'apellidos'   => $persona['apellidos']   ?? '',
+                    'telefono'    => $persona['telefono']    ?? '',
+                    'correo'      => $persona['correo']      ?? '',
+                    'direccion'   => $persona['direccion']   ?? '',
+                    'referencias' => $persona['referencias'] ?? '',
+                ],
+                'message'    => 'Persona encontrada por DNI'
+            ]);
+        }
+
+        return $this->response->setJSON([
+            'success'    => true,
+            'encontrado' => false,
+            'message'    => 'No se encontró persona con ese DNI'
+        ]);
+    }
+
     /**
      * Guardar nuevo lead con validación y transacción
      */
@@ -1006,158 +1267,6 @@ class Leads extends BaseController
         }
     }
 
-    /**
-     * MÉTODO DE DIAGNÓSTICO TEMPORAL
-     * Accede a: /leads/diagnostico
-     */
-    public function diagnostico()
-    {
-        $db = \Config\Database::connect();
-        
-        echo "<h1>🔍 Diagnóstico del Sistema</h1>";
-        echo "<hr>";
-        
-        // 1. Verificar estructura de tabla personas
-        echo "<h2>1. Estructura de tabla 'personas'</h2>";
-        $query = $db->query("DESCRIBE personas");
-        $columns = $query->getResultArray();
-        
-        echo "<table border='1' cellpadding='5'>";
-        echo "<tr><th>Campo</th><th>Tipo</th><th>Null</th><th>Key</th><th>Default</th></tr>";
-        foreach ($columns as $col) {
-            $highlight = ($col['Field'] === 'coordenadas' || $col['Field'] === 'id_zona') ? 'style="background: yellow;"' : '';
-            echo "<tr {$highlight}>";
-            echo "<td><strong>{$col['Field']}</strong></td>";
-            echo "<td>{$col['Type']}</td>";
-            echo "<td>{$col['Null']}</td>";
-            echo "<td>{$col['Key']}</td>";
-            echo "<td>{$col['Default']}</td>";
-            echo "</tr>";
-        }
-        echo "</table>";
-        
-        // Verificar si existen los campos
-        $tieneCoordenas = false;
-        $tieneIdZona = false;
-        foreach ($columns as $col) {
-            if ($col['Field'] === 'coordenadas') $tieneCoordenas = true;
-            if ($col['Field'] === 'id_zona') $tieneIdZona = true;
-        }
-        
-        echo "<br>";
-        echo "<strong>Campo 'coordenadas': </strong>" . ($tieneCoordenas ? "✅ EXISTE" : "❌ NO EXISTE") . "<br>";
-        echo "<strong>Campo 'id_zona': </strong>" . ($tieneIdZona ? "✅ EXISTE" : "❌ NO EXISTE") . "<br>";
-        
-        if (!$tieneCoordenas || !$tieneIdZona) {
-            echo "<br><div style='background: #ffcccc; padding: 10px; border: 2px solid red;'>";
-            echo "<h3>⚠️ ACCIÓN REQUERIDA</h3>";
-            echo "<p>Debes ejecutar este SQL en phpMyAdmin:</p>";
-            echo "<pre style='background: #f0f0f0; padding: 10px;'>";
-            if (!$tieneCoordenas) {
-                echo "ALTER TABLE personas ADD COLUMN coordenadas VARCHAR(50) NULL AFTER direccion;\n";
-            }
-            if (!$tieneIdZona) {
-                echo "ALTER TABLE personas ADD COLUMN id_zona INT NULL AFTER coordenadas;\n";
-            }
-            echo "</pre>";
-            echo "</div>";
-        }
-        
-        echo "<hr>";
-        
-        // 2. Verificar allowedFields del modelo
-        echo "<h2>2. Campos Permitidos en PersonaModel</h2>";
-        $allowedFields = $this->personaModel->allowedFields ?? [];
-        echo "<pre>";
-        print_r($allowedFields);
-        echo "</pre>";
-        
-        echo "<strong>Campo 'coordenadas' permitido: </strong>" . (in_array('coordenadas', $allowedFields) ? "✅ SÍ" : "❌ NO") . "<br>";
-        echo "<strong>Campo 'id_zona' permitido: </strong>" . (in_array('id_zona', $allowedFields) ? "✅ SÍ" : "❌ NO") . "<br>";
-        
-        echo "<hr>";
-        
-        // 3. Probar inserción simple
-        echo "<h2>3. Prueba de Inserción</h2>";
-        
-        try {
-            $testData = [
-                'nombres' => 'Test',
-                'apellidos' => 'Diagnóstico',
-                'telefono' => '987654321',
-                'direccion' => 'Av. Test 123'
-            ];
-            
-            echo "<p>Intentando insertar datos de prueba...</p>";
-            echo "<pre>";
-            print_r($testData);
-            echo "</pre>";
-            
-            $personaId = $this->personaModel->insert($testData);
-            
-            if ($personaId) {
-                echo "<div style='background: #ccffcc; padding: 10px; border: 2px solid green;'>";
-                echo "✅ <strong>ÉXITO!</strong> Persona creada con ID: {$personaId}";
-                echo "</div>";
-                
-                // Eliminar el registro de prueba
-                $this->personaModel->delete($personaId);
-                echo "<p><em>Registro de prueba eliminado.</em></p>";
-            } else {
-                echo "<div style='background: #ffcccc; padding: 10px; border: 2px solid red;'>";
-                echo "❌ <strong>ERROR al insertar</strong><br>";
-                echo "<strong>Errores del modelo:</strong><br>";
-                echo "<pre>";
-                print_r($this->personaModel->errors());
-                echo "</pre>";
-                echo "</div>";
-            }
-            
-        } catch (\Exception $e) {
-            echo "<div style='background: #ffcccc; padding: 10px; border: 2px solid red;'>";
-            echo "❌ <strong>EXCEPCIÓN:</strong> " . $e->getMessage();
-            echo "</div>";
-        }
-        
-        echo "<hr>";
-        
-        // 4. Verificar últimos leads
-        echo "<h2>4. Últimos 5 Leads Creados</h2>";
-        $query = $db->query("
-            SELECT 
-                p.idpersona,
-                p.nombres,
-                p.apellidos,
-                p.telefono,
-                p.created_at,
-                l.idlead
-            FROM personas p
-            LEFT JOIN leads l ON l.idpersona = p.idpersona
-            ORDER BY p.idpersona DESC
-            LIMIT 5
-        ");
-        $ultimos = $query->getResultArray();
-        
-        if (!empty($ultimos)) {
-            echo "<table border='1' cellpadding='5'>";
-            echo "<tr><th>ID Persona</th><th>Nombre</th><th>Teléfono</th><th>ID Lead</th><th>Fecha</th></tr>";
-            foreach ($ultimos as $u) {
-                echo "<tr>";
-                echo "<td>{$u['idpersona']}</td>";
-                echo "<td>{$u['nombres']} {$u['apellidos']}</td>";
-                echo "<td>{$u['telefono']}</td>";
-                echo "<td>" . ($u['idlead'] ?? 'Sin lead') . "</td>";
-                echo "<td>{$u['created_at']}</td>";
-                echo "</tr>";
-            }
-            echo "</table>";
-        } else {
-            echo "<p>No hay registros.</p>";
-        }
-        
-        echo "<hr>";
-        echo "<p><a href='/leads/create'>← Volver a Crear Lead</a></p>";
-    }
     
     /**
      * Obtener campos dinámicos del formulario según el origen

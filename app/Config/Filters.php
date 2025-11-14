@@ -52,11 +52,8 @@ class Filters extends BaseFilters
      */
     public array $required = [
         'before' => [
-            'forcehttps', // Force Global Secure Requests
-            'pagecache',  // Web Page Caching
         ],
         'after' => [
-            'pagecache',   // Web Page Caching
             'performance', // Performance Metrics
             'toolbar',     // Debug Toolbar
         ],
@@ -81,6 +78,11 @@ class Filters extends BaseFilters
                 'auth/logout',
                 'auth/check',
                 'login',
+                // Endpoints públicos
+                'whatsapp/webhook',
+                'index.php/whatsapp/webhook',
+                'api/personas/buscar',
+                'index.php/api/personas/buscar',
                 // Si usas index.php en la URL, también excluye:
                 'index.php/auth',
                 'index.php/auth/login',

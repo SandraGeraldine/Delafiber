@@ -62,9 +62,12 @@ $routes->group('dashboard', ['filter' => 'auth'], function($routes) {
 // === LEADS ===
 $routes->group('leads', ['filter' => 'auth'], function($routes) {
     $routes->get('/', 'Leads::index');
-    $routes->get('diagnostico', 'Leads::diagnostico'); // DIAGNÓSTICO TEMPORAL
     $routes->get('create', 'Leads::create');
     $routes->post('store', 'Leads::store');
+    // Registro simplificado para promotores de campo
+    $routes->get('campo', 'Leads::campo');
+    $routes->post('campoStore', 'Leads::campoStore');
+    $routes->get('campoBuscarDni', 'Leads::campoBuscarDni');
     $routes->get('view/(:num)', 'Leads::view/$1');
     $routes->get('edit/(:num)', 'Leads::edit/$1');
     $routes->post('update/(:num)', 'Leads::update/$1');
@@ -192,7 +195,6 @@ $routes->group('cotizaciones', ['filter' => 'auth'], function($routes) {
     $routes->get('pdf/(:num)', 'Cotizaciones::generarPDF/$1');
     $routes->get('porLead/(:num)', 'Cotizaciones::porLead/$1');
     $routes->get('buscarLeads', 'Cotizaciones::buscarLeads'); // AJAX: Buscar leads para Select2
-    $routes->get('diagnostico', 'DiagnosticoCotizaciones::testBusqueda'); // DIAGNÓSTICO de prueba
 });
 
 // === SERVICIOS ===

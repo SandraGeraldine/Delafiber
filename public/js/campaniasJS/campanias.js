@@ -1,3 +1,6 @@
+// Asegurar una constante BASE_URL basada en la variable global definida en el layout
+const BASE_URL = (typeof baseUrl !== 'undefined') ? baseUrl : '';
+
 document.addEventListener('DOMContentLoaded', function() {
     // Inicializar tooltips de Bootstrap
     const tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -10,7 +13,7 @@ document.addEventListener('DOMContentLoaded', function() {
     if (typeof $ !== 'undefined' && $.fn.DataTable) {
         tabla = $('#tablaCampanias').DataTable({
             language: {
-                url: base_url + '/js/datatables/es-ES.json'
+                url: BASE_URL + '/js/datatables/es-ES.json'
             },
             order: [[4, 'desc']],
             pageLength: 25,
@@ -28,18 +31,23 @@ document.addEventListener('DOMContentLoaded', function() {
     const limpiarFiltros = document.getElementById('limpiarFiltros');
 
     function aplicarFiltros() {
-        const estado = filtroEstado?.value || '';
-        const tipo = filtroTipo?.value || '';
-        const busqueda = busquedaRapida?.value.toLowerCase() || '';
+        const estadoFiltro = (filtroEstado?.value || '').toLowerCase();
+        const tipoFiltro = (filtroTipo?.value || '').toLowerCase();
+        const busqueda = (busquedaRapida?.value || '').toLowerCase();
 
         const filas = document.querySelectorAll('#tablaCampanias tbody tr');
         filas.forEach(fila => {
-            const estadoFila = fila.dataset.estado || '';
-            const tipoFila = fila.dataset.tipo || '';
+            let estadoFila = (fila.dataset.estado || '').toLowerCase();
+            const tipoFila = (fila.dataset.tipo || '').toLowerCase();
             const textoFila = fila.textContent.toLowerCase();
 
-            const coincideEstado = !estado || estadoFila === estado;
-            const coincideTipo = !tipo || tipoFila === tipo;
+            // Normalizar estados: tratar 'pausada' como 'inactiva'
+            if (estadoFila === 'pausada') {
+                estadoFila = 'inactiva';
+            }
+
+            const coincideEstado = !estadoFiltro || estadoFila === estadoFiltro;
+            const coincideTipo = !tipoFiltro || tipoFila === tipoFiltro;
             const coincideBusqueda = !busqueda || textoFila.includes(busqueda);
 
             if (coincideEstado && coincideTipo && coincideBusqueda) {
@@ -80,6 +88,6 @@ document.getElementById('btnConfirmarEliminar')?.addEventListener('click', funct
     if (idCampaniaEliminar) {
         this.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Eliminando...';
         this.disabled = true;
-        window.location.href = base_url + 'campanias/delete/' + idCampaniaEliminar;
+        window.location.href = BASE_URL + '/campanias/delete/' + idCampaniaEliminar;
     }
 });

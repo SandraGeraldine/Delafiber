@@ -9,29 +9,29 @@
         <?php if (session()->getFlashdata('success')): ?>
         <div class="alert alert-success alert-dismissible fade show">
             <?= session()->getFlashdata('success') ?>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <?php endif; ?>
 
         <!-- Tabs de Configuración -->
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#etapas">
+                <a class="nav-link active" data-bs-toggle="tab" href="#etapas">
                     <i class="icon-layers"></i> Etapas
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#origenes">
+                <a class="nav-link" data-bs-toggle="tab" href="#origenes">
                     <i class="icon-map-pin"></i> Orígenes
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#modalidades">
+                <a class="nav-link" data-bs-toggle="tab" href="#modalidades">
                     <i class="icon-grid"></i> Modalidades
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#usuarios">
+                <a class="nav-link" data-bs-toggle="tab" href="#usuarios">
                     <i class="icon-users"></i> Usuarios
                 </a>
             </li>
@@ -44,7 +44,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Gestión de Etapas</h5>
                         <button type="button" class="btn btn-sm btn-primary" 
-                                data-toggle="modal" data-target="#modalEtapa">
+                                data-bs-toggle="modal" data-bs-target="#modalEtapa">
                             <i class="icon-plus"></i> Nueva Etapa
                         </button>
                     </div>
@@ -105,7 +105,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Gestión de Orígenes</h5>
                         <button type="button" class="btn btn-sm btn-primary" 
-                                data-toggle="modal" data-target="#modalOrigen">
+                                data-bs-toggle="modal" data-bs-target="#modalOrigen">
                             <i class="icon-plus"></i> Nuevo Origen
                         </button>
                     </div>
@@ -161,7 +161,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Gestión de Modalidades</h5>
                         <button type="button" class="btn btn-sm btn-primary" 
-                                data-toggle="modal" data-target="#modalModalidad">
+                                data-bs-toggle="modal" data-bs-target="#modalModalidad">
                             <i class="icon-plus"></i> Nueva Modalidad
                         </button>
                     </div>
@@ -217,7 +217,7 @@
                     <div class="card-header d-flex justify-content-between align-items-center">
                         <h5 class="mb-0">Gestión de Usuarios</h5>
                         <button type="button" class="btn btn-sm btn-primary" 
-                                data-toggle="modal" data-target="#modalUsuario">
+                                data-bs-toggle="modal" data-bs-target="#modalUsuario">
                             <i class="icon-plus"></i> Nuevo Usuario
                         </button>
                     </div>
@@ -285,7 +285,7 @@
                 <input type="hidden" name="idetapa" id="etapa_id">
                 <div class="modal-header">
                     <h5 class="modal-title" id="etapaTitle">Nueva Etapa</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -306,7 +306,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
@@ -323,7 +323,7 @@
                 <input type="hidden" name="idorigen" id="origen_id">
                 <div class="modal-header">
                     <h5 class="modal-title" id="origenTitle">Nuevo Origen</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -340,7 +340,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
@@ -357,7 +357,7 @@
                 <input type="hidden" name="idmodalidad" id="modalidad_id">
                 <div class="modal-header">
                     <h5 class="modal-title" id="modalidadTitle">Nueva Modalidad</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="form-group">
@@ -374,7 +374,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>
@@ -391,7 +391,7 @@
                 <input type="hidden" name="idusuario" id="usuario_id">
                 <div class="modal-header">
                     <h5 class="modal-title" id="usuarioTitle">Nuevo Usuario</h5>
-                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
                     <div class="row">
@@ -451,7 +451,7 @@
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-light" data-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancelar</button>
                     <button type="submit" class="btn btn-primary">Guardar</button>
                 </div>
             </form>

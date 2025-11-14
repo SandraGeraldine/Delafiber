@@ -189,13 +189,15 @@ class LeadModel extends Model
                 ->where('l.estado', 'activo')
                 ->countAllResults();
 
-            // Obtener algunos leads de muestra
+            // Obtener algunos leads con información básica para el pipeline
             $leadsEjemplo = $this->db->table('leads l')
                 ->join('personas p', 'l.idpersona = p.idpersona')
-                ->select('l.idlead, p.nombres, p.apellidos, p.telefono')
+                ->join('origenes o', 'l.idorigen = o.idorigen')
+                ->select('l.idlead, p.nombres, p.apellidos, p.telefono, o.nombre as origen, l.created_at')
                 ->where('l.idusuario', $userId)
                 ->where('l.idetapa', $etapa['idetapa'])
                 ->where('l.estado', 'activo')
+                ->orderBy('l.created_at', 'DESC')
                 ->limit(10)
                 ->get()
                 ->getResultArray();

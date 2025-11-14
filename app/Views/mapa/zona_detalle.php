@@ -23,7 +23,7 @@
                 <a href="<?= base_url('crm-campanas/mapa-campanas/' . $zona['id_campana']) ?>" class="btn btn-outline-primary">
                     <i class="icon-map"></i> Ver en Mapa
                 </a>
-                <button type="button" class="btn btn-outline-secondary" data-toggle="modal" data-target="#modalEditarZona">
+                <button type="button" class="btn btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#modalEditarZona">
                     <i class="icon-edit"></i> Editar
                 </button>
             </div>
@@ -80,17 +80,17 @@
         <!-- Tabs -->
         <ul class="nav nav-tabs mb-3" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#prospectos">
+                <a class="nav-link active" data-bs-toggle="tab" href="#prospectos">
                     <i class="icon-users"></i> Prospectos
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#asignaciones">
+                <a class="nav-link" data-bs-toggle="tab" href="#asignaciones">
                     <i class="icon-user-check"></i> Agentes Asignados
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#metricas">
+                <a class="nav-link" data-bs-toggle="tab" href="#metricas">
                     <i class="icon-trending-up"></i> Métricas
                 </a>
             </li>
@@ -103,7 +103,7 @@
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h6 class="mb-0">Lista de Prospectos</h6>
-                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalRegistrarInteraccion">
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalRegistrarInteraccion">
                                 <i class="icon-plus"></i> Registrar Interacción
                             </button>
                         </div>
@@ -180,7 +180,7 @@
                     <div class="card-header">
                         <div class="d-flex justify-content-between align-items-center">
                             <h6 class="mb-0">Agentes Asignados</h6>
-                            <button type="button" class="btn btn-sm btn-primary" data-toggle="modal" data-target="#modalAsignarAgente">
+                            <button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalAsignarAgente">
                                 <i class="icon-user-plus"></i> Asignar Agente
                             </button>
                         </div>

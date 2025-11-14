@@ -7,12 +7,12 @@
         <div class="d-flex justify-content-between align-items-center mb-4">
             <div>
                 <a href="<?= base_url('campanias') ?>" class="btn btn-outline-secondary">
-                    <i class="icon-arrow-left"></i> Volver
+                    <i class="ti-arrow-left"></i> Volver
                 </a>
             </div>
             <div>
                 <a href="<?= base_url('campanias/edit/' . $campania['idcampania']) ?>" class="btn btn-warning">
-                    <i class="icon-pencil"></i> Editar
+                    <i class="ti-pencil"></i> Editar
                 </a>
                 <button class="btn btn-<?= ($campania['estado'] ?? 'Inactiva') == 'Activa' ? 'danger' : 'success' ?>" 
                         onclick="toggleEstado(<?= $campania['idcampania'] ?? 0 ?>)">
@@ -36,6 +36,33 @@
                         </div>
 
                         <p class="text-muted"><?= esc($campania['descripcion'] ?? 'Sin descripción') ?></p>
+
+                        <?php if (!empty($campania['objetivo']) || !empty($campania['leads_esperados']) || !empty($campania['cpl_objetivo'])): ?>
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <?php if (!empty($campania['objetivo'])): ?>
+                                <p class="mb-1">
+                                    <strong>Objetivo principal:</strong><br>
+                                    <?= esc($campania['objetivo']) ?>
+                                </p>
+                            <?php endif; ?>
+
+                            <div class="d-flex flex-wrap mt-2">
+                                <?php if (!empty($campania['leads_esperados'])): ?>
+                                    <div class="me-3 mb-1">
+                                        <small class="text-muted">Leads esperados</small><br>
+                                        <strong><?= (int) $campania['leads_esperados'] ?></strong>
+                                    </div>
+                                <?php endif; ?>
+
+                                <?php if (!empty($campania['cpl_objetivo'])): ?>
+                                    <div class="mb-1">
+                                        <small class="text-muted">CPL objetivo</small><br>
+                                        <strong>S/ <?= number_format((float) $campania['cpl_objetivo'], 2) ?></strong>
+                                    </div>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+                        <?php endif; ?>
 
                         <hr>
 
@@ -120,7 +147,7 @@
                     </div>
                     <div class="card-body">
                         <p class="text-center text-muted py-4">
-                            <i class="icon-bar-graph" style="font-size: 2rem;"></i><br>
+                            <i class="ti-bar-chart" style="font-size: 2rem;"></i><br>
                             Gráfico de evolución próximamente
                         </p>
                     </div>
@@ -161,12 +188,12 @@
                         </a>
                         <?php else: ?>
                         <p class="text-center text-muted py-4">
-                            <i class="icon-target" style="font-size: 2rem; color: #ddd;"></i><br>
+                            <i class="ti-target" style="font-size: 2rem; color: #ddd;"></i><br>
                             Sin leads aún
                         </p>
                         <a href="<?= base_url('leads/create?campania=' . $campania['idcampania']) ?>" 
                            class="btn btn-sm btn-primary btn-block">
-                            <i class="icon-plus"></i> Crear primer lead
+                            <i class="ti-plus"></i> Crear primer lead
                         </a>
                         <?php endif; ?>
                     </div>
@@ -195,6 +222,13 @@
                                 <span class="text-muted">Costo por Lead:</span>
                                 <strong class="text-primary">S/ <?= number_format($costoPorLead, 2) ?></strong>
                             </div>
+
+                            <?php if (!empty($campania['cpl_objetivo'])): ?>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="text-muted">CPL objetivo:</span>
+                                <strong class="text-muted">S/ <?= number_format((float) $campania['cpl_objetivo'], 2) ?></strong>
+                            </div>
+                            <?php endif; ?>
 
                             <?php 
                             $convertidos = $estadisticas['convertidos'] ?? 0;

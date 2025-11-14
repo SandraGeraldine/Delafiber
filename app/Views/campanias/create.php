@@ -4,29 +4,28 @@
 
 <div class="row">
     <div class="col-lg-8 mx-auto">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3 class="mb-0">Nueva Campaña</h3>
-            <a href="<?= base_url('campanias') ?>" class="btn btn-outline-secondary">
-                <i class="icon-arrow-left"></i> Volver
-            </a>
-        </div>
-
-        <?php if (session()->getFlashdata('error')): ?>
-        <div class="alert alert-danger alert-dismissible fade show">
-            <?= session()->getFlashdata('error') ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <?php endif; ?>
-
-        <?php if (session()->getFlashdata('success')): ?>
-        <div class="alert alert-success alert-dismissible fade show">
-            <?= session()->getFlashdata('success') ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <?php endif; ?>
-
         <div class="card">
+            <div class="card-header header-corporativo d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Nueva Campaña</h3>
+                <a href="<?= base_url('campanias') ?>" class="btn btn-light">
+                    <i class="ti-arrow-left"></i> Volver
+                </a>
+            </div>
             <div class="card-body">
+                <?php if (session()->getFlashdata('error')): ?>
+                <div class="alert alert-danger alert-dismissible fade show">
+                    <?= session()->getFlashdata('error') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php endif; ?>
+
+                <?php if (session()->getFlashdata('success')): ?>
+                <div class="alert alert-success alert-dismissible fade show">
+                    <?= session()->getFlashdata('success') ?>
+                    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                </div>
+                <?php endif; ?>
+
                 <form action="<?= base_url('campanias/store') ?>" method="POST" id="formCampania">
                     <?= csrf_field() ?>
                     
@@ -81,6 +80,38 @@
                         <small class="form-text text-muted">Máximo 500 caracteres</small>
                     </div>
 
+                    <!-- Objetivos y métricas -->
+                    <h5 class="mb-3 mt-4 text-primary">Objetivos y métricas</h5>
+
+                    <div class="form-group mb-3">
+                        <label for="objetivo" class="form-label">Objetivo principal</label>
+                        <input type="text" class="form-control" id="objetivo" name="objetivo"
+                               value="<?= old('objetivo') ?>"
+                               placeholder="Ej: Captar 50 nuevos leads de fibra en Chincha">
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="leads_esperados" class="form-label">Leads esperados</label>
+                                <input type="number" class="form-control" id="leads_esperados" name="leads_esperados"
+                                       value="<?= old('leads_esperados') ?>" min="0" step="1"
+                                       placeholder="Ej: 50">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group mb-3">
+                                <label for="cpl_objetivo" class="form-label">CPL objetivo (S/ por lead)</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">S/</span>
+                                    <input type="number" class="form-control" id="cpl_objetivo" name="cpl_objetivo"
+                                           value="<?= old('cpl_objetivo') ?>" min="0" step="0.01"
+                                           placeholder="Ej: 15.00">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Fechas -->
                     <h5 class="mb-3 mt-4 text-primary">Período de la Campaña</h5>
                     
@@ -105,7 +136,7 @@
                     </div>
 
                     <div class="alert alert-info mt-3" id="duracionCampania" style="display: none;">
-                        <i class="icon-info-circle"></i> <strong>Duración:</strong> <span id="textoDuracion"></span>
+                        <i class="ti-info-alt"></i> <strong>Duración:</strong> <span id="textoDuracion"></span>
                     </div>
 
                     <hr class="my-4">
@@ -113,14 +144,14 @@
                     <!-- Botones -->
                     <div class="d-flex justify-content-between align-items-center">
                         <a href="<?= base_url('campanias') ?>" class="btn btn-secondary">
-                            <i class="icon-x"></i> Cancelar
+                            <i class="ti-close"></i> Cancelar
                         </a>
                         <div>
                             <button type="reset" class="btn btn-outline-secondary me-2">
-                                <i class="icon-refresh-cw"></i> Limpiar
+                                <i class="ti-reload"></i> Limpiar
                             </button>
                             <button type="submit" class="btn btn-primary" id="btnGuardar">
-                                <i class="icon-check"></i> Crear Campaña
+                                <i class="ti-check"></i> Crear Campaña
                             </button>
                         </div>
                     </div>

@@ -12,12 +12,12 @@
        ============================================ */
     
     /* Morados Principales */
-    --delafiber-primary: #4A1A6B;        /* Morado principal */
+    --delafiber-primary: #32005A;        /* Persian Indigo */
     --delafiber-secondary: #32005A;      /* Persian Indigo */
     --delafiber-dark: #2A0045;           /* Morado oscuro */
     
     /* Rosas/Fucsias */
-    --delafiber-accent: #E85D9A;         /* Rosa suavizado */
+    --delafiber-accent: #FF2B50;         /* Folly */
     --delafiber-pink-light: #FFE5F0;     /* Rosa muy claro */
     --delafiber-pink-soft: #F5E6FF;      /* Morado muy claro */
     
@@ -33,13 +33,17 @@
     --delafiber-danger: #DC3545;
     --delafiber-info: #17A2B8;
     
+    /* RGB helpers */
+    --delafiber-primary-rgb: 50, 0, 90;   /* #32005A */
+    --delafiber-accent-rgb: 255, 43, 80;  /* #FF2B50 */
+    
     /* ============================================
        APLICAR A COMPONENTES BOOTSTRAP
        ============================================ */
     
     /* Botones Primarios */
     --bs-primary: var(--delafiber-primary);
-    --bs-primary-rgb: 74, 26, 107;
+    --bs-primary-rgb: 50, 0, 90;
     
     /* Links */
     --bs-link-color: var(--delafiber-accent);
@@ -163,7 +167,32 @@
 }
 
 /* Ajustar el contenido principal para que no quede detrás del sidebar */
+.container-scroller .page-body-wrapper .main-panel,
 .main-panel {
+    margin-left: 250px !important;
+    width: calc(100% - 250px) !important;
+    transition: width 0.25s ease, margin 0.25s ease !important;
+    max-width: calc(100% - 250px) !important;
+}
+
+/* Asegurar que el sidebar siempre sea visible */
+.container-scroller .page-body-wrapper .sidebar,
+.sidebar,
+#sidebar {
+    display: block !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    position: fixed !important;
+    left: 0 !important;
+    top: 70px !important;
+    width: 250px !important;
+    z-index: 100 !important;
+}
+
+/* Asegurar que el contenido respete el sidebar en todos los casos */
+body:not(.sidebar-icon-only) .container-scroller .page-body-wrapper .main-panel,
+body.sidebar-fixed .container-scroller .page-body-wrapper .main-panel,
+body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
     margin-left: 250px !important;
     width: calc(100% - 250px) !important;
 }
@@ -184,26 +213,35 @@
     padding-top: 70px;
 }
 
-/* Responsive: En móviles el sidebar no es fijo */
+/* Responsive: comportamiento offcanvas en móviles para el sidebar */
 @media (max-width: 991px) {
     .sidebar {
-        position: relative !important;
-        top: 0 !important;
-        width: 100% !important;
-        height: auto !important;
+        position: fixed !important;
+        top: 70px !important;
+        left: -250px !important;
+        width: 250px !important;
+        height: calc(100vh - 70px) !important;
+        z-index: 1000 !important;
     }
-    
+
+    .sidebar-offcanvas.active {
+        left: 0 !important;
+    }
+
     .main-panel {
         margin-left: 0 !important;
         width: 100% !important;
     }
-    
+
     .navbar {
-        position: relative !important;
+        position: fixed !important;
+        top: 0;
+        left: 0;
+        right: 0;
     }
-    
+
     .page-body-wrapper {
-        padding-top: 0;
+        padding-top: 70px;
     }
 }
 
@@ -285,15 +323,15 @@
 
 /* Botón de acento (rosa) */
 .btn-accent {
-    background: linear-gradient(135deg, var(--delafiber-accent) 0%, #FF2B80 100%);
+    background: linear-gradient(135deg, var(--delafiber-accent) 0%, var(--delafiber-accent) 100%);
     color: white;
     border: none;
-    box-shadow: 0 4px 15px rgba(232, 93, 154, 0.3);
+    box-shadow: 0 4px 15px rgba(var(--delafiber-accent-rgb), 0.3);
 }
 
 .btn-accent:hover {
-    background: linear-gradient(135deg, #FF2B80 0%, var(--delafiber-accent) 100%);
-    box-shadow: 0 6px 20px rgba(232, 93, 154, 0.4);
+    background: linear-gradient(135deg, var(--delafiber-accent) 0%, var(--delafiber-accent) 100%);
+    box-shadow: 0 6px 20px rgba(var(--delafiber-accent-rgb), 0.4);
     color: white;
 }
 
@@ -323,6 +361,18 @@
 .badge-accent {
     background-color: var(--delafiber-accent) !important;
     color: white;
+}
+
+/* ============================================
+   UTILIDADES DE COLOR
+   ============================================ */
+.bg-accent {
+    background-color: var(--delafiber-accent) !important;
+    color: #fff !important;
+}
+
+.text-accent {
+    color: var(--delafiber-accent) !important;
 }
 
 /* ============================================

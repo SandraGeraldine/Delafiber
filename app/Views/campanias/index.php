@@ -4,29 +4,10 @@
 
 <div class="row">
     <div class="col-12">
-        <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <div>
-                <h3 class="mb-1">Gestión de Campañas</h3>
-                <p class="text-muted mb-0">Administra y monitorea tus campañas de marketing</p>
-            </div>
-            <a href="<?= base_url('campanias/create') ?>" class="btn btn-primary">
-                <i class="icon-plus"></i> Nueva Campaña
-            </a>
-        </div>
-
-        <!-- Alertas -->
-        <?php if (session()->getFlashdata('success')): ?>
-        <div class="alert alert-success alert-dismissible fade show">
-            <i class="icon-check-circle me-2"></i>
-            <?= session()->getFlashdata('success') ?>
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-        <?php endif; ?>
 
         <?php if (session()->getFlashdata('error')): ?>
         <div class="alert alert-danger alert-dismissible fade show">
-            <i class="icon-alert-circle me-2"></i>
+            <i class="ti-alert me-2"></i>
             <?= session()->getFlashdata('error') ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -34,7 +15,7 @@
 
         <?php if (isset($error)): ?>
         <div class="alert alert-danger alert-dismissible fade show">
-            <i class="icon-alert-circle me-2"></i>
+            <i class="ti-alert me-2"></i>
             <?= esc($error) ?>
             <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
         </div>
@@ -73,7 +54,7 @@
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
                         <button type="button" class="btn btn-outline-secondary btn-sm w-100" id="limpiarFiltros">
-                            <i class="icon-x"></i> Limpiar
+                            <i class="ti-close"></i> Limpiar
                         </button>
                     </div>
                 </div>
@@ -90,7 +71,7 @@
                                 <h6 class="mb-0">Total Campañas</h6>
                                 <h3 class="mb-0"><?= count($campanias) ?></h3>
                             </div>
-                            <i class="icon-layers" style="font-size: 2rem; opacity: 0.5;"></i>
+                            <i class="ti-layers" style="font-size: 2rem; opacity: 0.5;"></i>
                         </div>
                     </div>
                 </div>
@@ -105,7 +86,7 @@
                                     <?= count(array_filter($campanias, fn($c) => ($c['estado'] ?? '') == 'Activa')) ?>
                                 </h3>
                             </div>
-                            <i class="icon-activity" style="font-size: 2rem; opacity: 0.5;"></i>
+                            <i class="ti-pulse" style="font-size: 2rem; opacity: 0.5;"></i>
                         </div>
                     </div>
                 </div>
@@ -120,7 +101,7 @@
                                     <?= array_sum(array_column($campanias, 'total_leads')) ?>
                                 </h3>
                             </div>
-                            <i class="icon-users" style="font-size: 2rem; opacity: 0.5;"></i>
+                            <i class="ti-user" style="font-size: 2rem; opacity: 0.5;"></i>
                         </div>
                     </div>
                 </div>
@@ -135,7 +116,7 @@
                                     S/ <?= number_format(array_sum(array_column($campanias, 'presupuesto')), 0) ?>
                                 </h3>
                             </div>
-                            <i class="icon-dollar-sign" style="font-size: 2rem; opacity: 0.5;"></i>
+                            <i class="ti-money" style="font-size: 2rem; opacity: 0.5;"></i>
                         </div>
                     </div>
                 </div>
@@ -195,7 +176,7 @@
                                 <td>
                                     <div>
                                         <small class="d-block">
-                                            <i class="icon-calendar me-1"></i>
+                                            <i class="ti-calendar me-1"></i>
                                             <?= date('d/m/Y', strtotime($campania['fecha_inicio'])) ?>
                                         </small>
                                         <small class="text-muted">
@@ -227,19 +208,19 @@
                                            class="btn btn-sm btn-outline-info" 
                                            title="Ver detalles"
                                            data-bs-toggle="tooltip">
-                                            <i class="icon-eye"></i>
+                                            <i class="ti-eye"></i>
                                         </a>
                                         <a href="<?= base_url('campanias/edit/' . $campania['idcampania']) ?>" 
                                            class="btn btn-sm btn-outline-warning" 
                                            title="Editar"
                                            data-bs-toggle="tooltip">
-                                            <i class="icon-edit"></i>
+                                            <i class="ti-pencil"></i>
                                         </a>
                                         <button onclick="confirmarEliminacion(<?= $campania['idcampania'] ?>, '<?= esc($campania['nombre']) ?>')" 
                                                 class="btn btn-sm btn-outline-danger" 
                                                 title="Eliminar"
                                                 data-bs-toggle="tooltip">
-                                            <i class="icon-trash-2"></i>
+                                            <i class="ti-trash"></i>
                                         </button>
                                     </div>
                                 </td>
@@ -251,12 +232,12 @@
                 <?php else: ?>
                 <div class="text-center py-5">
                     <div class="mb-3">
-                        <i class="icon-layers" style="font-size: 4rem; color: #dee2e6;"></i>
+                        <i class="ti-layers" style="font-size: 4rem; color: #dee2e6;"></i>
                     </div>
                     <h5 class="text-muted">No hay campañas registradas</h5>
                     <p class="text-muted mb-4">Comienza creando tu primera campaña de marketing</p>
                     <a href="<?= base_url('campanias/create') ?>" class="btn btn-primary btn-lg">
-                        <i class="icon-plus"></i> Crear primera campaña
+                        <i class="ti-plus"></i> Crear primera campaña
                     </a>
                 </div>
                 <?php endif; ?>
@@ -271,7 +252,7 @@
         <div class="modal-content">
             <div class="modal-header bg-danger text-white">
                 <h5 class="modal-title">
-                    <i class="icon-alert-triangle me-2"></i>
+                    <i class="ti-alert me-2"></i>
                     Confirmar Eliminación
                 </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
@@ -280,16 +261,16 @@
                 <p class="mb-2">¿Estás seguro de que deseas eliminar la campaña:</p>
                 <p class="fw-bold text-center fs-5" id="nombreCampaniaEliminar"></p>
                 <div class="alert alert-warning">
-                    <i class="icon-alert-circle me-2"></i>
+                    <i class="ti-alert me-2"></i>
                     <strong>Advertencia:</strong> Esta acción no se puede deshacer. Se eliminarán todos los datos asociados a esta campaña.
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
-                    <i class="icon-x"></i> Cancelar
+                    <i class="ti-close"></i> Cancelar
                 </button>
                 <button type="button" class="btn btn-danger" id="btnConfirmarEliminar">
-                    <i class="icon-trash-2"></i> Sí, eliminar
+                    <i class="ti-trash"></i> Sí, eliminar
                 </button>
             </div>
         </div>

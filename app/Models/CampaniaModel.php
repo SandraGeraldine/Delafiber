@@ -14,7 +14,11 @@ class CampaniaModel extends Model
         'fecha_inicio', 
         'fecha_fin', 
         'presupuesto',
-        'estado'
+        'estado',
+        // Campos adicionales para análisis de marketing
+        'objetivo',
+        'leads_esperados',
+        'cpl_objetivo'
     ];
     protected $useTimestamps = false;
     protected $createdField = 'created_at';

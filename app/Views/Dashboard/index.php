@@ -99,8 +99,8 @@
     <div class="col-xl-8 col-lg-7">
         <!-- Tareas de hoy -->
         <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-primary">📋 Mis Tareas de Hoy</h6>
+            <div class="card-header py-3 header-corporativo">
+                <h6 class="m-0 font-weight-bold">📋 Mis Tareas de Hoy</h6>
             </div>
             <div class="card-body">
                 <?php if (!empty($tareas_hoy)): ?>
@@ -142,8 +142,8 @@
 
         <!-- Leads calientes -->
         <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-warning">🔥 Leads Calientes - Requieren Atención</h6>
+            <div class="card-header py-3 header-corporativo">
+                <h6 class="m-0 font-weight-bold">🔥 Leads Calientes - Requieren Atención</h6>
             </div>
             <div class="card-body">
                 <?php if (!empty($leads_calientes)): ?>
@@ -183,8 +183,8 @@
     <div class="col-xl-4 col-lg-5">
         <!-- Acciones rápidas -->
         <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-success">⚡ Acciones Rápidas</h6>
+            <div class="card-header py-3 header-corporativo">
+                <h6 class="m-0 font-weight-bold">⚡ Acciones Rápidas</h6>
             </div>
             <div class="card-body text-center">
                 <a href="<?= base_url('leads/create') ?>" class="btn btn-success btn-lg btn-block mb-3">
@@ -208,8 +208,8 @@
 
         <!-- Actividad reciente -->
         <div class="card shadow mb-4">
-            <div class="card-header py-3">
-                <h6 class="m-0 font-weight-bold text-secondary">📋 Actividad Reciente</h6>
+            <div class="card-header py-3 header-corporativo">
+                <h6 class="m-0 font-weight-bold">📋 Actividad Reciente</h6>
             </div>
             <div class="card-body">
                 <?php if (!empty($actividad_reciente)): ?>
@@ -237,8 +237,8 @@
 
         <!-- Tips del día -->
         <div class="card shadow mb-4">
-            <div class="card-header py-3 bg-light">
-                <h6 class="m-0 font-weight-bold text-dark">💡 Tip del Día</h6>
+            <div class="card-header py-3 header-corporativo">
+                <h6 class="m-0 font-weight-bold">💡 Tip del Día</h6>
             </div>
             <div class="card-body">
                 <p class="small text-muted mb-0">

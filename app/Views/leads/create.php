@@ -1,14 +1,12 @@
 <?= $this->extend('Layouts/base') ?>
 
-<?= $this->section('content') ?>
-
+<?= $this->section('styles') ?>
 <link rel="stylesheet" href="<?= base_url('css/leads/create.css') ?>">
 <link rel="stylesheet" href="<?= base_url('css/leads/toast-notifications.css') ?>">
+<?= $this->endSection() ?>
 
-<!-- Select2 CSS -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<?= $this->section('content') ?>
 
-<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 <style>
     /* Estilos personalizados para Select2 */
     .select2-container--default .select2-selection--single {
@@ -36,12 +34,14 @@
     .select2-dropdown {
         border: 1px solid #ced4da;
         border-radius: 0.25rem;
-        width: 100% !important;
-        max-width: 100% !important;
+        /* Mantener el dropdown por debajo del sidebar (z-index 100 en el tema) */
+        z-index: 50 !important;
     }
     .select2-container--open .select2-dropdown {
         left: 0 !important;
+        z-index: 50 !important;
     }
+    .select2-container--open { z-index: 49 !important; }
     .select2-search--dropdown {
         padding: 12px;
         background-color: #f8f9fa;
@@ -94,39 +94,46 @@
         background-color: #f8f9fa;
         cursor: pointer;
     }
+    .select2-container--open .select2-dropdown {
+        z-index: 50 !important;
+    }
+    .select2-container--open.select2-container--above {
+        z-index: 50 !important;
+    }
+    .select2-container--open.select2-container--below {
+        z-index: 50 !important;
+    }
 </style>
 
-<div class="row">
-    <div class="col-md-12 grid-margin stretch-card">
-        <div class="card">
-            <div class="card-body">
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <h4 class="card-title mb-0">Registrar Nuevo Lead</h4>
-                    <a href="<?= base_url('leads') ?>" class="btn btn-outline-secondary">
-                        <i class="icon-arrow-left"></i> Volver
-                    </a>
-                </div>
-
-                <?php if (session()->getFlashdata('error')): ?>
-                <div class="alert alert-danger alert-dismissible fade show" role="alert">
-                    <?= session()->getFlashdata('error') ?>
-                    <button type="button" class="close" data-dismiss="alert">
-                        <span>&times;</span>
-                    </button>
-                </div>
-                <?php endif; ?>
-
-                <!-- Indicador de Progreso -->
-                <div class="mb-4">
-                    <div class="progress" style="height: 8px;">
-                        <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 50%"></div>
+<div class="container-fluid leads-create-container">
+    <div class="row">
+        <div class="col-md-12 grid-margin stretch-card">
+            <div class="card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center mb-4">
+                        <h4 class="card-title mb-0">Registrar Nuevo Lead</h4>
+                        <a href="<?= base_url('leads') ?>" class="btn btn-outline-secondary">
+                            <i class="icon-arrow-left"></i> Volver
+                        </a>
                     </div>
-                    <div class="text-center mt-2">
-                        <span class="badge badge-primary" id="stepIndicator">Paso 1 de 2</span>
-                    </div>
-                </div>
 
-                <form id="formLead" action="<?= base_url('leads/store') ?>" method="POST">
+                    <?php if (session()->getFlashdata('error')): ?>
+                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                        <?= session()->getFlashdata('error') ?>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                    <?php endif; ?>
+
+                    <div class="mb-4">
+                        <div class="progress" style="height: 8px;">
+                            <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 50%"></div>
+                        </div>
+                        <div class="text-center mt-2">
+                            <span class="badge badge-primary" id="stepIndicator">Paso 1 de 2</span>
+                        </div>
+                    </div>
+
+                <form id="formLead" action="<?= base_url('leads/store') ?>" method="POST" enctype="multipart/form-data" novalidate>
                     <?= csrf_field() ?>
 
                     <!-- ============================================ -->
@@ -134,8 +141,8 @@
                     <!-- ============================================ -->
                     <div id="paso1">
                         <div class="card mb-4">
-                            <div class="card-header bg-primary text-white">
-                                <h5 class="mb-0"><i class="icon-user"></i> Paso 1: Datos del Cliente</h5>
+                            <div class="card-header paso1-header">
+                                <h5 class="mb-0"><i class="icon-user"></i> Paso 1: Datos del cliente</h5>
                             </div>
                             <div class="card-body">
                                 <!-- Búsqueda rápida -->
@@ -160,7 +167,7 @@
                                         <label for="dni">O buscar por DNI</label>
                                         <div class="input-group">
                                             <input type="text" class="form-control" id="dni" name="dni" 
-                                                   placeholder="8 dígitos" maxlength="8">
+                                                   placeholder="8 dígitos" maxlength="8" inputmode="numeric" pattern="\d{8}" title="Ingrese 8 dígitos">
                                             <div class="input-group-append">
                                                 <button class="btn btn-primary" type="button" id="btnBuscarDni">
                                                     <i class="icon-magnifier"></i> Buscar
@@ -201,7 +208,7 @@
                                         <div class="form-group">
                                             <label for="telefono">Teléfono *</label>
                                             <input type="text" class="form-control" id="telefono" name="telefono" 
-                                                   maxlength="9" placeholder="9XXXXXXXX" required>
+                                                   maxlength="9" placeholder="9XXXXXXXX" required inputmode="numeric" pattern="\d{9}" title="Ingrese 9 dígitos">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
@@ -230,8 +237,8 @@
                     <!-- ============================================ -->
                     <div id="paso2" style="display:none;">
                         <div class="card mb-4">
-                            <div class="card-header bg-success text-white">
-                                <h5 class="mb-0"><i class="icon-home"></i> Paso 2: ¿Dónde Instalará el Servicio?</h5>
+                            <div class="card-header paso2-header">
+                                <h5 class="mb-0"><i class="icon-home"></i> Paso 2: ¿Dónde instalará el servicio?</h5>
                             </div>
                             <div class="card-body">
                                 <div class="alert alert-warning mb-4">
@@ -562,7 +569,11 @@
         </div>
     </div>
 </div>
+</div>
 
+<?= $this->endSection() ?>
+
+<?= $this->section('scripts') ?>
   <!-- Botones de Acción   -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -677,80 +688,454 @@ const campanias = <?= json_encode($campanias ?? []) ?>;
 
 <!-- (El filtrado de paquetes por datos embebidos ha sido reemplazado por la API GST) -->
 
-<?= $this->endSection() ?>
-<!-- Select2 JS - DEBE CARGARSE ANTES DE USARLO -->
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
-
-<?= $this->section('scripts') ?>
 <script>
+// ============================================
+// MEJORAS PARA EL FORMULARIO DE LEADS
+// ============================================
+
 document.addEventListener('DOMContentLoaded', () => {
+  // ============================================
+  // 1. GESTIÓN MEJORADA DEL MAPA EN MODAL
+  // ============================================
+  
+  let mapaInicializado = false;
+  const mapModalEl = document.getElementById('mapModal');
+  const btnGuardar = document.getElementById('btnGuardarModalMapa');
+  const slcTipoServicio = document.getElementById('slcTipoServicio');
+  
+  if (mapModalEl) {
+    mapModalEl.addEventListener('shown.bs.modal', async () => {
+      if (!mapaInicializado) {
+        const tipo = (slcTipoServicio?.value === '2') ? 'Antenas' : 'Cajas';
+        try {
+          const mapa = await import(`${BASE_URL}js/api/Mapa.js`);
+          await mapa.iniciarMapa(tipo, 'mapContainer', 'modal');
+          await mapa.eventoMapa(true);
+          mapa.obtenerCoordenadasClick();
+          mapaInicializado = true;
+          if (mapa.ultimaCoordenada) {
+            btnGuardar.disabled = false;
+          }
+        } catch (err) {
+          console.error('Error al iniciar mapa:', err);
+          Swal.fire({
+            icon: 'error',
+            title: 'Error al cargar el mapa',
+            text: 'No se pudo inicializar el mapa. Por favor, recarga la página.'
+          });
+        }
+      }
+    });
+    
+    mapModalEl.addEventListener('hidden.bs.modal', async () => {
+      try {
+        const mapa = await import(`${BASE_URL}js/api/Mapa.js`);
+        await mapa.eliminarMapa();
+        mapaInicializado = false;
+        btnGuardar.disabled = true;
+      } catch (err) {
+        console.error('Error al limpiar mapa:', err);
+      }
+    });
+  }
+
+  // ============================================
+  // 2. CONFIGURACIÓN MEJORADA DE SELECT2
+  // ============================================
+  
+  // Función mejorada para inicializar Select2
+  function initSelect2(selector, options = {}) {
+    const element = document.querySelector(selector);
+    if (!element) {
+      console.warn(`Elemento no encontrado: ${selector}`);
+      return;
+    }
+    
+    // Verificar que jQuery y Select2 estén cargados
+    if (typeof $ === 'undefined' || !$.fn.select2) {
+      console.error('jQuery o Select2 no están cargados');
+      return;
+    }
+    
+    const $element = $(element);
+    
+    // Destruir instancia anterior si existe
+    if ($element.hasClass('select2-hidden-accessible')) {
+      try {
+        $element.select2('destroy');
+      } catch (e) {
+        // Ignorar errores al destruir
+      }
+    }
+    
+    // Configuración por defecto
+    const defaultConfig = {
+      theme: 'bootstrap-5',
+      width: '100%',
+      // Mantener el ancho del dropdown igual al del campo
+      dropdownAutoWidth: false,
+      language: {
+        noResults: function() {
+          return 'No se encontraron resultados';
+        },
+        searching: function() {
+          return 'Buscando...';
+        }
+      },
+      placeholder: options.placeholder || 'Seleccione una opción',
+      allowClear: true,
+      escapeMarkup: function(markup) {
+        return markup; // Permite HTML en las opciones
+      }
+    };
+    
+    // Si está dentro de un modal, configurar dropdownParent
+    const $modal = $element.closest('.modal');
+    if ($modal.length > 0) {
+      defaultConfig.dropdownParent = $modal;
+    }
+    
+    // Combinar configuraciones
+    const finalConfig = { ...defaultConfig, ...options };
+    
+    try {
+      $element.select2(finalConfig);
+      console.log(`Select2 inicializado correctamente: ${selector}`);
+    } catch (error) {
+      console.error(`Error inicializando Select2 en ${selector}:`, error);
+    }
+  }
+  
+  // Inicializar Select2 cuando el DOM esté listo
+  $(document).ready(function() {
+    // Esperar un momento para asegurar que todo esté cargado
+    setTimeout(function() {
+      // #iddistrito y #tipo_servicio se mantienen como selects nativos
+      initSelect2('#idorigen', { placeholder: 'Seleccione origen' });
+      initSelect2('#idmodalidad', { placeholder: 'Seleccione modalidad' });
+      // Activar buscador solo para Plan de Interés (paquetes)
+      initSelect2('#plan_interes', { 
+        placeholder: 'Buscar plan...',
+        minimumResultsForSearch: 0,
+        width: '100%'
+      });
+    }, 100);
+  });
+
+  // ============================================
+  // 3. CARGA DINÁMICA DE PLANES MEJORADA
+  // ============================================
+  
   const selServicio = document.getElementById('tipo_servicio');
   const selPlan = document.getElementById('plan_interes');
   const planInfo = document.getElementById('plan_info');
-
+  
+  let cargandoPlanes = false;
+  
   async function cargarPlanes() {
+    if (cargandoPlanes) return;
+    
     try {
+      cargandoPlanes = true;
       selPlan.disabled = true;
-      selPlan.innerHTML = '<option>Cargando planes...</option>';
-      // Obtener código del tipo de servicio desde el option seleccionado (data-tipo), ej: FIBR
+      
+      if (planInfo) {
+        planInfo.innerHTML = '<i class="icon-refresh rotating"></i> Cargando planes...';
+      }
+      
       const opt = selServicio?.selectedOptions?.[0];
       const tipoRaw = opt ? (opt.getAttribute('data-tipo') || '').trim() : '';
-      // Normalizar tipo: enviar solo el prefijo antes de ':' (p. ej., 'CABL' de 'CABL:1')
-      const tipo = (tipoRaw || '').split(':')[0].trim();
-      const url = tipo ? `/api/catalogo/planes?tipo=${encodeURIComponent(tipo)}` : '/api/catalogo/planes';
+
+      // Mapear nombres descriptivos a códigos esperados por la API GST
+      const mapaTipos = {
+        'Fibra Óptica': 'FIBR',
+        'Fibra Optica': 'FIBR',
+        'Fibra': 'FIBR',
+        'Cable': 'CABL',
+        'Wireless Internet Service Provider': 'WISP',
+      };
+
+      // Si tipoRaw ya es un código (FIBR, CABL, WISP, etc.) lo respetamos
+      let tipo = mapaTipos[tipoRaw] || (tipoRaw || '').split(':')[0].trim();
+      
+      const url = tipo 
+        ? `${BASE_URL}api/catalogo/planes?tipo=${encodeURIComponent(tipo)}` 
+        : `${BASE_URL}api/catalogo/planes`;
+      
       const res = await fetch(url);
+      
+      if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+      
       const planes = await res.json();
+      
+      // Limpiar y poblar opciones
       selPlan.innerHTML = '<option value="">Seleccione un plan</option>';
-      if (Array.isArray(planes)) {
+      
+      if (Array.isArray(planes) && planes.length > 0) {
         planes.forEach(p => {
-          const vel = (p.velocidad && p.velocidad !== '[]') ? (p.velocidad + ' Mbps') : '';
-          const nombre = [p.nombre, vel, (p.precio ? ('S/ ' + p.precio) : '')]
-            .filter(Boolean).join(' - ');
-          const opt = document.createElement('option');
-          opt.value = (p.id ?? p.codigo ?? p.nombre ?? '').toString();
-          opt.textContent = nombre || 'Plan';
-          selPlan.appendChild(opt);
+          const vel = (p.velocidad && p.velocidad !== '[]') 
+            ? ` - ${p.velocidad} Mbps` 
+            : '';
+          const precio = p.precio ? ` - S/ ${p.precio}` : '';
+          const nombre = `${p.nombre}${vel}${precio}`;
+          
+          const option = document.createElement('option');
+          option.value = (p.id ?? p.codigo ?? p.nombre ?? '').toString();
+          option.textContent = nombre || 'Plan';
+          option.dataset.velocidad = p.velocidad || '';
+          option.dataset.precio = p.precio || '';
+          
+          selPlan.appendChild(option);
         });
+        
+        if (planInfo) {
+          planInfo.textContent = `${planes.length} planes disponibles`;
+        }
+      } else {
+        selPlan.innerHTML = '<option value="">No hay planes disponibles</option>';
+        if (planInfo) {
+          planInfo.textContent = 'No hay planes disponibles para este servicio';
+        }
       }
       selPlan.disabled = false;
-      if (planInfo) planInfo.textContent = 'Seleccione un plan disponible';
-      if (typeof $ !== 'undefined' && $.fn && $.fn.select2) {
-        try {
-          const $sel = $(selPlan);
-          if ($sel.hasClass('select2-hidden-accessible')) $sel.select2('destroy');
-          // Buscar un contenedor visible y cercano para alojar el dropdown
-          const $parent = $sel.closest('.modal, .offcanvas, .card, .form-group, .container, .content-wrapper').first();
-          $sel.select2({
-            placeholder: 'Buscar plan...',
-            width: '100%',
-            dropdownAutoWidth: false,
-            dropdownParent: $parent.length ? $parent : $sel.parent()
-          });
-        } catch(_) {}
+      
+    } catch (error) {
+      console.error('Error cargando planes:', error);
+      selPlan.innerHTML = '<option value="">Error al cargar planes</option>';
+      if (planInfo) {
+        planInfo.innerHTML = '<span class="text-danger">No se pudo cargar los planes</span>';
       }
-    } catch (e) {
-      selPlan.innerHTML = '<option value="">No se pudo cargar planes</option>';
       selPlan.disabled = false;
-      if (planInfo) planInfo.textContent = 'No se pudo cargar planes';
+      
+      Swal.fire({
+        icon: 'error',
+        title: 'Error al cargar planes',
+        text: 'No se pudieron cargar los planes. Por favor, intenta de nuevo.',
+        toast: true,
+        position: 'top-end',
+        showConfirmButton: false,
+        timer: 3000
+      });
+    } finally {
+      cargandoPlanes = false;
     }
   }
-
-  // Cargar planes al seleccionar un tipo de servicio
+  
   if (selServicio) {
-    selServicio.addEventListener('change', (e) => {
-      if (e.target.value) {
-        cargarPlanes();
-      } else {
+    // Evento de cambio (Select2 o nativo) para cargar planes
+    $(selServicio).on('select2:select select2:clear change', function(e) {
+      const valor = $(this).val();
+      if (!valor) {
         selPlan.innerHTML = '<option value="">Primero seleccione un servicio</option>';
         selPlan.disabled = true;
         if (planInfo) planInfo.textContent = 'Seleccione un tipo de servicio primero';
+      } else {
+        cargarPlanes();
       }
     });
-    // Si ya viene un servicio seleccionado, cargar planes de inmediato
+    
+    // Cargar planes si ya hay un valor seleccionado
     if (selServicio.value) {
-      cargarPlanes();
+      setTimeout(cargarPlanes, 200);
     }
   }
+
+  // ============================================
+  // 4. VALIDACIÓN MEJORADA DE DNI Y TELÉFONO
+  // ============================================
+  
+  const dni = document.getElementById('dni');
+  const telefono = document.getElementById('telefono');
+  
+  if (dni) {
+    dni.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 8);
+    });
+    
+    dni.addEventListener('blur', (e) => {
+      if (e.target.value && e.target.value.length !== 8) {
+        e.target.setCustomValidity('El DNI debe tener 8 dígitos');
+        e.target.classList.add('is-invalid');
+      } else {
+        e.target.setCustomValidity('');
+        e.target.classList.remove('is-invalid');
+      }
+    });
+  }
+  
+  if (telefono) {
+    telefono.addEventListener('input', (e) => {
+      e.target.value = e.target.value.replace(/\D/g, '').slice(0, 9);
+    });
+    
+    telefono.addEventListener('blur', (e) => {
+      const valor = e.target.value;
+      if (valor) {
+        if (valor.length !== 9) {
+          e.target.setCustomValidity('El teléfono debe tener 9 dígitos');
+          e.target.classList.add('is-invalid');
+        } else if (!valor.startsWith('9')) {
+          e.target.setCustomValidity('El teléfono debe comenzar con 9');
+          e.target.classList.add('is-invalid');
+        } else {
+          e.target.setCustomValidity('');
+          e.target.classList.remove('is-invalid');
+        }
+      } else {
+        e.target.setCustomValidity('');
+        e.target.classList.remove('is-invalid');
+      }
+    });
+  }
+
+  // ============================================
+  // 5. VALIDACIÓN Y ENVÍO DEL FORMULARIO
+  // ============================================
+  
+  const form = document.getElementById('formLead');
+  
+  if (form) {
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      
+      form.classList.add('was-validated');
+      
+      if (!form.checkValidity()) {
+        Swal.fire({
+          icon: 'warning',
+          title: 'Formulario incompleto',
+          text: 'Por favor, completa todos los campos requeridos correctamente.',
+          confirmButtonText: 'Entendido'
+        });
+        
+        const firstInvalid = form.querySelector(':invalid');
+        if (firstInvalid) {
+          firstInvalid.scrollIntoView({ behavior: 'smooth', block: 'center' });
+          firstInvalid.focus();
+        }
+        
+        return;
+      }
+      
+      const result = await Swal.fire({
+        icon: 'question',
+        title: '¿Guardar lead?',
+        text: 'Se registrará el nuevo lead con la información proporcionada.',
+        showCancelButton: true,
+        confirmButtonText: 'Sí, guardar',
+        cancelButtonText: 'Cancelar',
+        confirmButtonColor: '#28a745',
+        cancelButtonColor: '#6c757d'
+      });
+      
+      if (result.isConfirmed) {
+        Swal.fire({
+          title: 'Guardando...',
+          text: 'Por favor espera',
+          allowOutsideClick: false,
+          allowEscapeKey: false,
+          didOpen: () => {
+            Swal.showLoading();
+          }
+        });
+        
+        form.submit();
+      }
+    });
+  }
+
+  // ============================================
+  // 6. PREVIEW DE IMÁGENES CARGADAS
+  // ============================================
+  
+  function setupFilePreview(inputId, previewId) {
+    const input = document.getElementById(inputId);
+    const preview = document.getElementById(previewId);
+    
+    if (!input || !preview) return;
+    
+    input.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      
+      if (!file) {
+        preview.innerHTML = '';
+        return;
+      }
+      
+      if (file.size > 5 * 1024 * 1024) {
+        Swal.fire({
+          icon: 'error',
+          title: 'Archivo muy grande',
+          text: 'El archivo no debe superar los 5MB',
+          toast: true,
+          position: 'top-end',
+          showConfirmButton: false,
+          timer: 3000
+        });
+        input.value = '';
+        preview.innerHTML = '';
+        return;
+      }
+      
+      if (file.type.startsWith('image/')) {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+          preview.innerHTML = `
+            <div class="mt-2">
+              <img src="${e.target.result}" class="img-thumbnail" style="max-width: 200px; max-height: 200px;">
+              <p class="text-muted small mb-0">${file.name} (${(file.size / 1024).toFixed(2)} KB)</p>
+            </div>
+          `;
+        };
+        reader.readAsDataURL(file);
+      } else if (file.type === 'application/pdf') {
+        preview.innerHTML = `
+          <div class="mt-2">
+            <div class="alert alert-info">
+              <i class="icon-doc"></i> ${file.name} (${(file.size / 1024).toFixed(2)} KB)
+            </div>
+          </div>
+        `;
+      }
+    });
+  }
+  
+  setupFilePreview('foto_dni_frontal', 'preview_dni_frontal');
+  setupFilePreview('foto_dni_reverso', 'preview_dni_reverso');
+  setupFilePreview('recibo_luz_agua', 'preview_recibo');
+  setupFilePreview('foto_domicilio', 'preview_domicilio');
 });
+
+// ============================================
+// 7. UTILIDADES GLOBALES
+// ============================================
+
+window.showToast = function(icon, title, text = '') {
+  if (typeof Swal === 'undefined') return;
+  
+  Swal.fire({
+    icon: icon,
+    title: title,
+    text: text,
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true
+  });
+};
+
+window.formatPhone = function(phone) {
+  if (!phone) return '';
+  const cleaned = phone.replace(/\D/g, '');
+  return cleaned.slice(0, 9);
+};
+
+window.formatDNI = function(dni) {
+  if (!dni) return '';
+  const cleaned = dni.replace(/\D/g, '');
+  return cleaned.slice(0, 8);
+};
 </script>
 <?= $this->endSection() ?>

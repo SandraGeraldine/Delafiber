@@ -71,7 +71,7 @@
                         </label>
                         <div class="input-group-icon">
                             <i class="ti-user"></i>
-                            <input type="text" class="form-control" id="usuario" name="usuario" placeholder="usuario o email"value="<?= old('usuario') ?>"required autofocus autocomplete="username">
+                            <input type="text" pattern=".{3,}" title="Mínimo 3 caracteres" class="form-control" id="usuario" name="usuario" placeholder="usuario o email" value="<?= old('usuario') ?>" required autofocus autocomplete="username">
                         </div>
                     </div>
                     
@@ -82,7 +82,7 @@
                         </label>
                         <div class="input-group-icon password-field">
                             <i class="ti-lock"></i>
-                            <input type="password" class="form-control" id="password" name="password" placeholder="contraseña" requiredautocomplete="current-password">
+                            <input type="password" class="form-control" id="password" name="password" placeholder="contraseña" required autocomplete="current-password">
                             <button type="button" class="password-toggle-btn" id="togglePassword" title="Mostrar contraseña">
                                 <i class="ti-eye" id="toggleIcon"></i>
                             </button>

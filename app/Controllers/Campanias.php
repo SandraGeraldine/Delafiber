@@ -96,7 +96,11 @@ class Campanias extends BaseController
             'fecha_inicio' => $this->request->getPost('fecha_inicio'),
             'fecha_fin' => $this->request->getPost('fecha_fin'),
             'presupuesto' => $this->request->getPost('presupuesto') ?: 0,
-            'estado' => 'Activa'
+            'estado' => 'Activa',
+            // Objetivos y métricas
+            'objetivo' => $this->request->getPost('objetivo'),
+            'leads_esperados' => $this->request->getPost('leads_esperados') ?: null,
+            'cpl_objetivo' => $this->request->getPost('cpl_objetivo') ?: null,
         ];
 
         // Guardar
@@ -155,7 +159,10 @@ class Campanias extends BaseController
         $validation->setRules([
             'nombre' => 'required|min_length[3]|max_length[100]',
             'fecha_inicio' => 'required|valid_date',
-            'presupuesto' => 'permit_empty|decimal'
+            'presupuesto' => 'permit_empty|decimal',
+            'objetivo' => 'permit_empty',
+            'leads_esperados' => 'permit_empty|integer',
+            'cpl_objetivo' => 'permit_empty|decimal'
         ]);
 
         if (!$validation->withRequest($this->request)->run()) {
@@ -172,7 +179,11 @@ class Campanias extends BaseController
             'fecha_inicio' => $this->request->getPost('fecha_inicio'),
             'fecha_fin' => $this->request->getPost('fecha_fin'),
             'presupuesto' => $this->request->getPost('presupuesto') ?: 0,
-            'estado' => $this->request->getPost('estado') ?: 'Activa'
+            'estado' => $this->request->getPost('estado') ?: 'Activa',
+            // Objetivos y métricas
+            'objetivo' => $this->request->getPost('objetivo'),
+            'leads_esperados' => $this->request->getPost('leads_esperados') ?: null,
+            'cpl_objetivo' => $this->request->getPost('cpl_objetivo') ?: null,
         ];
 
         // Actualizar

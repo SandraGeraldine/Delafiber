@@ -67,31 +67,31 @@
         <?php if (session()->getFlashdata('success')): ?>
         <div class="alert alert-success alert-dismissible fade show">
             <?= session()->getFlashdata('success') ?>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <?php endif; ?>
 
         <?php if (session()->getFlashdata('error')): ?>
         <div class="alert alert-danger alert-dismissible fade show">
             <?= session()->getFlashdata('error') ?>
-            <button type="button" class="close" data-dismiss="alert">&times;</button>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
         <?php endif; ?>
 
         <!-- Tabs -->
         <ul class="nav nav-tabs" role="tablist">
             <li class="nav-item">
-                <a class="nav-link active" data-toggle="tab" href="#datosPersonales">
+                <a class="nav-link active" data-bs-toggle="tab" href="#datosPersonales">
                     <i class="icon-user"></i> Datos Personales
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#cambiarPassword">
+                <a class="nav-link" data-bs-toggle="tab" href="#cambiarPassword">
                     <i class="icon-lock"></i> Cambiar Contraseña
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link" data-toggle="tab" href="#actividad">
+                <a class="nav-link" data-bs-toggle="tab" href="#actividad">
                     <i class="icon-activity"></i> Actividad Reciente
                 </a>
             </li>

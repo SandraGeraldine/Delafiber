@@ -153,14 +153,14 @@
 
 /* Drag Over Effect */
 .pipeline-body.drag-over {
-    background: #f0f7ff;
-    border: 2px dashed #667eea;
+    background: rgba(102, 126, 234, 0.08); /* morado muy suave */
+    border: 2px dashed var(--delafiber-primary);
 }
 
 /* Drag Forbidden Effect (no retroceder) */
 .pipeline-body.drag-forbidden {
-    background: #fff5f5;
-    border: 2px dashed #e74c3c;
+    background: #fff7f7; /* rojo más suave */
+    border: 2px dashed #f29d9d;
     cursor: not-allowed;
 }
 
