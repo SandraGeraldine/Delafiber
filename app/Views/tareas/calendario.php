@@ -23,10 +23,10 @@
                 <a href="<?= base_url('tareas') ?>" class="btn btn-light btn-sm">
                     <i class="ti-list"></i> Vista Lista
                 </a>
-                <button class="btn btn-light btn-sm" id="btnNuevaTarea">
+                <button class="btn btn-primary btn-sm" id="btnNuevaTarea">
                     <i class="ti-plus"></i> Nueva Tarea
                 </button>
-                <button class="btn btn-light btn-sm" id="btnNuevaReunion">
+                <button class="btn btn-primary btn-sm" id="btnNuevaReunion">
                     <i class="ti-user"></i> Nueva Reunión
                 </button>
             </div>
@@ -92,7 +92,7 @@
                 <h5 class="modal-title" id="modalTareaTitle">
                     <i class="ti-calendar"></i> Nueva Tarea
                 </h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                <button type="button" class="btn-close" id="btnCerrarModalTarea" data-bs-dismiss="modal"></button>
             </div>
             <div class="modal-body">
                 <form id="formTarea">
@@ -117,6 +117,9 @@
                                 <i class="ti-users"></i> Reunión
                             </label>
                         </div>
+                        <small class="text-muted d-block mt-1">
+                            Las reuniones se asignarán como tarea a cada participante y aparecerán también en sus notificaciones.
+                        </small>
                     </div>
 
                     <div class="row">
@@ -208,7 +211,7 @@
                 </form>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" class="btn btn-secondary" id="btnCancelarTarea" data-bs-dismiss="modal">Cancelar</button>
                 <button type="button" class="btn btn-danger" id="btnEliminarTarea" style="display: none;">
                     <i class="ti-trash"></i> Eliminar
                 </button>

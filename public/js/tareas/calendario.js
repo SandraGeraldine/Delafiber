@@ -22,7 +22,8 @@ document.addEventListener('DOMContentLoaded', function() {
         return;
     }
     
-    const modalTarea = new bootstrap.Modal(document.getElementById('modalTarea'));
+    const modalTareaElement = document.getElementById('modalTarea');
+    const modalTarea = new bootstrap.Modal(modalTareaElement);
     const formTarea = document.getElementById('formTarea');
     let tareaEditando = null;
 
@@ -95,6 +96,15 @@ document.addEventListener('DOMContentLoaded', function() {
         abrirModalNuevaTarea();
     });
 
+    // Botones de cerrar/cancelar del modal
+    document.getElementById('btnCerrarModalTarea')?.addEventListener('click', function() {
+        modalTarea.hide();
+    });
+
+    document.getElementById('btnCancelarTarea')?.addEventListener('click', function() {
+        modalTarea.hide();
+    });
+
     // Guardar tarea
     document.getElementById('btnGuardarTarea')?.addEventListener('click', function() {
         if (!formTarea.checkValidity()) {
@@ -103,6 +113,16 @@ document.addEventListener('DOMContentLoaded', function() {
         }
 
         const idtarea = document.getElementById('idtarea').value;
+
+        // Determinar si es reunión
+        const esReunion = document.querySelector('input[name="es_reunion"]:checked')?.value === '1';
+
+        // Obtener participantes seleccionados (solo aplica para reuniones)
+        const participantesSelect = document.getElementById('participantes');
+        const participantes = participantesSelect
+            ? Array.from(participantesSelect.selectedOptions).map(opt => opt.value)
+            : [];
+
         const data = {
             idtarea: idtarea || null,
             titulo: document.getElementById('titulo').value,
@@ -111,7 +131,9 @@ document.addEventListener('DOMContentLoaded', function() {
             prioridad: document.getElementById('prioridad').value,
             fecha_vencimiento: document.getElementById('fecha_vencimiento').value,
             idlead: document.getElementById('idlead').value || null,
-            estado: document.getElementById('estado').value || 'pendiente'
+            estado: document.getElementById('estado').value || 'pendiente',
+            es_reunion: esReunion ? 1 : 0,
+            participantes: esReunion ? participantes : []
         };
 
         const url = idtarea 

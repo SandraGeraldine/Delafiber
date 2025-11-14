@@ -106,12 +106,12 @@ function initSelect2() {
         inicializarBuscadorLeads(config.selectors.selectLead, {
             placeholder: 'Buscar lead por nombre, teléfono o DNI...',
             dropdownParent: $(config.selectors.modalNuevaTarea),
-            minimumInputLength: 2,
+            minimumInputLength: 3,
             delay: 300
         });
     } else {
         // Fallback a implementación básica
-        console.log('ℹ️ Usando implementación básica de Select2');
+        console.log('ℹ Usando implementación básica de Select2');
         $(config.selectors.selectLead).select2({
             theme: 'bootstrap-5',
             placeholder: 'Buscar lead por nombre, teléfono o DNI...',
@@ -121,43 +121,50 @@ function initSelect2() {
                 url: config.baseUrl + config.endpoints.buscarLeads,
                 dataType: 'json',
                 delay: 300,
-                data: function(params) {
-                    return { q: params.term, page: params.page || 1 };
-                },
-                processResults: function(data, params) {
-                    params.page = params.page || 1;
+                data: function (params) {
                     return {
-                        results: (data.leads || []).map(lead => ({
-                            id: lead.idlead,
-                            text: `${lead.nombre_completo} - ${lead.telefono || 'Sin teléfono'}`
-                                    lead: lead
-                                })),
-                                pagination: {
-                                    more: (params.page * 20) < data.total
-                                }
-                            };
-                        },
-                        cache: true
-                    },
-                    minimumInputLength: 2,
-                    language: {
-                        inputTooShort: function() {
-                            return 'Escribe al menos 2 caracteres para buscar';
-                        },
-                        searching: function() {
-                            return 'Buscando leads...';
-                        },
-                        noResults: function() {
-                            return 'No se encontraron leads';
-                        },
-                        errorLoading: function() {
-                            return 'Error al cargar resultados';
+                        q: params.term || '',
+                        page: params.page || 1
+                    };
+                },
+                processResults: function (data, params) {
+                    params.page = params.page || 1;
+
+                    const results = (data.clientes || data.leads || []).map(function (item) {
+                        return {
+                            id: item.idlead || item.idpersona,
+                            text: ((item.nombre_completo || (item.nombres + ' ' + (item.apellidos || ''))) || 'Sin nombre')
+                                  + ' - ' + (item.telefono || 'Sin teléfono')
+                        };
+                    });
+
+                    return {
+                        results: results,
+                        pagination: {
+                            more: (params.page * 20) < (data.total || 0)
                         }
-                    }
-                });
+                    };
+                },
+                cache: true
+            },
+            minimumInputLength: 2,
+            language: {
+                inputTooShort: function () {
+                    return 'Escribe al menos 2 caracteres para buscar';
+                },
+                searching: function () {
+                    return 'Buscando leads...';
+                },
+                noResults: function () {
+                    return 'No se encontraron leads';
+                },
+                errorLoading: function () {
+                    return 'Error al cargar resultados';
+                }
             }
-        }
-    });
+        });
+    }
+}
     
     // Limpiar Select2 cuando se cierra el modal
     $('#modalNuevaTarea').on('hidden.bs.modal', function () {
@@ -167,7 +174,6 @@ function initSelect2() {
             $('#selectLead').val(null).trigger('change');
         }
     });
-});
 
 window.completarTarea = function(idtarea) {
     document.getElementById('idtarea_completar').value = idtarea;

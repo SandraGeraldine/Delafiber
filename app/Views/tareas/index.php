@@ -84,6 +84,17 @@ $error = $error ?? null;
     <!-- Contenido Principal -->
     <div class="col-md-12">
         <div class="card">
+            <div class="card-header header-corporativo d-flex justify-content-between align-items-center">
+                <div>
+                    <h4 class="mb-0">Mi Agenda de Tareas</h4>
+                    <small>Organiza tu día y gestiona tus pendientes</small>
+                </div>
+                <div>
+                    <button class="btn btn-light btn-sm" data-bs-toggle="modal" data-bs-target="#modalNuevaTarea">
+                        <i class="ti-plus"></i> Nueva Tarea
+                    </button>
+                </div>
+            </div>
             <div class="card-body">
                 <!-- Hint informativo -->
                 <div class="alert alert-info alert-dismissible fade show mb-4" role="alert" style="border-left: 4px solid #0dcaf0;">
@@ -98,18 +109,6 @@ $error = $error ?? null;
                             </p>
                         </div>
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                    </div>
-                </div>
-
-                <div class="d-flex justify-content-between align-items-center mb-4">
-                    <div>
-                        <h4 class="card-title mb-0">Mi Agenda de Tareas</h4>
-                        <small class="text-muted">Organiza tu día y gestiona tus pendientes</small>
-                    </div>
-                    <div>
-                        <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#modalNuevaTarea">
-                            <i class="ti-plus"></i> Nueva Tarea
-                        </button>
                     </div>
                 </div>
 
@@ -452,17 +451,19 @@ $error = $error ?? null;
                         <?php endif; ?>
                     </div>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
+            </div> <!-- card-body -->
+        </div> <!-- card -->
+    </div> <!-- col-md-12 -->
+</div> <!-- row -->
 
 <!-- Modal Nueva Tarea -->
 <div class="modal fade" id="modalNuevaTarea" tabindex="-1">
     <div class="modal-dialog modal-lg">
         <div class="modal-content">
-            <div class="modal-header bg-primary text-white">
-                <h5 class="modal-title">Nueva Tarea</h5>
+            <div class="modal-header header-corporativo text-white">
+                <h5 class="modal-title mb-0">
+                    <i class="ti-clipboard me-2"></i> Nueva Tarea
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form action="<?= base_url('tareas/crear') ?>" method="POST">
@@ -479,10 +480,10 @@ $error = $error ?? null;
                             <div class="mb-3">
                                 <label class="form-label">Prioridad *</label>
                                 <select class="form-select" name="prioridad" required>
-                                    <option value="baja">🟢 Baja</option>
-                                    <option value="media" selected>🟡 Media</option>
-                                    <option value="alta">🟠 Alta</option>
-                                    <option value="urgente">🔴 Urgente</option>
+                                    <option value="baja"> Baja</option>
+                                    <option value="media" selected> Media</option>
+                                    <option value="alta"> Alta</option>
+                                    <option value="urgente"> Urgente</option>
                                 </select>
                             </div>
                         </div>
@@ -499,11 +500,11 @@ $error = $error ?? null;
                             <div class="mb-3">
                                 <label class="form-label">Tipo de Tarea *</label>
                                 <select class="form-select" name="tipo_tarea" required>
-                                    <option value="llamada">📞 Llamada</option>
-                                    <option value="whatsapp">💬 WhatsApp</option>
-                                    <option value="email">📧 Email</option>
-                                    <option value="reunion">🤝 Reunión</option>
-                                    <option value="seguimiento">📋 Seguimiento</option>
+                                    <option value="llamada"> Llamada</option>
+                                    <option value="whatsapp"> WhatsApp</option>
+                                    <option value="email"> Email</option>
+                                    <option value="reunion"> Reunión</option>
+                                    <option value="seguimiento"> Seguimiento</option>
                                 </select>
                             </div>
                         </div>
@@ -538,8 +539,12 @@ $error = $error ?? null;
                     <input type="hidden" name="estado" value="Pendiente">
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Crear Tarea</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ti-close"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="ti-check"></i> Crear Tarea
+                    </button>
                 </div>
             </form>
         </div>
@@ -550,8 +555,10 @@ $error = $error ?? null;
 <div class="modal fade" id="modalCompletarTarea" tabindex="-1">
     <div class="modal-dialog">
         <div class="modal-content">
-            <div class="modal-header bg-success text-white">
-                <h5 class="modal-title">Completar Tarea</h5>
+            <div class="modal-header header-corporativo text-white">
+                <h5 class="modal-title mb-0">
+                    <i class="ti-check-box me-2"></i> Completar Tarea
+                </h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
             </div>
             <form id="formCompletarTarea">
@@ -576,8 +583,12 @@ $error = $error ?? null;
                     </div>
                 </div>
                 <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-success">Marcar como Completada</button>
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">
+                        <i class="ti-close"></i> Cancelar
+                    </button>
+                    <button type="submit" class="btn btn-success">
+                        <i class="ti-check"></i> Marcar como Completada
+                    </button>
                 </div>
             </form>
         </div>
@@ -611,4 +622,3 @@ document.getElementById('modalNuevaTarea').addEventListener('hidden.bs.modal', f
 });
 </script>
 <?= $this->endSection() ?>
-   

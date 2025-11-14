@@ -428,11 +428,68 @@ class Tareas extends BaseController
             'estado' => 'pendiente'
         ];
 
+        // Información de reunión (opcional)
+        $esReunion = !empty($data['es_reunion']);
+        $participantes = $esReunion && !empty($data['participantes']) && is_array($data['participantes'])
+            ? $data['participantes']
+            : [];
+
         try {
+            // Crear tarea principal (del usuario actual)
             $id = $this->tareaModel->insert($tareaData);
+
+            // Modelo de notificaciones (si la tabla existe)
+            $notifModel = null;
+            try {
+                $db = \Config\Database::connect();
+                if ($db->tableExists('notificaciones')) {
+                    $notifModel = new \App\Models\NotificacionModel();
+                }
+            } catch (\Exception $e) {
+                $notifModel = null;
+            }
+
+            // Notificación para el organizador
+            if ($notifModel && $esReunion) {
+                $notifModel->crearNotificacion(
+                    session()->get('idusuario'),
+                    'reunion',
+                    'Reunión creada',
+                    'Has creado la reunión: ' . $tareaData['titulo'],
+                    base_url('tareas/calendario')
+                );
+            }
+
+            // Si es reunión y hay participantes, crear tareas y notificaciones individuales para cada uno
+            if ($esReunion && !empty($participantes)) {
+                foreach ($participantes as $idusuarioParticipante) {
+                    // Evitar duplicar la tarea del organizador
+                    if ((int) $idusuarioParticipante === (int) session()->get('idusuario')) {
+                        continue;
+                    }
+
+                    $tareaParticipante = $tareaData;
+                    $tareaParticipante['idusuario'] = (int) $idusuarioParticipante;
+                    $tareaParticipante['titulo'] = 'Reunión: ' . $tareaData['titulo'];
+
+                    $this->tareaModel->insert($tareaParticipante);
+
+                    // Notificación para cada participante
+                    if ($notifModel) {
+                        $notifModel->crearNotificacion(
+                            (int) $idusuarioParticipante,
+                            'reunion',
+                            'Nueva reunión asignada',
+                            'Te han invitado a la reunión: ' . $tareaData['titulo'],
+                            base_url('tareas/calendario')
+                        );
+                    }
+                }
+            }
+
             return $this->response->setJSON([
                 'success' => true,
-                'message' => 'Tarea creada exitosamente',
+                'message' => $esReunion ? 'Reunión creada y asignada a los participantes' : 'Tarea creada exitosamente',
                 'idtarea' => $id
             ]);
         } catch (\Exception $e) {
