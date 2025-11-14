@@ -5,12 +5,12 @@
 <div class="row">
     <div class="col-12">
         <!-- Header -->
-        <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="d-flex flex-column flex-md-row justify-content-between align-items-start align-items-md-center gap-3 mb-4">
             <div>
                 <h3 class="mb-1">Mapa de Campañas</h3>
                 <p class="text-muted mb-0">Gestión territorial de campañas con análisis geoespacial</p>
             </div>
-            <div class="btn-group">
+            <div class="btn-group flex-wrap">
                 <button type="button" class="btn btn-outline-primary" id="btnCargarProspectos">
                     <i class="icon-users"></i> Cargar Prospectos
                 </button>
@@ -30,7 +30,7 @@
         <div class="card mb-3">
             <div class="card-body">
                 <div class="row align-items-center">
-                    <div class="col-md-6">
+                    <div class="col-12 col-md-6 mb-3 mb-md-0">
                         <label class="form-label mb-2"><strong>Seleccionar Campaña:</strong></label>
                         <select class="form-select" id="id_campana_select">
                             <option value="">-- Todas las campañas --</option>
@@ -45,8 +45,8 @@
                             <?php endif; ?>
                         </select>
                     </div>
-                    <div class="col-md-6">
-                        <div class="d-flex gap-2 mt-3">
+                    <div class="col-12 col-md-6">
+                        <div class="d-flex flex-wrap gap-2 mt-2 mt-md-0 justify-content-start justify-content-md-end">
                             <button type="button" class="btn btn-sm btn-info" id="btnToggleProspectos">
                                 <i class="icon-eye"></i> Mostrar/Ocultar Prospectos
                             </button>
@@ -62,7 +62,7 @@
         <!-- Estadísticas rápidas -->
         <?php if (isset($campana) && isset($zonas)): ?>
         <div class="row mb-3">
-            <div class="col-md-3">
+            <div class="col-12 col-sm-6 col-md-3 mb-3 mb-md-0">
                 <div class="card bg-primary text-white">
                     <div class="card-body">
                         <h6 class="mb-1">Zonas Activas</h6>
@@ -100,7 +100,7 @@
         <!-- Mapa -->
         <div class="card">
             <div class="card-body p-0">
-                <div id="mapCampanas" style="height: 600px; width: 100%;"></div>
+                <div id="mapCampanas" style="height: 60vh; min-height: 360px; width: 100%;"></div>
             </div>
         </div>
 
@@ -109,7 +109,7 @@
             <div class="card-body">
                 <h6 class="mb-3"><strong>Leyenda:</strong></h6>
                 <div class="row">
-                    <div class="col-md-4">
+                    <div class="col-12 col-md-4 mb-2">
                         <div class="d-flex align-items-center mb-2">
                             <div style="width: 20px; height: 20px; background: #e74c3c; border-radius: 50%; margin-right: 10px;"></div>
                             <span>Prioridad Alta</span>

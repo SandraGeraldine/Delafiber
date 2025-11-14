@@ -113,8 +113,6 @@ class Cotizaciones extends BaseController
 
     public function store()
     {
-        $validation = \Config\Services::validation();
-        
         $rules = [
             'idlead' => 'required|numeric',
             'idservicio' => 'required|numeric',
@@ -123,7 +121,9 @@ class Cotizaciones extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+            // Usar el validador interno de CodeIgniter para obtener los errores
+            $errors = $this->validator ? $this->validator->getErrors() : [];
+            return redirect()->back()->withInput()->with('errors', $errors);
         }
 
         // Obtener ID de usuario
@@ -173,7 +173,8 @@ class Cotizaciones extends BaseController
                 
                 // Mover lead a etapa COTIZACION si no está ya ahí
                 $lead = $this->leadModel->find($dataCotizacion['idlead']);
-                if ($lead && isset($lead->idetapa) && $lead->idetapa < 4) { 
+                // $lead es un array, no un objeto
+                if ($lead && isset($lead['idetapa']) && (int)$lead['idetapa'] < 4) { 
                     $this->leadModel->update($dataCotizacion['idlead'], ['idetapa' => 4]);
                 }
             }

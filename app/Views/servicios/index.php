@@ -5,15 +5,21 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title mb-0">
+                <div class="card-header header-corporativo d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
                         <i class="ti-package me-2"></i>Catálogo de Servicios
                     </h4>
-                    <div>
-                        <a href="<?= base_url('servicios/estadisticas') ?>" class="btn btn-outline-info me-2">
+                    <div class="d-flex align-items-center">
+                        <form action="<?= base_url('servicios/sincronizar-gst') ?>" method="post" class="me-2">
+                            <?= csrf_field() ?>
+                            <button type="submit" class="btn btn-light btn-sm" onclick="return confirm('¿Sincronizar catálogo desde GST? Esto creará o actualizará servicios según los planes disponibles.');">
+                                <i class="ti-cloud-down me-1"></i>Sincronizar GST
+                            </button>
+                        </form>
+                        <a href="<?= base_url('servicios/estadisticas') ?>" class="btn btn-light btn-sm me-2">
                             <i class="ti-bar-chart me-1"></i>Estadísticas
                         </a>
-                        <a href="<?= base_url('servicios/create') ?>" class="btn btn-primary">
+                        <a href="<?= base_url('servicios/create') ?>" class="btn btn-light btn-sm">
                             <i class="ti-plus me-1"></i>Nuevo Servicio
                         </a>
                     </div>

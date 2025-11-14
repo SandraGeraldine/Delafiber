@@ -205,6 +205,7 @@ $routes->group('servicios', ['filter' => 'auth'], function($routes) {
     $routes->get('edit/(:num)', 'Servicios::edit/$1');
     $routes->post('update/(:num)', 'Servicios::update/$1');
     $routes->post('toggleEstado/(:num)', 'Servicios::toggleEstado/$1');
+    $routes->match(['get','post'], 'sincronizar-gst', 'Servicios::sincronizarDesdeGST');
     $routes->get('estadisticas', 'Servicios::estadisticas');
 });
 

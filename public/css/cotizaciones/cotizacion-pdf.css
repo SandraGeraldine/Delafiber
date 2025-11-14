@@ -12,34 +12,34 @@ body {
 
 .header {
     text-align: center;
-    border-bottom: 3px solid #007bff;
-    padding-bottom: 20px;
-    margin-bottom: 30px;
+    padding: 24px 20px 20px 20px;
+    margin: -20px -20px 30px -20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
 }
 
 .company-name {
     font-size: 28px;
     font-weight: bold;
-    color: #007bff;
-    margin-bottom: 5px;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
 }
 
 .company-tagline {
-    font-size: 14px;
-    color: #666;
+    font-size: 13px;
+    opacity: 0.9;
     margin-bottom: 10px;
 }
 
 .quote-title {
-    font-size: 24px;
-    color: #333;
-    margin-top: 20px;
+    font-size: 22px;
+    margin-top: 12px;
 }
 
 .quote-number {
-    font-size: 18px;
-    color: #007bff;
-    font-weight: bold;
+    font-size: 16px;
+    font-weight: 600;
+    margin-top: 4px;
 }
 
 .info-section {
@@ -164,23 +164,24 @@ body {
     text-transform: uppercase;
 }
 
-.status-vigente { 
+/* Estados según valores de la BD: Borrador, Enviada, Aceptada, Rechazada */
+.status-Borrador { 
+    background-color: #6c757d; 
+    color: white; 
+}
+
+.status-Enviada { 
+    background-color: #17a2b8; 
+    color: white; 
+}
+
+.status-Aceptada { 
     background-color: #28a745; 
     color: white; 
 }
 
-.status-aceptada { 
-    background-color: #007bff; 
-    color: white; 
-}
-
-.status-rechazada { 
+.status-Rechazada { 
     background-color: #dc3545; 
-    color: white; 
-}
-
-.status-vencida { 
-    background-color: #6c757d; 
     color: white; 
 }
 

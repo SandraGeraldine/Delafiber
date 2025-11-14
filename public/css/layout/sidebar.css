@@ -46,14 +46,14 @@
     text-align: center;
 }
 
-/* Sidebar collapse */
+/* Sidebar collapse (modo solo íconos en desktop) */
 .sidebar-icon-only .sidebar { 
-    width: 70px; 
+    width: 70px !important;
 }
 
 .sidebar-icon-only .sidebar .nav .nav-item .nav-link { 
-    padding: 12px 20px; 
-    text-align: center; 
+    padding: 12px;
+    text-align: center;
 }
 
 .sidebar-icon-only .sidebar .nav .nav-item .nav-link .menu-title { 
@@ -65,24 +65,77 @@
 }
 
 .sidebar-icon-only .main-panel { 
-    width: calc(100% - 70px); 
+    width: calc(100% - 70px) !important;
 }
 
-/* Mobile sidebar */
+.sidebar-icon-only .navbar .navbar-menu-wrapper {
+    width: calc(100% - 70px) !important;
+}
+
+/* Prevenir scroll cuando sidebar está abierto en mobile */
+body.sidebar-open {
+    overflow: hidden;
+}
+
+/* Mobile / tablet: sidebar como offcanvas */
 @media (max-width: 991px) {
+    /* Sidebar oculto por defecto */
     .sidebar-offcanvas { 
-        position: fixed; 
+        position: fixed !important;
         max-height: 100vh; 
         top: 0; 
         bottom: 0; 
-        overflow: auto; 
-        left: -260px; 
-        transition: all 0.25s ease-out; 
+        overflow-y: auto; 
+        overflow-x: hidden;
+        left: -260px !important;
+        width: 260px !important;
+        transition: left 0.3s ease-out !important;
         z-index: 1050;
+        background: #1a1a2e; /* Asegura el fondo morado */
     }
+    
+    /* Sidebar visible cuando está activo */
     .sidebar-offcanvas.active { 
-        left: 0; 
-        box-shadow: 0 0 20px rgba(0,0,0,0.3); 
+        left: 0 !important;
+        box-shadow: 2px 0 20px rgba(0,0,0,0.5);
+    }
+    
+    /* Asegurar que los textos se vean en mobile */
+    .sidebar-offcanvas .menu-title {
+        display: inline !important;
+    }
+    
+    .sidebar-offcanvas .menu-arrow {
+        display: inline-block !important;
+    }
+    
+    /* NO aplicar sidebar-icon-only en mobile */
+    body:not(.sidebar-icon-only) .sidebar-offcanvas .nav-link {
+        text-align: left !important;
+        padding: 12px 20px !important;
+    }
+    
+    /* Contenido ocupa todo el ancho */
+    .main-panel {
+        width: 100% !important;
+        margin-left: 0 !important;
+    }
+    
+    .navbar .navbar-menu-wrapper {
+        width: 100% !important;
+    }
+    
+    /* Overlay oscuro cuando el sidebar está abierto */
+    .sidebar-offcanvas.active::after {
+        content: '';
+        position: fixed;
+        top: 0;
+        left: 260px;
+        right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: -1;
+        pointer-events: none;
     }
 }
 

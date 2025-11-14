@@ -37,6 +37,7 @@
 
   <!-- Layout CSS -->
   <link rel="stylesheet" href="<?= base_url('css/dashboard/dashboard.css') ?>">
+  <link rel="stylesheet" href="<?= base_url('css/layout/sidebar.css') ?>">
 
   <!-- Tema Corporativo Delafiber -->
   <link rel="stylesheet" href="<?= base_url('css/delafiber-theme.css?v=' . time()) ?>">

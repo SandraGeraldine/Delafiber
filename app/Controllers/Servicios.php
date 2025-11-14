@@ -67,8 +67,6 @@ class Servicios extends BaseController
      */
     public function store()
     {
-        $validation = \Config\Services::validation();
-        
         $rules = [
             'nombre' => 'required|min_length[3]|max_length[150]',
             'velocidad' => 'required|max_length[50]',
@@ -77,7 +75,8 @@ class Servicios extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+            $errors = $this->validator ? $this->validator->getErrors() : [];
+            return redirect()->back()->withInput()->with('errors', $errors);
         }
 
         $data = [
@@ -120,8 +119,6 @@ class Servicios extends BaseController
      */
     public function update($id)
     {
-        $validation = \Config\Services::validation();
-        
         $rules = [
             'nombre' => 'required|min_length[3]|max_length[150]',
             'velocidad' => 'required|max_length[50]',
@@ -130,7 +127,8 @@ class Servicios extends BaseController
         ];
 
         if (!$this->validate($rules)) {
-            return redirect()->back()->withInput()->with('errors', $validation->getErrors());
+            $errors = $this->validator ? $this->validator->getErrors() : [];
+            return redirect()->back()->withInput()->with('errors', $errors);
         }
 
         $data = [
@@ -168,6 +166,189 @@ class Servicios extends BaseController
         }
 
         return $this->response->setJSON(['success' => false, 'message' => 'Error al cambiar estado']);
+    }
+
+    /**
+     * Sincronizar servicios desde el catálogo GST (API externa)
+     */
+    public function sincronizarDesdeGST()
+    {
+        try {
+            $db = \Config\Database::connect();
+            if (!$db->tableExists('servicios')) {
+                return redirect()->to('/servicios')->with('error', 'La tabla servicios no existe en la base de datos');
+            }
+
+            $apiKey   = env('gst.api.key') ?: '';
+            $planesUrl = env('gst.catalogo.planes.url') ?: 'https://gst.delafiber.com/api/Planes';
+
+            if (empty($apiKey)) {
+                return redirect()->to('/servicios')->with('error', 'Clave de API GST no configurada (gst.api.key)');
+            }
+
+            $headers = "Authorization: Api-Key {$apiKey}\r\n" .
+                       "Accept: application/json\r\n" .
+                       "Content-Type: application/json\r\n";
+
+            $payload = json_encode([
+                'operacion'  => 'obtencionPlanesPorTipoServicio',
+                'parametros' => [
+                    'tipoServicio' => 'FIBR'
+                ],
+            ]);
+
+            $context = stream_context_create([
+                'http' => [
+                    'method'        => 'POST',
+                    'header'        => $headers,
+                    'content'       => $payload,
+                    'ignore_errors' => true,
+                    'timeout'       => 15,
+                ]
+            ]);
+
+            $response = @file_get_contents($planesUrl, false, $context);
+            if ($response === false) {
+                $error = error_get_last();
+                return redirect()->to('/servicios')->with('error', 'No se pudo conectar con GST: ' . ($error['message'] ?? '')); 
+            }
+
+            $decoded = json_decode($response, true);
+
+            $lista = [];
+            if (is_array($decoded)) {
+                $isList = array_keys($decoded) === range(0, count($decoded) - 1);
+                if ($isList) {
+                    $lista = $decoded;
+                } else {
+                    $candidatos = ['data', 'planes', 'items', 'results', 'result', 'records', 'rows'];
+                    foreach ($candidatos as $k) {
+                        if (array_key_exists($k, $decoded) && is_array($decoded[$k])) {
+                            $lista = $decoded[$k];
+                            break;
+                        }
+                        if ($k === 'planes' && isset($decoded['data']) && is_array($decoded['data']) && isset($decoded['data']['planes']) && is_array($decoded['data']['planes'])) {
+                            $lista = $decoded['data']['planes'];
+                            break;
+                        }
+                    }
+                }
+            }
+
+            $uniforme = [];
+            foreach ($lista as $item) {
+                if (!is_array($item)) {
+                    continue;
+                }
+
+                $id = $item['id']
+                    ?? $item['id_plan']
+                    ?? $item['idPaquete']
+                    ?? $item['id_paquete']
+                    ?? $item['idpaquete']
+                    ?? $item['idPlan']
+                    ?? null;
+
+                $nombre = $item['nombre']
+                    ?? $item['plan']
+                    ?? $item['paquete']
+                    ?? $item['nombre_plan']
+                    ?? $item['descripcion']
+                    ?? 'Plan';
+
+                $precio = $item['precio']
+                    ?? $item['monto']
+                    ?? $item['costo']
+                    ?? $item['precio_plan']
+                    ?? null;
+
+                $velocidad = $item['velocidad'] ?? $item['mbps'] ?? null;
+                if (is_string($velocidad)) {
+                    $decodedVel = json_decode($velocidad, true);
+                    if (json_last_error() === JSON_ERROR_NONE && is_array($decodedVel)) {
+                        $b = $decodedVel['bajada']['maxima'] ?? ($decodedVel['bajada'] ?? null);
+                        $s = $decodedVel['subida']['maxima'] ?? ($decodedVel['subida'] ?? null);
+                        if ($b !== null && $s !== null) {
+                            $velocidad = $b . '/' . $s;
+                        }
+                    }
+                } elseif (is_array($velocidad)) {
+                    $b = $velocidad['bajada'] ?? null;
+                    $s = $velocidad['subida'] ?? null;
+                    if ($b !== null && $s !== null) {
+                        $velocidad = $b . '/' . $s;
+                    } else {
+                        $velocidad = ($velocidad['valor'] ?? null);
+                    }
+                } else {
+                    $b = $item['bajada'] ?? null;
+                    $s = $item['subida'] ?? null;
+                    if ($b !== null && $s !== null) {
+                        $velocidad = $b . '/' . $s;
+                    }
+                }
+
+                $codigo = $item['codigo']
+                    ?? $item['sku']
+                    ?? $item['cod_plan']
+                    ?? null;
+
+                if ($nombre && $precio !== null) {
+                    $uniforme[] = [
+                        'id'        => $id,
+                        'nombre'    => $nombre,
+                        'precio'    => (float) $precio,
+                        'velocidad' => $velocidad,
+                        'codigo'    => $codigo,
+                    ];
+                }
+            }
+
+            if (empty($uniforme)) {
+                return redirect()->to('/servicios')->with('error', 'No se encontraron planes válidos en el catálogo GST');
+            }
+
+            $creados = 0;
+            $actualizados = 0;
+
+            foreach ($uniforme as $plan) {
+                // Buscar servicios existentes por nombre y precio para evitar duplicados
+                $existing = $db->table('servicios')
+                    ->where('nombre', $plan['nombre'])
+                    ->where('precio', $plan['precio'])
+                    ->get()
+                    ->getRowArray();
+
+                $dataServicio = [
+                    'nombre'      => $plan['nombre'],
+                    'descripcion' => null,
+                    'velocidad'   => $plan['velocidad'] ?? null,
+                    'categoria'   => 'hogar',
+                    'precio'      => $plan['precio'],
+                    'estado'      => 'activo',
+                ];
+
+                if ($existing && isset($existing['idservicio'])) {
+                    $db->table('servicios')
+                        ->where('idservicio', $existing['idservicio'])
+                        ->update($dataServicio);
+                    $actualizados++;
+                } else {
+                    $db->table('servicios')->insert($dataServicio);
+                    $creados++;
+                }
+            }
+
+            $mensaje = 'Sincronización completa. '; 
+            $mensaje .= 'Nuevos servicios: ' . $creados . '. '; 
+            $mensaje .= 'Actualizados: ' . $actualizados . '.';
+
+            return redirect()->to('/servicios')->with('success', $mensaje);
+
+        } catch (\Throwable $e) {
+            log_message('error', 'Error al sincronizar servicios desde GST: ' . $e->getMessage());
+            return redirect()->to('/servicios')->with('error', 'Error al sincronizar servicios desde GST: ' . $e->getMessage());
+        }
     }
 
     /**

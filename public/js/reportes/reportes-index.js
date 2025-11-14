@@ -2,42 +2,49 @@
  * JavaScript para Reportes
  */
 
-const baseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || '';
+(function() {
+    'use strict';
 
-// Funciones básicas para reportes
-function imprimirReporte() {
-    window.print();
-}
+    const reportesBaseUrl = document.querySelector('meta[name="base-url"]')?.getAttribute('content') || '';
 
-function exportarExcel() {
-    const periodo = document.getElementById('periodoSelect').value;
-    const fechaInicio = document.querySelector('input[name="fecha_inicio"]')?.value || '';
-    const fechaFin = document.querySelector('input[name="fecha_fin"]')?.value || '';
-    
-    let url = `${baseUrl}/reportes/exportar-excel?periodo=${periodo}`;
-    
-    if (periodo === 'personalizado' && fechaInicio && fechaFin) {
-        url += '&fecha_inicio=' + fechaInicio + '&fecha_fin=' + fechaFin;
+    // Funciones básicas para reportes
+    function imprimirReporte() {
+        window.print();
     }
-    
-    window.location.href = url;
-}
 
-// Cambio de período
-const periodoSelect = document.getElementById('periodoSelect');
-if (periodoSelect) {
-    periodoSelect.addEventListener('change', function() {
-        const rangoFechas = document.getElementById('rangoFechas');
-        if (this.value === 'personalizado') {
-            rangoFechas.style.display = 'inline-flex';
-        } else {
-            rangoFechas.style.display = 'none';
+    function exportarExcel() {
+        const periodo = document.getElementById('periodoSelect').value;
+        const fechaInicio = document.querySelector('input[name="fecha_inicio"]')?.value || '';
+        const fechaFin = document.querySelector('input[name="fecha_fin"]')?.value || '';
+        
+        let url = `${reportesBaseUrl}/reportes/exportar-excel?periodo=${periodo}`;
+        
+        if (periodo === 'personalizado' && fechaInicio && fechaFin) {
+            url += '&fecha_inicio=' + fechaInicio + '&fecha_fin=' + fechaFin;
         }
-    });
-}
+        
+        window.location.href = url;
+    }
 
-// Gráficos con datos reales del backend
-$(document).ready(function() {
+    // Exponer funciones al scope global para los botones onclick del HTML
+    window.imprimirReporte = imprimirReporte;
+    window.exportarExcel = exportarExcel;
+
+    // Cambio de período
+    const periodoSelect = document.getElementById('periodoSelect');
+    if (periodoSelect) {
+        periodoSelect.addEventListener('change', function() {
+            const rangoFechas = document.getElementById('rangoFechas');
+            if (this.value === 'personalizado') {
+                rangoFechas.style.display = 'inline-flex';
+            } else {
+                rangoFechas.style.display = 'none';
+            }
+        });
+    }
+
+    // Gráficos con datos reales del backend
+    $(document).ready(function() {
     // Gráfico de Etapas
     const chartEtapasEl = document.getElementById('chartEtapas');
     if (chartEtapasEl) {
@@ -134,4 +141,6 @@ $(document).ready(function() {
             }
         }
     }
-});
+    });
+
+})();

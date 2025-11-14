@@ -5,8 +5,8 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header">
-                    <h4 class="card-title mb-0">
+                <div class="card-header header-corporativo">
+                    <h4 class="mb-0">
                         <i class="ti-package me-2"></i>
                         <?= isset($servicio) && $servicio ? 'Editar Servicio' : 'Nuevo Servicio' ?>
                     </h4>

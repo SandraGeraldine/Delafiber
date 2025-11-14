@@ -296,5 +296,5 @@ $datos_tendencia = $datos_tendencia ?? [];
 
 <?= $this->section('scripts') ?>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
-<script src="<?= base_url('js/reportes/reportes-index.js') ?>"></script>
+<script src="<?= base_url('js/reportes/reportes-dashboard.js') ?>"></script>
 <?= $this->endSection() ?>

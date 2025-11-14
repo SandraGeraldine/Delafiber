@@ -11,22 +11,72 @@ $(document).ready(function() {
         $(target).collapse('toggle');
     });
 
+    // Función para aplicar comportamiento responsive
+    function aplicarColapsoResponsive() {
+        const ancho = window.innerWidth || document.documentElement.clientWidth;
+        
+        if (ancho <= 991) {
+            // En mobile/tablet: cerrar sidebar y remover clase de colapso
+            $('.sidebar-offcanvas').removeClass('active');
+            $('body').removeClass('sidebar-icon-only');
+        }
+        // En desktop: no forzar ningún estado, permitir toggle manual
+    }
+
+    // Aplicar al cargar
+    aplicarColapsoResponsive();
+
+    // Aplicar al redimensionar
+    $(window).on('resize', function() {
+        aplicarColapsoResponsive();
+    });
+
+    // Restaurar preferencia del usuario en desktop
+    const sidebarCollapsed = localStorage.getItem('sidebar-collapsed') === 'true';
+    if (window.innerWidth > 991 && sidebarCollapsed) {
+        $('body').addClass('sidebar-icon-only');
+    }
+
     // Toggle sidebar en desktop (minimizar/expandir)
     $('#sidebarToggle').on('click', function(e) {
         e.preventDefault();
         $('body').toggleClass('sidebar-icon-only');
+        
+        // Guardar preferencia del usuario
+        localStorage.setItem('sidebar-collapsed', $('body').hasClass('sidebar-icon-only'));
     });
     
-    // Toggle sidebar en mobile (mostrar/ocultar)
-    $('#mobileMenuToggle').on('click', function(e) {
+    // Toggle sidebar en mobile: mostrar/ocultar offcanvas
+    $('#mobileMenuToggle, .navbar-toggler').on('click', function(e) {
         e.preventDefault();
+        e.stopPropagation();
+        
+        console.log('Toggle clicked'); // Debug
         $('.sidebar-offcanvas').toggleClass('active');
+        
+        // Prevenir scroll del body cuando sidebar está abierto
+        if ($('.sidebar-offcanvas').hasClass('active')) {
+            $('body').addClass('sidebar-open');
+        } else {
+            $('body').removeClass('sidebar-open');
+        }
     });
     
     // Cerrar sidebar mobile al hacer click fuera
     $(document).on('click', function(e) {
-        if (!$(e.target).closest('.sidebar-offcanvas, #mobileMenuToggle').length) {
+        if (!$(e.target).closest('.sidebar-offcanvas, #mobileMenuToggle, .navbar-toggler').length) {
+            if ($('.sidebar-offcanvas').hasClass('active')) {
+                $('.sidebar-offcanvas').removeClass('active');
+                $('body').removeClass('sidebar-open');
+            }
+        }
+    });
+    
+    // Cerrar sidebar al hacer click en un link del menú (mobile)
+    $('.sidebar-offcanvas .nav-link').on('click', function() {
+        if (window.innerWidth <= 991) {
             $('.sidebar-offcanvas').removeClass('active');
+            $('body').removeClass('sidebar-open');
         }
     });
     

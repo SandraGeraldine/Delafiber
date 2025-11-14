@@ -5,11 +5,11 @@
     <div class="row">
         <div class="col-12">
             <div class="card">
-                <div class="card-header d-flex justify-content-between align-items-center">
-                    <h4 class="card-title mb-0">
+                <div class="card-header header-corporativo d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0">
                         <i class="ti-receipt me-2"></i>Cotizaciones
                     </h4>
-                    <a href="<?= base_url('cotizaciones/create') ?>" class="btn btn-primary">
+                    <a href="<?= base_url('cotizaciones/create') ?>" class="btn btn-light">
                         <i class="ti-plus me-1"></i>Nueva Cotización
                     </a>
                 </div>
