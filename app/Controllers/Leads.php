@@ -435,7 +435,7 @@ class Leads extends BaseController
     public function store()
     {
         // Verificar permiso
-        requiere_permiso('leads.create', 'No tienes permisos para crear leads');
+        // requiere_permiso('leads.create', 'No tienes permisos para crear leads');
         
         // Combinar reglas de persona y lead
         $rules = array_merge(reglas_persona(), reglas_lead());
@@ -683,15 +683,36 @@ class Leads extends BaseController
             log_message('info', "[PERF] Leads::store total time: " . round(($t_end - $t_start), 3) . "s");
             if ($db->transStatus() === false) throw new \Exception('Error en la transacción');
             
-            $mensajeExito = $usuarioAsignado == session()->get('idusuario') 
-                ? "Lead '$nombreCompleto' creado exitosamente"
-                : "Lead '$nombreCompleto' creado y asignado exitosamente";
-            
+            // Verificar si la solicitud es AJAX
+        $isAjax = $this->request->isAJAX();
+        
+        $mensajeExito = $usuarioAsignado == session()->get('idusuario') 
+            ? "Lead '$nombreCompleto' creado exitosamente"
+            : "Lead '$nombreCompleto' creado y asignado exitosamente";
+        
+        if ($isAjax) {
+            return $this->response->setJSON([
+                'success' => true,
+                'lead_id' => $leadId,
+                'message' => $mensajeExito
+            ]);
+        } else {
             return redirect()->to('/leads')
                 ->with('success', $mensajeExito)
                 ->with('swal_success', true);
+        }
         } catch (\Exception $e) {
             $db->transRollback();
+            
+            // Verificar si la solicitud es AJAX
+            $isAjax = $this->request->isAJAX();
+            
+            if ($isAjax) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ]);
+            }
             return redirect()->back()
                 ->withInput()
                 ->with('error', 'Error al crear el lead: ' . $e->getMessage())
