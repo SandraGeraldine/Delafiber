@@ -833,6 +833,9 @@ document.addEventListener('DOMContentLoaded', () => {
       });
       
       if (result.isConfirmed) {
+        console.log('🔥 CONFIRMADO - Enviando formulario normal...');
+        
+        // Mostrar loading mientras se envía el formulario
         Swal.fire({
           title: 'Guardando...',
           text: 'Por favor espera',
@@ -843,6 +846,7 @@ document.addEventListener('DOMContentLoaded', () => {
           }
         });
         
+        // Enviar el formulario de forma normal (POST a leads/store)
         form.submit();
       }
     });

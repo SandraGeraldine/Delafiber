@@ -207,59 +207,7 @@ document.addEventListener('DOMContentLoaded', function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
         
         pasoActual = 1;
-        
     }
-
-    // ==========================================
-    // VALIDACIÓN FINAL ANTES DE ENVIAR
-    // ==========================================
-    formLead.addEventListener('submit', function(e) {
-        // Si está en paso 1, prevenir envío
-        if (pasoActual === 1) {
-            e.preventDefault();
-            Swal.fire({
-                icon: 'info',
-                title: 'Completa el Paso 2',
-                text: 'Debes completar la información del servicio antes de guardar',
-                confirmButtonColor: '#3085d6'
-            });
-            return false;
-        }
-        
-        // Validar Paso 2 completo
-        if (!validarPaso2()) {
-            e.preventDefault();
-            return false;
-        }
-
-        // Prevenir doble envío
-        if (formLead.dataset.enviando === 'true') {
-            e.preventDefault();
-            return false;
-        }
-
-        // Marcar como enviando
-        formLead.dataset.enviando = 'true';
-
-        // Deshabilitar botón y mostrar loading
-        const btnGuardar = document.getElementById('btnGuardar');
-        if (btnGuardar) {
-            btnGuardar.disabled = true;
-            btnGuardar.innerHTML = '<i class="icon-refresh rotating"></i> Guardando...';
-        }
-
-        // Mostrar loading
-        Swal.fire({
-            title: 'Guardando Lead...',
-            text: 'Por favor espera',
-            allowOutsideClick: false,
-            allowEscapeKey: false,
-            didOpen: () => {
-                Swal.showLoading();
-            }
-        });
-
-    });
 
     // ==========================================
     // PERMITIR ENTER EN PASO 1 PARA AVANZAR
