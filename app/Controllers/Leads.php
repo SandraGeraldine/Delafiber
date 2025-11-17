@@ -544,11 +544,16 @@ class Leads extends BaseController
                 throw new \Exception('Error al crear el lead: ' . $errorMsg);
             }
             
-            // Guardar campos dinámicos según origen
-            $camposDinamicosModel = new CampoDinamicoOrigenModel();
-            $camposDinamicos = $this->obtenerCamposDinamicos();
-            if (!empty($camposDinamicos)) {
-                $camposDinamicosModel->guardarCampos($leadId, $camposDinamicos);
+            // Guardar campos dinámicos según origen (no romper si falla)
+            try {
+                $camposDinamicosModel = new CampoDinamicoOrigenModel();
+                $camposDinamicos = $this->obtenerCamposDinamicos();
+                if (!empty($camposDinamicos)) {
+                    $camposDinamicosModel->guardarCampos($leadId, $camposDinamicos);
+                }
+            } catch (\Throwable $eCampos) {
+                // Registrar pero no abortar la creación del lead
+                log_message('error', 'Error guardando campos dinámicos de origen para lead ' . $leadId . ': ' . $eCampos->getMessage());
             }
             
             // Registrar en historial de leads

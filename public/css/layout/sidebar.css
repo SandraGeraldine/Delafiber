@@ -87,8 +87,8 @@ body.sidebar-open {
         bottom: 0; 
         overflow-y: auto; 
         overflow-x: hidden;
-        left: -260px !important;
-        width: 260px !important;
+        left: -100% !important;
+        width: 100% !important;
         transition: left 0.3s ease-out !important;
         z-index: 1050;
         background: #1a1a2e; /* Asegura el fondo morado */
@@ -97,7 +97,7 @@ body.sidebar-open {
     /* Sidebar visible cuando está activo */
     .sidebar-offcanvas.active { 
         left: 0 !important;
-        box-shadow: 2px 0 20px rgba(0,0,0,0.5);
+        box-shadow: 0 0 20px rgba(0,0,0,0.5);
     }
     
     /* Asegurar que los textos se vean en mobile */
@@ -127,15 +127,9 @@ body.sidebar-open {
     
     /* Overlay oscuro cuando el sidebar está abierto */
     .sidebar-offcanvas.active::after {
-        content: '';
-        position: fixed;
-        top: 0;
-        left: 260px;
-        right: 0;
-        bottom: 0;
-        background: rgba(0, 0, 0, 0.6);
-        z-index: -1;
-        pointer-events: none;
+        /* Con el sidebar ocupando el 100% del ancho, el overlay ya no es necesario.
+           Lo desactivamos para evitar franjas oscuras a la derecha. */
+        content: none;
     }
 }
 

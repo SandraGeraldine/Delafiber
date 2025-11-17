@@ -47,7 +47,9 @@ $(document).ready(function() {
     });
     
     // Toggle sidebar en mobile: mostrar/ocultar offcanvas
-    $('#mobileMenuToggle, .navbar-toggler').on('click', function(e) {
+    // Solo el botón #mobileMenuToggle debe controlar el offcanvas móvil,
+    // no el botón de colapsar sidebar de escritorio (#sidebarToggle).
+    $('#mobileMenuToggle').on('click', function(e) {
         e.preventDefault();
         e.stopPropagation();
         
@@ -64,7 +66,8 @@ $(document).ready(function() {
     
     // Cerrar sidebar mobile al hacer click fuera
     $(document).on('click', function(e) {
-        if (!$(e.target).closest('.sidebar-offcanvas, #mobileMenuToggle, .navbar-toggler').length) {
+        if (!$(e.target).closest('.sidebar-offcanvas, #mobileMenuToggle').length) {
+
             if ($('.sidebar-offcanvas').hasClass('active')) {
                 $('.sidebar-offcanvas').removeClass('active');
                 $('body').removeClass('sidebar-open');
@@ -72,13 +75,8 @@ $(document).ready(function() {
         }
     });
     
-    // Cerrar sidebar al hacer click en un link del menú (mobile)
-    $('.sidebar-offcanvas .nav-link').on('click', function() {
-        if (window.innerWidth <= 991) {
-            $('.sidebar-offcanvas').removeClass('active');
-            $('body').removeClass('sidebar-open');
-        }
-    });
+    // NOTA: ya no cerramos automáticamente el sidebar al hacer click en los links.
+    // El usuario lo abrirá/cerrará manualmente con el botón hamburguesa.
     
     // Búsqueda global
     $('#searchInput').on('keypress', function(e) {

@@ -1,27 +1,27 @@
 /**
- * Tema Corporativo Delafiber
- * Variables CSS globales para todo el sistema
- * 
- * @version 1.0
- * @date 2025-10-29
+ * Tema Corporativo Delafiber - VERSIÓN FINAL
+ * ==========================================
+ * Consolidado y corregido - Sin duplicados
+ * @version 2.0
+ * @date 2025-11-16
  */
 
+/* ==========================================================================
+   1. VARIABLES CORPORATIVAS
+   ========================================================================== */
+
 :root {
-    /* ============================================
-       COLORES CORPORATIVOS DELAFIBER
-       ============================================ */
+    /* Colores principales */
+    --delafiber-primary: #32005A;
+    --delafiber-secondary: #32005A;
+    --delafiber-dark: #2A0045;
     
-    /* Morados Principales */
-    --delafiber-primary: #32005A;        /* Persian Indigo */
-    --delafiber-secondary: #32005A;      /* Persian Indigo */
-    --delafiber-dark: #2A0045;           /* Morado oscuro */
+    /* Acentos */
+    --delafiber-accent: #FF2B50;
+    --delafiber-pink-light: #FFE5F0;
+    --delafiber-pink-soft: #F5E6FF;
     
-    /* Rosas/Fucsias */
-    --delafiber-accent: #FF2B50;         /* Folly */
-    --delafiber-pink-light: #FFE5F0;     /* Rosa muy claro */
-    --delafiber-pink-soft: #F5E6FF;      /* Morado muy claro */
-    
-    /* Grises y Neutros */
+    /* Neutros */
     --delafiber-gray-light: #F8F9FA;
     --delafiber-gray: #E0E6ED;
     --delafiber-gray-dark: #6C757D;
@@ -34,70 +34,119 @@
     --delafiber-info: #17A2B8;
     
     /* RGB helpers */
-    --delafiber-primary-rgb: 50, 0, 90;   /* #32005A */
-    --delafiber-accent-rgb: 255, 43, 80;  /* #FF2B50 */
+    --delafiber-primary-rgb: 50, 0, 90;
+    --delafiber-accent-rgb: 255, 43, 80;
     
-    /* ============================================
-       APLICAR A COMPONENTES BOOTSTRAP
-       ============================================ */
+    /* Alturas del navbar */
+    --navbar-height-desktop: 60px;
+    --navbar-height-mobile: 56px;
+    --sidebar-width-desktop: 250px;
+    --sidebar-width-collapsed: 70px;
     
-    /* Botones Primarios */
+    /* Bootstrap overrides */
     --bs-primary: var(--delafiber-primary);
     --bs-primary-rgb: 50, 0, 90;
-    
-    /* Links */
     --bs-link-color: var(--delafiber-accent);
     --bs-link-hover-color: var(--delafiber-primary);
 }
 
-/* ============================================
-   SIDEBAR (Menú Lateral) - FIJO DEBAJO DEL NAVBAR
-   ============================================ */
+/* ==========================================================================
+   2. NAVBAR - ALTURA Y ALINEACIÓN FIJA
+   ========================================================================== */
+
+.navbar {
+    position: fixed !important;
+    top: 0;
+    left: 0;
+    right: 0;
+    width: 100% !important;
+    height: var(--navbar-height-desktop) !important;
+    min-height: var(--navbar-height-desktop) !important;
+    z-index: 1000 !important;
+    display: flex;
+    align-items: center;
+}
+
+.navbar .navbar-brand-wrapper,
+.navbar .navbar-menu-wrapper {
+    height: var(--navbar-height-desktop);
+    min-height: var(--navbar-height-desktop);
+    display: flex;
+    align-items: center;
+}
+
+.navbar .navbar-brand img,
+.navbar .brand-logo-mini img {
+    height: 36px;
+    max-height: 36px;
+    width: auto;
+    display: block;
+}
+
+.navbar .navbar-nav {
+    display: flex;
+    align-items: center;
+}
+
+/* Botón hamburguesa */
+.navbar-toggler {
+    border: 2px solid var(--delafiber-accent) !important;
+    border-radius: 8px;
+    padding: 0.4rem;
+    transition: all 0.3s ease;
+    background: transparent;
+}
+
+.navbar-toggler:hover {
+    background: linear-gradient(135deg, var(--delafiber-primary), var(--delafiber-accent));
+    transform: scale(1.05);
+}
+
+.navbar-toggler i {
+    color: var(--delafiber-accent);
+    font-size: 1.4rem;
+    transition: all 0.3s ease;
+}
+
+/* Fondo general igual al del contenido para evitar franja blanca */
+.page-body-wrapper,
+.main-panel {
+    background: #F5F7FF;
+}
+
+.navbar-toggler:hover i {
+    color: white;
+    transform: rotate(90deg);
+}
+
+/* Botón hamburguesa de escritorio (minimizar sidebar) sin borde llamativo */
+@media (min-width: 992px) {
+    #sidebarToggle.navbar-toggler {
+        border: none !important;
+        padding: 0.25rem !important;
+        background: transparent !important;
+        box-shadow: none !important;
+        margin-left: 0 !important;
+        margin-right: 0.5rem;          /* un pequeño aire antes del buscador */
+    }
+}
+
+/* ==========================================================================
+   3. SIDEBAR - DESKTOP
+   ========================================================================== */
+
 .sidebar {
     background: linear-gradient(180deg, var(--delafiber-dark) 0%, var(--delafiber-primary) 100%) !important;
     position: fixed !important;
-    top: 70px; /* Debajo del navbar */
+    top: var(--navbar-height-desktop);
     left: 0;
-    bottom: 0;
-    width: 250px;
+    width: var(--sidebar-width-desktop);
+    height: calc(100vh - var(--navbar-height-desktop));
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 100;
-    height: calc(100vh - 70px); /* Altura menos el navbar */
-    transition: all 0.3s ease-in-out; /* Animación suave */
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-}
-
-/* Sidebar colapsado (cuando se presiona hamburguesa) */
-.sidebar-icon-only .sidebar {
-    width: 70px;
-}
-
-/* Ajustar contenido cuando sidebar está colapsado */
-.sidebar-icon-only .main-panel {
-    margin-left: 70px !important;
-    width: calc(100% - 70px) !important;
-}
-
-/* Ocultar texto cuando está colapsado */
-.sidebar-icon-only .sidebar .nav-item .nav-link .menu-title {
-    display: none;
-}
-
-/* Centrar iconos cuando está colapsado */
-.sidebar-icon-only .sidebar .nav-item .nav-link {
-    justify-content: center;
-    padding: 1rem 0.5rem;
-}
-
-.sidebar-icon-only .sidebar .nav-item .nav-link i {
-    margin-right: 0;
-    font-size: 1.5rem;
-}
-
-/* Ocultar flechas de submenú cuando está colapsado */
-.sidebar-icon-only .sidebar .nav-item .nav-link .menu-arrow {
-    display: none;
+    transition: all 0.3s ease;
 }
 
 /* Scrollbar del sidebar */
@@ -118,9 +167,12 @@
     background: rgba(232, 93, 154, 0.7);
 }
 
+/* Links del sidebar */
 .sidebar .nav-item .nav-link {
     color: rgba(255, 255, 255, 0.8) !important;
     transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
 }
 
 .sidebar .nav-item .nav-link:hover,
@@ -134,7 +186,33 @@
     transition: all 0.3s ease;
 }
 
-/* Tooltip para mostrar texto cuando está colapsado */
+/* ==========================================================================
+   4. SIDEBAR COLAPSADO (DESKTOP)
+   ========================================================================== */
+
+.sidebar-icon-only .sidebar {
+    width: var(--sidebar-width-collapsed);
+}
+
+.sidebar-icon-only .sidebar .nav-item .nav-link {
+    justify-content: center;
+    padding: 1rem 0.5rem;
+}
+
+.sidebar-icon-only .sidebar .nav-item .nav-link .menu-title {
+    display: none;
+}
+
+.sidebar-icon-only .sidebar .nav-item .nav-link .menu-arrow {
+    display: none;
+}
+
+.sidebar-icon-only .sidebar .nav-item .nav-link i {
+    margin-right: 0;
+    font-size: 1.5rem;
+}
+
+/* Tooltip en sidebar colapsado */
 .sidebar-icon-only .sidebar .nav-item .nav-link {
     position: relative;
 }
@@ -142,7 +220,7 @@
 .sidebar-icon-only .sidebar .nav-item .nav-link:hover::after {
     content: attr(data-title);
     position: absolute;
-    left: 70px;
+    left: var(--sidebar-width-collapsed);
     top: 50%;
     transform: translateY(-50%);
     background: var(--delafiber-primary);
@@ -166,148 +244,185 @@
     }
 }
 
-/* Ajustar el contenido principal para que no quede detrás del sidebar */
-.container-scroller .page-body-wrapper .main-panel,
-.main-panel {
-    margin-left: 250px !important;
-    width: calc(100% - 250px) !important;
-    transition: width 0.25s ease, margin 0.25s ease !important;
-    max-width: calc(100% - 250px) !important;
-}
+/* ==========================================================================
+   5. LAYOUT PRINCIPAL - DESKTOP
+   ========================================================================== */
 
-/* Asegurar que el sidebar siempre sea visible */
-.container-scroller .page-body-wrapper .sidebar,
-.sidebar,
-#sidebar {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: fixed !important;
-    left: 0 !important;
-    top: 70px !important;
-    width: 250px !important;
-    z-index: 100 !important;
-}
-
-/* Asegurar que el contenido respete el sidebar en todos los casos */
-body:not(.sidebar-icon-only) .container-scroller .page-body-wrapper .main-panel,
-body.sidebar-fixed .container-scroller .page-body-wrapper .main-panel,
-body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
-    margin-left: 250px !important;
-    width: calc(100% - 250px) !important;
-}
-
-/* El navbar ocupa todo el ancho */
-.navbar {
-    position: fixed !important;
-    top: 0;
-    left: 0;
-    right: 0;
-    width: 100% !important;
-    z-index: 1000;
-    margin-left: 0 !important;
-}
-
-/* Ajustar el contenido para que no quede detrás del navbar */
-.page-body-wrapper {
-    padding-top: 70px;
-}
-
-/* Responsive: comportamiento offcanvas en móviles para el sidebar */
-@media (max-width: 991px) {
-    .sidebar {
-        position: fixed !important;
-        top: 70px !important;
-        left: -250px !important;
-        width: 250px !important;
-        height: calc(100vh - 70px) !important;
-        z-index: 1000 !important;
+@media (min-width: 992px) {
+    .page-body-wrapper {
+        padding-top: var(--navbar-height-desktop);
     }
 
+    .main-panel,
+    .content-wrapper {
+        margin-left: var(--sidebar-width-desktop);
+        width: calc(100% - var(--sidebar-width-desktop));
+        transition: margin 0.3s ease, width 0.3s ease;
+    }
+
+    /* Cuando sidebar está colapsado */
+    .sidebar-icon-only .main-panel,
+    .sidebar-icon-only .content-wrapper {
+        margin-left: var(--sidebar-width-collapsed);
+        width: calc(100% - var(--sidebar-width-collapsed));
+    }
+
+    /* Asegurar sidebar visible en desktop */
+    .sidebar {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+    }
+
+    /* En escritorio mostrar solo logo grande */
+    .navbar .navbar-brand-wrapper .navbar-brand.brand-logo {
+        display: inline-block !important;
+    }
+
+    .navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini {
+        display: none !important;
+    }
+
+    /* Cuando el layout está colapsado (sidebar-icon-only), usar solo logo mini */
+    .sidebar-icon-only .navbar .navbar-brand-wrapper .navbar-brand.brand-logo {
+        display: none !important;
+    }
+
+    .sidebar-icon-only .navbar .navbar-brand-wrapper .navbar-brand.brand-logo-mini {
+        display: inline-block !important;
+    }
+}
+
+/* ==========================================================================
+   6. RESPONSIVE - MOBILE/TABLET
+   ========================================================================== */
+
+@media (max-width: 991px) {
+    /* Navbar más compacto */
+    .navbar {
+        height: var(--navbar-height-mobile) !important;
+        min-height: var(--navbar-height-mobile) !important;
+        padding: 0 0.5rem !important;
+    }
+
+    .navbar .navbar-brand-wrapper,
+    .navbar .navbar-menu-wrapper {
+        height: var(--navbar-height-mobile);
+        min-height: var(--navbar-height-mobile);
+        align-items: center;
+    }
+
+    /* Distribución: logo a la izquierda, acciones a la derecha */
+    .navbar .navbar-brand-wrapper {
+        flex: 0 0 auto;
+    }
+
+    .navbar .navbar-menu-wrapper {
+        flex: 1 1 auto;
+        justify-content: flex-end !important;
+        column-gap: 0.4rem;
+    }
+
+    .navbar .navbar-menu-wrapper .navbar-nav {
+        flex-wrap: nowrap !important;
+    }
+
+    /* En móvil solo se debe mostrar el logo mini para evitar duplicados */
+    .navbar .navbar-brand.brand-logo {
+        display: none !important;
+    }
+
+    .navbar .navbar-brand.brand-logo-mini {
+        display: inline-block !important;
+    }
+
+    .navbar .navbar-brand img,
+    .navbar .brand-logo-mini img {
+        height: 32px !important;
+        max-height: 32px !important;
+    }
+
+    /* Ocultar búsqueda en mobile */
+    .navbar-nav.me-lg-2 {
+        display: none !important;
+    }
+
+    /* Ocultar icono de notificaciones en la barra superior en móvil
+       (en la referencia solo se ve avatar + nombre + menú) */
+    .navbar-nav.navbar-nav-right > .nav-item:first-child {
+        display: none !important;
+    }
+
+    /* Avatar más pequeño */
+    .navbar .user-avatar {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    /* Sidebar como offcanvas */
+    .sidebar {
+        position: fixed !important;
+        top: var(--navbar-height-mobile) !important;
+        left: -100% !important;
+        width: 100% !important;
+        height: calc(100vh - var(--navbar-height-mobile)) !important;
+        z-index: 1001 !important;
+        transition: left 0.3s ease !important;
+    }
+
+    /* Sidebar activo */
+    .sidebar.active,
     .sidebar-offcanvas.active {
         left: 0 !important;
     }
 
-    .main-panel {
+    /* Contenido ocupa todo el ancho */
+    .page-body-wrapper {
+        padding-top: var(--navbar-height-mobile);
+    }
+
+    .main-panel,
+    .content-wrapper {
         margin-left: 0 !important;
         width: 100% !important;
     }
 
-    .navbar {
-        position: fixed !important;
-        top: 0;
+    /* Overlay oscuro */
+    body.sidebar-open::before {
+        content: '';
+        position: fixed;
+        top: var(--navbar-height-mobile);
         left: 0;
         right: 0;
+        bottom: 0;
+        background: rgba(0, 0, 0, 0.6);
+        z-index: 1000;
+        animation: fadeInOverlay 0.3s ease;
     }
 
-    .page-body-wrapper {
-        padding-top: 70px;
+    @keyframes fadeInOverlay {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    /* Prevenir scroll */
+    body.sidebar-open {
+        overflow: hidden;
     }
 }
 
-/* ============================================
-   NAVBAR (Header Superior)
-   ============================================ */
-.navbar {
-    background: white !important;
-    border-bottom: 2px solid var(--delafiber-pink-light);
-}
+/* ==========================================================================
+   7. BOTONES
+   ========================================================================== */
 
-.navbar .navbar-brand {
-    color: var(--delafiber-primary) !important;
-}
-
-/* Botón hamburguesa mejorado */
-.navbar-toggler,
-.navbar .navbar-menu-wrapper .navbar-toggler {
-    border: 2px solid var(--delafiber-accent) !important;
-    border-radius: 8px;
-    padding: 0.5rem;
-    transition: all 0.3s ease;
-    background: transparent;
-}
-
-.navbar-toggler:hover,
-.navbar .navbar-menu-wrapper .navbar-toggler:hover {
-    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
-    border-color: var(--delafiber-primary) !important;
-    transform: scale(1.05);
-}
-
-.navbar-toggler:focus,
-.navbar .navbar-menu-wrapper .navbar-toggler:focus {
-    box-shadow: 0 0 0 0.25rem rgba(232, 93, 154, 0.25);
-}
-
-.navbar-toggler i,
-.navbar .navbar-menu-wrapper .navbar-toggler i {
-    color: var(--delafiber-accent);
-    font-size: 1.5rem;
-    transition: all 0.3s ease;
-}
-
-.navbar-toggler:hover i,
-.navbar .navbar-menu-wrapper .navbar-toggler:hover i {
-    color: white;
-    transform: rotate(90deg);
-}
-
-/* Animación del icono hamburguesa */
-.sidebar-icon-only .navbar-toggler i {
-    transform: rotate(180deg);
-}
-
-/* ============================================
-   BOTONES
-   ============================================ */
 .btn-primary {
-    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-secondary) 100%);
+    background: linear-gradient(135deg, var(--delafiber-primary), var(--delafiber-secondary));
     border: none;
     box-shadow: 0 4px 15px rgba(74, 26, 107, 0.3);
 }
 
 .btn-primary:hover {
-    background: linear-gradient(135deg, var(--delafiber-secondary) 0%, var(--delafiber-dark) 100%);
+    background: linear-gradient(135deg, var(--delafiber-secondary), var(--delafiber-dark));
     box-shadow: 0 6px 20px rgba(74, 26, 107, 0.4);
 }
 
@@ -319,25 +434,27 @@ body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
 .btn-outline-primary:hover {
     background-color: var(--delafiber-primary);
     border-color: var(--delafiber-primary);
+    color: white;
 }
 
-/* Botón de acento (rosa) */
 .btn-accent {
-    background: linear-gradient(135deg, var(--delafiber-accent) 0%, var(--delafiber-accent) 100%);
+    background: var(--delafiber-accent);
     color: white;
     border: none;
-    box-shadow: 0 4px 15px rgba(var(--delafiber-accent-rgb), 0.3);
+    box-shadow: 0 4px 15px rgba(255, 43, 80, 0.3);
 }
 
 .btn-accent:hover {
-    background: linear-gradient(135deg, var(--delafiber-accent) 0%, var(--delafiber-accent) 100%);
-    box-shadow: 0 6px 20px rgba(var(--delafiber-accent-rgb), 0.4);
+    background: var(--delafiber-accent);
+    box-shadow: 0 6px 20px rgba(255, 43, 80, 0.4);
     color: white;
+    filter: brightness(1.1);
 }
 
-/* ============================================
-   CARDS (Tarjetas)
-   ============================================ */
+/* ==========================================================================
+   8. CARDS
+   ========================================================================== */
+
 .card {
     border: 1px solid var(--delafiber-gray);
     border-radius: 10px;
@@ -351,46 +468,52 @@ body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
     font-weight: 600;
 }
 
-/* ============================================
-   BADGES (Etiquetas)
-   ============================================ */
-.badge-primary {
-    background-color: var(--delafiber-primary) !important;
+/* Cards de estadísticas */
+.card.bg-primary {
+    background: linear-gradient(135deg, var(--delafiber-primary), var(--delafiber-secondary)) !important;
 }
 
-.badge-accent {
-    background-color: var(--delafiber-accent) !important;
-    color: white;
+.card.bg-success {
+    background: linear-gradient(135deg, #28A745, #20C997) !important;
 }
 
-/* ============================================
-   UTILIDADES DE COLOR
-   ============================================ */
-.bg-accent {
-    background-color: var(--delafiber-accent) !important;
-    color: #fff !important;
+.card.bg-info {
+    background: linear-gradient(135deg, #17A2B8, #00B4D8) !important;
 }
 
-.text-accent {
-    color: var(--delafiber-accent) !important;
+.card.bg-warning {
+    background: linear-gradient(135deg, #FFC107, #FFB300) !important;
 }
 
-/* ============================================
-   TABLAS
-   ============================================ */
+/* ==========================================================================
+   9. TABLAS
+   ========================================================================== */
+
 .table thead th {
     background-color: var(--delafiber-pink-soft);
     color: var(--delafiber-primary);
     border-bottom: 2px solid var(--delafiber-accent);
+    font-weight: 600;
+    padding: 1rem;
 }
 
 .table-hover tbody tr:hover {
     background-color: var(--delafiber-pink-light);
 }
 
-/* ============================================
-   FORMULARIOS
-   ============================================ */
+.table tbody tr {
+    transition: all 0.2s ease;
+}
+
+.table tbody td {
+    padding: 1rem;
+    vertical-align: middle;
+}
+
+/* ==========================================================================
+   10. FORMULARIOS
+   ========================================================================== */
+
 .form-control:focus {
     border-color: var(--delafiber-accent);
     box-shadow: 0 0 0 0.25rem rgba(232, 93, 154, 0.15);
@@ -401,9 +524,21 @@ body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
     border-color: var(--delafiber-accent);
 }
 
-/* ============================================
-   LINKS
-   ============================================ */
+/* ==========================================================================
+   11. COMPONENTES ADICIONALES
+   ========================================================================== */
+
+/* Badges */
+.badge-primary {
+    background-color: var(--delafiber-primary) !important;
+}
+
+.badge-accent {
+    background-color: var(--delafiber-accent) !important;
+    color: white;
+}
+
+/* Links */
 a {
     color: var(--delafiber-accent);
 }
@@ -412,18 +547,14 @@ a:hover {
     color: var(--delafiber-primary);
 }
 
-/* ============================================
-   ALERTAS
-   ============================================ */
+/* Alertas */
 .alert-primary {
     background-color: var(--delafiber-pink-soft);
     border-color: var(--delafiber-accent);
     color: var(--delafiber-primary);
 }
 
-/* ============================================
-   PAGINACIÓN
-   ============================================ */
+/* Paginación */
 .pagination .page-item.active .page-link {
     background-color: var(--delafiber-primary);
     border-color: var(--delafiber-primary);
@@ -438,18 +569,9 @@ a:hover {
     color: var(--delafiber-primary);
 }
 
-/* ============================================
-   PROGRESS BARS
-   ============================================ */
-.progress-bar {
-    background: linear-gradient(90deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
-}
-
-/* ============================================
-   MODALES
-   ============================================ */
+/* Modales */
 .modal-header {
-    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-secondary) 100%);
+    background: linear-gradient(135deg, var(--delafiber-primary), var(--delafiber-secondary));
     color: white;
 }
 
@@ -457,53 +579,7 @@ a:hover {
     filter: brightness(0) invert(1);
 }
 
-/* ============================================
-   BREADCRUMBS
-   ============================================ */
-.breadcrumb-item.active {
-    color: var(--delafiber-primary);
-}
-
-.breadcrumb-item a {
-    color: var(--delafiber-accent);
-}
-
-/* ============================================
-   DROPDOWNS
-   ============================================ */
-.dropdown-item:hover,
-.dropdown-item:focus {
-    background-color: var(--delafiber-pink-light);
-    color: var(--delafiber-primary);
-}
-
-.dropdown-item.active {
-    background-color: var(--delafiber-primary);
-}
-
-/* ============================================
-   TABS (Pestañas)
-   ============================================ */
-.nav-tabs .nav-link.active {
-    color: var(--delafiber-primary);
-    border-bottom: 3px solid var(--delafiber-accent);
-}
-
-.nav-tabs .nav-link:hover {
-    border-color: var(--delafiber-pink-light);
-    color: var(--delafiber-accent);
-}
-
-/* ============================================
-   SPINNERS (Cargando)
-   ============================================ */
-.spinner-border-primary {
-    color: var(--delafiber-primary);
-}
-
-/* ============================================
-   SCROLLBAR PERSONALIZADO
-   ============================================ */
+/* Scrollbar global */
 ::-webkit-scrollbar {
     width: 10px;
     height: 10px;
@@ -514,536 +590,207 @@ a:hover {
 }
 
 ::-webkit-scrollbar-thumb {
-    background: linear-gradient(180deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
+    background: linear-gradient(180deg, var(--delafiber-primary), var(--delafiber-accent));
     border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: linear-gradient(180deg, var(--delafiber-accent) 0%, var(--delafiber-primary) 100%);
+    background: linear-gradient(180deg, var(--delafiber-accent), var(--delafiber-primary));
 }
 
-/* ============================================
-   MÓDULO: CAMPAÑAS
-   ============================================ */
+/* ==========================================================================
+   12. AJUSTES MOBILE ESPECÍFICOS
+   ========================================================================== */
 
-/* Cards de estadísticas */
-.card.bg-primary,
-.card.bg-success,
-.card.bg-info,
-.card.bg-warning {
-    border: none;
-    border-radius: 15px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+@media (max-width: 576px) {
+    .content-wrapper {
+        padding: 0.75rem 0.5rem;
+    }
+
+    .card {
+        margin-bottom: 1rem;
+        border-radius: 8px;
+    }
+
+    .card-body {
+        padding: 1rem;
+    }
+
+    .btn {
+        padding: 0.35rem 0.75rem;
+        font-size: 0.85rem;
+    }
+
+    .page-header h1 {
+        font-size: 1.3rem;
+    }
+
+    .stats-card {
+        padding: 1rem;
+    }
+
+    .stats-card .stats-number {
+        font-size: 1.8rem;
+    }
+
+    /* Navbar ultra-compacto en móviles pequeños */
+    .navbar {
+        padding: 0 0.4rem !important;
+    }
+
+    .navbar .navbar-brand-wrapper {
+        flex: 0 0 auto;
+    }
+
+    .navbar .navbar-menu-wrapper {
+        flex: 1 1 auto;
+        justify-content: flex-end !important;
+    }
+
+    .navbar .user-avatar {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .navbar .navbar-nav-right .nav-item {
+        margin-left: 0.25rem;
+    }
+
+    #mobileMenuToggle {
+        margin-left: 0.25rem;
+    }
 }
 
-.card.bg-primary {
-    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-secondary) 100%) !important;
+/* ==========================================================================
+   FIX CRÍTICO: Alineación vertical del navbar
+   El logo debe estar a la misma altura que notificaciones/perfil
+   ========================================================================== */
+
+/* Forzar altura y centrado vertical en TODOS los elementos del navbar */
+.navbar {
+    display: flex !important;
+    align-items: center !important;
 }
 
-.card.bg-success {
-    background: linear-gradient(135deg, #28A745 0%, #20C997 100%) !important;
+.navbar .navbar-brand-wrapper {
+    height: var(--navbar-height-desktop) !important;
+    min-height: var(--navbar-height-desktop) !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 !important;
 }
 
-.card.bg-info {
-    background: linear-gradient(135deg, #17A2B8 0%, #00B4D8 100%) !important;
+.navbar .navbar-menu-wrapper {
+    height: var(--navbar-height-desktop) !important;
+    min-height: var(--navbar-height-desktop) !important;
+    display: flex !important;
+    align-items: center !important;
+    padding: 0 1rem !important;
 }
 
-.card.bg-warning {
-    background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%) !important;
+/* Logo perfectamente centrado */
+.navbar .navbar-brand,
+.navbar .brand-logo,
+.navbar .brand-logo-mini {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
-.card.bg-primary:hover,
-.card.bg-success:hover,
-.card.bg-info:hover,
-.card.bg-warning:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+.navbar .navbar-brand img,
+.navbar .brand-logo img,
+.navbar .brand-logo-mini img {
+    height: 36px !important;
+    max-height: 36px !important;
+    width: auto !important;
+    display: block !important;
+    margin: 0 auto !important;
 }
 
-/* Tabla de campañas */
-.table {
-    border-radius: 10px;
-    overflow: hidden;
+/* Navbar nav (notificaciones y perfil) centrado */
+.navbar .navbar-nav {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    margin: 0 !important;
 }
 
-.table thead {
-    background: linear-gradient(135deg, var(--delafiber-pink-soft) 0%, white 100%);
+.navbar .navbar-nav .nav-item {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
 }
 
-.table thead th {
-    color: var(--delafiber-primary);
-    font-weight: 600;
-    border-bottom: 2px solid var(--delafiber-accent);
-    padding: 1rem;
+.navbar .navbar-nav .nav-link {
+    display: flex !important;
+    align-items: center !important;
+    height: 100% !important;
+    padding: 0 0.75rem !important;
 }
 
-.table tbody tr {
-    transition: all 0.2s ease;
-    border-bottom: 1px solid var(--delafiber-gray);
-}
-
-.table tbody tr:hover {
-    background-color: var(--delafiber-pink-light);
-    transform: scale(1.01);
-}
-
-.table tbody td {
-    padding: 1rem;
-    vertical-align: middle;
-}
-
-/* Badges de estado */
-.badge {
-    padding: 0.5rem 1rem;
-    border-radius: 20px;
-    font-weight: 600;
-    font-size: 0.85rem;
-}
-
-.badge.bg-success {
-    background: linear-gradient(135deg, #28A745 0%, #20C997 100%) !important;
-}
-
-.badge.bg-warning {
-    background: linear-gradient(135deg, #FFC107 0%, #FFB300 100%) !important;
-    color: #333 !important;
-}
-
-.badge.bg-danger {
-    background: linear-gradient(135deg, #DC3545 0%, #C92A2A 100%) !important;
-}
-
-.badge.bg-info {
-    background: linear-gradient(135deg, #17A2B8 0%, #00B4D8 100%) !important;
-}
-
-/* ============================================
-   MÓDULO: LEADS
-   ============================================ */
-
-/* Pipeline de leads */
-.pipeline-column {
-    background: var(--delafiber-gray-light);
-    border-radius: 15px;
-    padding: 1.5rem;
-    min-height: 500px;
-    transition: all 0.3s ease;
-}
-
-.pipeline-column:hover {
-    background: var(--delafiber-pink-light);
-    box-shadow: 0 5px 20px rgba(232, 93, 154, 0.1);
-}
-
-.pipeline-column h4 {
-    color: var(--delafiber-primary);
-    font-weight: 700;
-    margin-bottom: 1rem;
-    padding-bottom: 0.5rem;
-    border-bottom: 3px solid var(--delafiber-accent);
-}
-
-/* Lead card en pipeline */
-.lead-card {
-    background: white;
-    border-radius: 10px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    border-left: 4px solid var(--delafiber-accent);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
-    transition: all 0.3s ease;
-    cursor: move;
-}
-
-.lead-card:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 5px 20px rgba(74, 26, 107, 0.15);
-    border-left-color: var(--delafiber-primary);
-}
-
-.lead-card .lead-name {
-    color: var(--delafiber-primary);
-    font-weight: 600;
-    font-size: 1rem;
-    margin-bottom: 0.5rem;
-}
-
-.lead-card .lead-info {
-    color: var(--delafiber-gray-dark);
-    font-size: 0.85rem;
-}
-
-/* Filtros de leads */
-.filter-section {
-    background: var(--delafiber-pink-soft);
-    border-radius: 10px;
-    padding: 1.5rem;
-    margin-bottom: 2rem;
-}
-
-.filter-section .form-control,
-.filter-section .form-select {
-    border: 2px solid var(--delafiber-gray);
-    border-radius: 8px;
-}
-
-.filter-section .form-control:focus,
-.filter-section .form-select:focus {
-    border-color: var(--delafiber-accent);
-    box-shadow: 0 0 0 0.25rem rgba(232, 93, 154, 0.15);
-}
-
-/* ============================================
-   MÓDULO: COTIZACIONES
-   ============================================ */
-
-/* Card de cotización */
-.cotizacion-card {
-    border: 2px solid var(--delafiber-gray);
-    border-radius: 15px;
-    padding: 1.5rem;
-    margin-bottom: 1.5rem;
-    transition: all 0.3s ease;
-    background: white;
-}
-
-.cotizacion-card:hover {
-    border-color: var(--delafiber-accent);
-    box-shadow: 0 10px 30px rgba(232, 93, 154, 0.15);
-    transform: translateY(-3px);
-}
-
-.cotizacion-card .cotizacion-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--delafiber-pink-light);
-}
-
-.cotizacion-card .cotizacion-numero {
-    color: var(--delafiber-primary);
-    font-weight: 700;
-    font-size: 1.2rem;
-}
-
-.cotizacion-card .cotizacion-total {
-    color: var(--delafiber-accent);
-    font-weight: 700;
-    font-size: 1.5rem;
-}
-
-/* ============================================
-   MÓDULO: TAREAS
-   ============================================ */
-
-/* Lista de tareas */
-.tarea-item {
-    background: white;
-    border-left: 4px solid var(--delafiber-gray);
-    border-radius: 8px;
-    padding: 1rem;
-    margin-bottom: 1rem;
-    transition: all 0.3s ease;
-}
-
-.tarea-item:hover {
-    border-left-color: var(--delafiber-accent);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
-    transform: translateX(5px);
-}
-
-.tarea-item.prioridad-alta {
-    border-left-color: #DC3545;
-}
-
-.tarea-item.prioridad-media {
-    border-left-color: #FFC107;
-}
-
-.tarea-item.prioridad-baja {
-    border-left-color: #28A745;
-}
-
-.tarea-item.completada {
-    opacity: 0.6;
-    background-color: var(--delafiber-gray-light);
-}
-
-.tarea-item .tarea-titulo {
-    color: var(--delafiber-primary);
-    font-weight: 600;
-    margin-bottom: 0.5rem;
-}
-
-/* Calendario de tareas */
-.fc-event {
-    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
-    border: none;
-    border-radius: 5px;
-    padding: 0.25rem 0.5rem;
-}
-
-.fc-event:hover {
-    background: linear-gradient(135deg, var(--delafiber-accent) 0%, var(--delafiber-primary) 100%);
-}
-
-/* ============================================
-   MÓDULO: DASHBOARD
-   ============================================ */
-
-/* Stats cards mejorados */
-.stats-card {
-    background: white;
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-    border-left: 5px solid var(--delafiber-accent);
-}
-
-.stats-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(74, 26, 107, 0.15);
-}
-
-.stats-card .stats-icon {
-    width: 60px;
-    height: 60px;
-    border-radius: 15px;
+/* Avatar circular perfectamente centrado */
+.navbar .user-avatar {
+    width: 36px !important;
+    height: 36px !important;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
-    color: white;
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+    font-size: 16px;
+    font-weight: 600;
 }
 
-.stats-card .stats-number {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--delafiber-primary);
-    margin-bottom: 0.5rem;
+/* Íconos de notificación centrados */
+.navbar .nav-link i {
+    line-height: 1 !important;
+    vertical-align: middle !important;
 }
 
-.stats-card .stats-label {
-    color: var(--delafiber-gray-dark);
-    font-size: 0.9rem;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
+/* Botón hamburguesa (desktop) */
+.navbar-toggler {
+    align-self: center !important;
+    margin: 0 !important;
 }
 
-/* Gráficos */
-.chart-container {
-    background: white;
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+/* Separación extra entre campanita y avatar en escritorio */
+@media (min-width: 992px) {
+    .navbar-nav.navbar-nav-right .nav-item + .nav-item {
+        margin-left: 0.75rem;
+    }
 }
 
-.chart-container h4 {
-    color: var(--delafiber-primary);
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    padding-bottom: 1rem;
-    border-bottom: 2px solid var(--delafiber-pink-light);
-}
+/* ==========================================================================
+   RESPONSIVE: Mobile - Alineación Navbar
+   ========================================================================== */
 
-/* ============================================
-   MÓDULO: USUARIOS
-   ============================================ */
+@media (max-width: 991px) {
+    .navbar .navbar-brand-wrapper {
+        height: var(--navbar-height-mobile) !important;
+        min-height: var(--navbar-height-mobile) !important;
+    }
 
-/* Card de usuario */
-.usuario-card {
-    background: white;
-    border-radius: 15px;
-    padding: 1.5rem;
-    text-align: center;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-    transition: all 0.3s ease;
-}
+    .navbar .navbar-menu-wrapper {
+        height: var(--navbar-height-mobile) !important;
+        min-height: var(--navbar-height-mobile) !important;
+    }
 
-.usuario-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 10px 30px rgba(74, 26, 107, 0.15);
-}
+    .navbar .navbar-brand img,
+    .navbar .brand-logo img,
+    .navbar .brand-logo-mini img {
+        height: 32px !important;
+        max-height: 32px !important;
+    }
 
-.usuario-card .usuario-avatar {
-    width: 80px;
-    height: 80px;
-    border-radius: 50%;
-    border: 4px solid var(--delafiber-accent);
-    margin: 0 auto 1rem;
-}
+    .navbar .user-avatar {
+        width: 32px !important;
+        height: 32px !important;
+        font-size: 14px !important;
+    }
 
-.usuario-card .usuario-nombre {
-    color: var(--delafiber-primary);
-    font-weight: 700;
-    font-size: 1.1rem;
-    margin-bottom: 0.5rem;
-}
-
-.usuario-card .usuario-rol {
-    color: var(--delafiber-gray-dark);
-    font-size: 0.9rem;
-}
-
-/* ============================================
-   MÓDULO: REPORTES
-   ============================================ */
-
-/* Filtros de reportes */
-.reporte-filtros {
-    background: linear-gradient(135deg, var(--delafiber-pink-soft) 0%, white 100%);
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border: 2px solid var(--delafiber-pink-light);
-}
-
-.reporte-filtros h5 {
-    color: var(--delafiber-primary);
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-}
-
-/* Tabla de reportes */
-.reporte-tabla {
-    background: white;
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
-}
-
-.reporte-tabla .table-responsive {
-    border-radius: 10px;
-    overflow: hidden;
-}
-
-/* ============================================
-   COMPONENTES GENERALES MEJORADOS
-   ============================================ */
-
-/* Botón de acción flotante */
-.btn-float {
-    position: fixed;
-    bottom: 30px;
-    right: 30px;
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
-    color: white;
-    border: none;
-    box-shadow: 0 10px 30px rgba(74, 26, 107, 0.3);
-    font-size: 1.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: all 0.3s ease;
-    z-index: 1000;
-}
-
-.btn-float:hover {
-    transform: scale(1.1) rotate(90deg);
-    box-shadow: 0 15px 40px rgba(74, 26, 107, 0.4);
-}
-
-/* Search bar mejorado */
-.search-bar {
-    position: relative;
-}
-
-.search-bar input {
-    border: 2px solid var(--delafiber-gray);
-    border-radius: 25px;
-    padding: 0.75rem 1.5rem 0.75rem 3rem;
-    transition: all 0.3s ease;
-}
-
-.search-bar input:focus {
-    border-color: var(--delafiber-accent);
-    box-shadow: 0 0 0 0.25rem rgba(232, 93, 154, 0.15);
-    background-color: white;
-}
-
-.search-bar i {
-    position: absolute;
-    left: 1rem;
-    top: 50%;
-    transform: translateY(-50%);
-    color: var(--delafiber-accent);
-}
-
-/* Empty state */
-.empty-state {
-    text-align: center;
-    padding: 4rem 2rem;
-}
-
-.empty-state i {
-    font-size: 4rem;
-    color: var(--delafiber-accent);
-    margin-bottom: 1rem;
-    opacity: 0.5;
-}
-
-.empty-state h4 {
-    color: var(--delafiber-primary);
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.empty-state p {
-    color: var(--delafiber-gray-dark);
-}
-
-/* Loading spinner personalizado */
-.spinner-delafiber {
-    width: 50px;
-    height: 50px;
-    border: 5px solid var(--delafiber-pink-light);
-    border-top: 5px solid var(--delafiber-accent);
-    border-radius: 50%;
-    animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-/* Toast notifications */
-.toast {
-    border-radius: 10px;
-    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
-}
-
-.toast-header {
-    background: linear-gradient(135deg, var(--delafiber-primary) 0%, var(--delafiber-accent) 100%);
-    color: white;
-    border-radius: 10px 10px 0 0;
-}
-
-/* Page header mejorado */
-.page-header {
-    background: linear-gradient(135deg, var(--delafiber-pink-soft) 0%, white 100%);
-    border-radius: 15px;
-    padding: 2rem;
-    margin-bottom: 2rem;
-    border-left: 5px solid var(--delafiber-accent);
-}
-
-.page-header h1 {
-    color: var(--delafiber-primary);
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-}
-
-.page-header p {
-    color: var(--delafiber-gray-dark);
-    margin: 0;
+    .navbar .nav-link i {
+        font-size: 18px !important;
+    }
 }
