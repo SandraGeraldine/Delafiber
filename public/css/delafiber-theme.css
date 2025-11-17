@@ -167,34 +167,40 @@
 }
 
 /* Ajustar el contenido principal para que no quede detrás del sidebar */
-.container-scroller .page-body-wrapper .main-panel,
-.main-panel {
-    margin-left: 250px !important;
-    width: calc(100% - 250px) !important;
-    transition: width 0.25s ease, margin 0.25s ease !important;
-    max-width: calc(100% - 250px) !important;
+@media (min-width: 992px) {
+    .container-scroller .page-body-wrapper .main-panel,
+    .main-panel {
+        margin-left: 250px !important;
+        width: calc(100% - 250px) !important;
+        transition: width 0.25s ease, margin 0.25s ease !important;
+        max-width: calc(100% - 250px) !important;
+    }
 }
 
 /* Asegurar que el sidebar siempre sea visible */
-.container-scroller .page-body-wrapper .sidebar,
-.sidebar,
-#sidebar {
-    display: block !important;
-    visibility: visible !important;
-    opacity: 1 !important;
-    position: fixed !important;
-    left: 0 !important;
-    top: 70px !important;
-    width: 250px !important;
-    z-index: 100 !important;
+@media (min-width: 992px) {
+    .container-scroller .page-body-wrapper .sidebar,
+    .sidebar,
+    #sidebar {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: fixed !important;
+        left: 0 !important;
+        top: 70px !important;
+        width: 250px !important;
+        z-index: 100 !important;
+    }
 }
 
 /* Asegurar que el contenido respete el sidebar en todos los casos */
-body:not(.sidebar-icon-only) .container-scroller .page-body-wrapper .main-panel,
-body.sidebar-fixed .container-scroller .page-body-wrapper .main-panel,
-body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
-    margin-left: 250px !important;
-    width: calc(100% - 250px) !important;
+@media (min-width: 992px) {
+    body:not(.sidebar-icon-only) .container-scroller .page-body-wrapper .main-panel,
+    body.sidebar-fixed .container-scroller .page-body-wrapper .main-panel,
+    body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
+        margin-left: 250px !important;
+        width: calc(100% - 250px) !important;
+    }
 }
 
 /* El navbar ocupa todo el ancho */
@@ -221,7 +227,7 @@ body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
         left: -250px !important;
         width: 250px !important;
         height: calc(100vh - 70px) !important;
-        z-index: 1000 !important;
+        z-index: 1050 !important;
     }
 
     .sidebar-offcanvas.active {
@@ -231,6 +237,7 @@ body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
     .main-panel {
         margin-left: 0 !important;
         width: 100% !important;
+        max-width: 100% !important;
     }
 
     .navbar {
@@ -650,7 +657,7 @@ a:hover {
     border-radius: 10px;
     padding: 1rem;
     margin-bottom: 1rem;
-    border-left: 4px solid var(--delafiber-accent);
+    border-left: 4px solid var(--delafiber-gray);
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
     cursor: move;
@@ -746,6 +753,8 @@ a:hover {
     border-radius: 8px;
     padding: 1rem;
     margin-bottom: 1rem;
+    border-left: 4px solid var(--delafiber-gray);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
     transition: all 0.3s ease;
 }
 
@@ -775,6 +784,7 @@ a:hover {
 .tarea-item .tarea-titulo {
     color: var(--delafiber-primary);
     font-weight: 600;
+    font-size: 1rem;
     margin-bottom: 0.5rem;
 }
 
@@ -1046,4 +1056,51 @@ a:hover {
 .page-header p {
     color: var(--delafiber-gray-dark);
     margin: 0;
+}
+
+/* Ajustes del header solo para CELULAR */
+@media (max-width: 575.98px) {
+    /* El bloque del logo no debe ocupar tanto ancho fijo */
+    .navbar .navbar-brand-wrapper {
+        width: auto;
+        padding-left: 0.75rem;
+        padding-right: 0.5rem;
+    }
+
+    /* El contenedor derecho usa todo el espacio restante */
+    .navbar .navbar-menu-wrapper {
+        flex: 1;
+        width: auto;
+        justify-content: flex-end;
+    }
+
+    /* Alinear íconos campana + perfil + botón menú */
+    .navbar .navbar-nav.navbar-nav-right {
+        display: flex;
+        align-items: center;
+    }
+
+    .navbar .navbar-nav.navbar-nav-right > li {
+        margin-left: 0.25rem;
+        margin-right: 0.25rem;
+    }
+
+    /* Opcional: ocultar la barra de búsqueda en celular
+       para que haya más espacio horizontal */
+    .navbar .nav-search {
+        display: none !important;
+    }
+
+    /* En móvil: mostrar logo grande y ocultar logo mini */
+    .navbar .navbar-brand.brand-logo {
+        display: inline-block !important;
+    }
+
+    .navbar .navbar-brand.brand-logo img {
+        height: 32px;
+    }
+
+    .navbar .navbar-brand.brand-logo-mini {
+        display: none !important;
+    }
 }
