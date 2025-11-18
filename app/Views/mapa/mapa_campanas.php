@@ -97,12 +97,19 @@
         </div>
         <?php endif; ?>
 
+        <?php $googleMapsKey = env('GOOGLE_MAPS_KEY1') ?: env('google.maps.key'); ?>
         <!-- Mapa -->
         <div class="card">
             <div class="card-body p-0">
                 <div id="mapCampanas" style="height: 60vh; min-height: 360px; width: 100%;"></div>
             </div>
         </div>
+
+        <?php if (empty($googleMapsKey)): ?>
+            <div class="alert alert-warning mt-3" role="alert">
+                <strong>Google Maps no está disponible.</strong> Configura la clave de API en tu archivo <code>.env</code> usando <code>GOOGLE_MAPS_KEY1</code> (ó <code>google.maps.key</code>). Sin una clave válida el mapa no puede cargarse.
+            </div>
+        <?php endif; ?>
 
         <!-- Leyenda -->
         <div class="card mt-3">
@@ -148,13 +155,22 @@
 
 <?= $this->section('scripts') ?>
 <!-- Google Maps API - CARGAR PRIMERO -->
-<script src="https://maps.googleapis.com/maps/api/js?key=<?= env('GOOGLE_MAPS_KEY') ?>&libraries=drawing,geometry"></script>
+<?php if (!empty($googleMapsKey)): ?>
+    <script src="https://maps.googleapis.com/maps/api/js?key=<?= esc($googleMapsKey) ?>&libraries=drawing,geometry"></script>
+<?php endif; ?>
 
 <script type="module">
     import { inicializarSistema } from '<?= base_url('js/mapa/mapa-init.js') ?>';
     
+    const tieneClaveGoogleMaps = <?= json_encode(!empty($googleMapsKey)) ?>;
+    
     // Inicializar sistema al cargar la página
     document.addEventListener('DOMContentLoaded', async function() {
+        if (!tieneClaveGoogleMaps) {
+            console.warn('Falta la clave de Google Maps. No se intentará inicializar el mapa.');
+            return;
+        }
+
         const idCampana = document.getElementById('id_campana_select')?.value || null;
         const zonas = <?= json_encode($zonas ?? []) ?>;
         
