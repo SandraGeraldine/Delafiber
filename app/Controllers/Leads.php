@@ -197,7 +197,7 @@ class Leads extends BaseController
             'user_name' => session()->get('user_name'),
         ];
 
-        return view('leads/campo_form', $data);
+        return view('leads/lead_form', $data);
     }
 
     /**

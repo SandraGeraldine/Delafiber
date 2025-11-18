@@ -16,7 +16,7 @@ class App extends BaseConfig
      *
      * E.g., http://example.com/
      */
-    public string $baseURL = 'https://delafiber.com/crm/';
+    public string $baseURL = 'http://delafiber.test/';
 
     /**
      * Allowed Hostnames in the Site URL other than the hostname in the baseURL.
