@@ -1,4 +1,4 @@
-<?= $this->extend('Layouts/Base') ?>
+<?= $this->extend('Layouts/base') ?>
 
 <?= $this->section('styles') ?>
 <link rel="stylesheet" href="<?= base_url('css/reportes/reportes-index.css') ?>">

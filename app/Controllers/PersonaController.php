@@ -54,7 +54,7 @@ class PersonaController extends BaseController
             'title' => 'Listado de Personas'
         ];
 
-        return view('personas/index', $data);
+        return view('Personas/index', $data);
     }
 
     // Formulario de creación/edición
