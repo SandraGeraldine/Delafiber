@@ -148,7 +148,7 @@
 
 <?= $this->section('scripts') ?>
 <!-- Google Maps API - CARGAR PRIMERO -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAACo2qyElsl8RwIqW3x0peOA_20f7SEHA&libraries=drawing,geometry"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=<?= env('GOOGLE_MAPS_KEY') ?>&libraries=drawing,geometry"></script>
 
 <script type="module">
     import { inicializarSistema } from '<?= base_url('js/mapa/mapa-init.js') ?>';
