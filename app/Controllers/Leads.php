@@ -379,6 +379,14 @@ class Leads extends BaseController
     }
 
     /**
+     * Mismo flujo de campo pero expuesto a la vista simplificada llamada simpleStore
+     */
+    public function simpleStore()
+    {
+        return $this->campoStore();
+    }
+
+    /**
      * Buscar persona existente por DNI para autocompletar en formulario de campo (AJAX)
      */
     public function campoBuscarDni()
