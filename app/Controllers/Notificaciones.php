@@ -11,10 +11,24 @@ use App\Models\NotificacionModel;
 class Notificaciones extends BaseController
 {
     protected $notificacionModel;
+    protected $db;
 
     public function __construct()
     {
-        $this->notificacionModel = new NotificacionModel();
+        $this->db = \Config_DATABASE::connect();
+        if ($this->tablaDisponible()) {
+            $this->notificacionModel = new NotificacionModel();
+        }
+    }
+
+    protected function tablaDisponible(): bool
+    {
+        try {
+            return $this->db->tableExists('notificaciones');
+        } catch (\Throwable $e) {
+            log_message('warning', 'Tabla notificaciones no disponible: ' . $e->getMessage());
+            return false;
+        }
     }
 
     /**
@@ -27,6 +41,13 @@ class Notificaciones extends BaseController
         }
 
         try {
+            if (!$this->tablaDisponible()) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'notificaciones' => [],
+                    'total' => 0
+                ]);
+            }
             $userId = session()->get('idusuario');
             $notificaciones = $this->notificacionModel->getNoLeidas($userId);
             $total = $this->notificacionModel->contarNoLeidas($userId);

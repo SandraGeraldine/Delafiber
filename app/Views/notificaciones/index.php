@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/base') ?>
+<?= $this->extend('Layouts/base') ?>
 
 <?php
 // Cargar helper de tiempo

@@ -53,7 +53,6 @@ writable/cache/*
 
 writable/logs/*
 !writable/logs/index.html
-
 writable/session/*
 !writable/session/index.html
 
@@ -63,7 +62,7 @@ writable/uploads/*
 writable/debugbar/*
 !writable/debugbar/index.html
 
-php_errors.log
+#php_errors.log
 
 #-------------------------
 # User Guide Temp Files

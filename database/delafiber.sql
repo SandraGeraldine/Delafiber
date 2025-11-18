@@ -1,10 +1,4 @@
-DROP DATABASE IF EXISTS `delafiber`;
-CREATE DATABASE `delafiber` DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-USE `delafiber`;
 
-SET FOREIGN_KEY_CHECKS = 0;
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET time_zone = "+00:00";
 
 -- Tabla: roles
 CREATE TABLE `roles` (
@@ -366,6 +360,23 @@ CREATE TABLE `leads` (
     ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+-- Tabla: campos_dinamicos_origen
+CREATE TABLE `campos_dinamicos_origen` (
+  `idcampo` INT UNSIGNED AUTO_INCREMENT,
+  `idlead` INT UNSIGNED NOT NULL,
+  `campo` VARCHAR(100) NOT NULL COMMENT 'Nombre del campo dinámico',
+  `valor` TEXT COMMENT 'Valor del campo',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`idcampo`),
+  KEY `idx_campo_lead` (`idlead`),
+  KEY `idx_campo_nombre` (`campo`),
+  CONSTRAINT `fk_campo_lead` 
+    FOREIGN KEY (`idlead`) 
+    REFERENCES `leads` (`idlead`) 
+    ON DELETE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
 -- Tabla: seguimientos
 CREATE TABLE `seguimientos` (
   `idseguimiento` INT UNSIGNED AUTO_INCREMENT,
@@ -528,7 +539,6 @@ CREATE TABLE `eventos_calendario` (
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-
 -- Tabla: auditoria
 CREATE TABLE `auditoria` (
   `idauditoria` INT UNSIGNED AUTO_INCREMENT,
@@ -539,14 +549,15 @@ CREATE TABLE `auditoria` (
   `datos_anteriores` JSON,
   `datos_nuevos` JSON,
   `ip_address` VARCHAR(45),
-  `user_agent` TEXT,
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `created_at` DATETIME NULL,
+  `updated_at` DATETIME NULL,
   PRIMARY KEY (`idauditoria`),
   KEY `idx_auditoria_usuario` (`idusuario`),
+  KEY `idx_auditoria_tabla` (`tabla_afectada`),
   KEY `idx_auditoria_fecha` (`created_at`),
-  CONSTRAINT `fk_auditoria_usuario` 
-    FOREIGN KEY (`idusuario`) 
-    REFERENCES `usuarios` (`idusuario`) 
+  CONSTRAINT `fk_auditoria_usuario`
+    FOREIGN KEY (`idusuario`)
+    REFERENCES `usuarios` (`idusuario`)
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
@@ -559,278 +570,53 @@ CREATE TABLE `historial_leads` (
   `etapa_nueva` INT UNSIGNED NOT NULL,
   `motivo` TEXT,
   `fecha` DATETIME DEFAULT CURRENT_TIMESTAMP,
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
   PRIMARY KEY (`idhistorial`),
   KEY `idx_historial_lead` (`idlead`),
   KEY `idx_historial_usuario` (`idusuario`),
   KEY `idx_historial_fecha` (`fecha`),
+  KEY `idx_historial_etapa_anterior` (`etapa_anterior`),
+  KEY `idx_historial_etapa_nueva` (`etapa_nueva`),
   CONSTRAINT `fk_historial_lead` 
     FOREIGN KEY (`idlead`) 
     REFERENCES `leads` (`idlead`) 
     ON DELETE CASCADE,
   CONSTRAINT `fk_historial_usuario` 
     FOREIGN KEY (`idusuario`) 
-    REFERENCES `usuarios` (`idusuario`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Tabla: notificaciones
-CREATE TABLE `notificaciones` (
-  `idnotificacion` INT UNSIGNED AUTO_INCREMENT,
-  `idusuario` INT UNSIGNED NOT NULL COMMENT 'Usuario que recibe la notificación',
-  `tipo` VARCHAR(50) NOT NULL COMMENT 'lead_reasignado, tarea_asignada, apoyo_urgente, solicitud_apoyo, seguimiento_programado, transferencia_masiva',
-  `titulo` VARCHAR(255) NOT NULL,
-  `mensaje` TEXT NOT NULL,
-  `url` VARCHAR(255) DEFAULT NULL COMMENT 'URL de destino al hacer clic',
-  `leida` TINYINT(1) NOT NULL DEFAULT 0 COMMENT '0 = no leída, 1 = leída',
-  `fecha_leida` DATETIME DEFAULT NULL,
-  `created_at` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`idnotificacion`),
-  KEY `idx_notificacion_usuario` (`idusuario`),
-  KEY `idx_notificacion_leida` (`leida`),
-  KEY `idx_notificacion_fecha` (`created_at`),
-  KEY `idx_notificacion_usuario_leida` (`idusuario`, `leida`, `created_at`),
-  CONSTRAINT `fk_notificacion_usuario` 
-    FOREIGN KEY (`idusuario`) 
     REFERENCES `usuarios` (`idusuario`) 
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Tabla: campos_dinamicos_origen
-CREATE TABLE `campos_dinamicos_origen` (
-  `id` INT UNSIGNED AUTO_INCREMENT,
-  `idlead` INT UNSIGNED NOT NULL COMMENT 'Lead al que pertenece',
-  `campo` VARCHAR(100) NOT NULL COMMENT 'Nombre del campo (ej: referido_por, tipo_publicidad)',
-  `valor` TEXT COMMENT 'Valor del campo',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`),
-  KEY `idx_campos_lead` (`idlead`),
-  KEY `idx_campos_campo` (`campo`),
-  CONSTRAINT `fk_campos_dinamicos_lead` 
-    FOREIGN KEY (`idlead`) 
-    REFERENCES `leads` (`idlead`) 
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
-
--- Tabla: tb_interacciones
-CREATE TABLE IF NOT EXISTS `tb_interacciones` (
-  `id_interaccion` INT UNSIGNED AUTO_INCREMENT,
-  `id_prospecto` INT UNSIGNED NOT NULL,
-  `id_campana` INT UNSIGNED NOT NULL,
-  `tipo_interaccion` VARCHAR(50) NOT NULL COMMENT 'Llamada, Visita, Email, WhatsApp, SMS, Reunión',
-  `fecha_interaccion` DATETIME DEFAULT CURRENT_TIMESTAMP,
-  `resultado` VARCHAR(50) NOT NULL COMMENT 'Contactado, No Contesta, Interesado, No Interesado, Agendado, Convertido, Rechazado',
-  `notas` TEXT,
-  `proxima_accion` TEXT,
-  `id_usuario` INT UNSIGNED NOT NULL,
-  `duracion_minutos` INT UNSIGNED,
-  `costo` DECIMAL(10,2) DEFAULT 0,
-  `create_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id_interaccion`),
-  KEY `idx_interaccion_prospecto` (`id_prospecto`),
-  KEY `idx_interaccion_campana` (`id_campana`),
-  KEY `idx_interaccion_usuario` (`id_usuario`),
-  KEY `idx_interaccion_fecha` (`fecha_interaccion`),
-  CONSTRAINT `fk_interaccion_prospecto` 
-    FOREIGN KEY (`id_prospecto`) 
-    REFERENCES `personas` (`idpersona`) 
     ON DELETE CASCADE,
-  CONSTRAINT `fk_interaccion_campana` 
-    FOREIGN KEY (`id_campana`) 
-    REFERENCES `campanias` (`idcampania`) 
-    ON DELETE CASCADE,
-  CONSTRAINT `fk_interaccion_usuario` 
-    FOREIGN KEY (`id_usuario`) 
-    REFERENCES `usuarios` (`idusuario`) 
+  CONSTRAINT `fk_historial_etapa_anterior` 
+    FOREIGN KEY (`etapa_anterior`) 
+    REFERENCES `etapas` (`idetapa`) 
+    ON DELETE SET NULL,
+  CONSTRAINT `fk_historial_etapa_nueva` 
+    FOREIGN KEY (`etapa_nueva`) 
+    REFERENCES `etapas` (`idetapa`) 
     ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Tabla: comentario_lead (comentarios de leads)
-CREATE TABLE IF NOT EXISTS `comentari_lead` (
-  `idcomentario` INT UNSIGNED AUTO_INCREMENT,
-  `idlead` INT UNSIGNED NOT NULL,
-  `idusuario` INT UNSIGNED NOT NULL,
-  `comentario` TEXT NOT NULL,
-  `tipo` ENUM('nota_interna', 'solicitud_apoyo', 'respuesta') DEFAULT 'nota_interna' COMMENT 'Tipo de comentario',
-  `created_at` DATETIME NULL,
-  `updated_at` DATETIME NULL,
-  PRIMARY KEY (`idcomentario`),
-  KEY `idx_comentario_lead` (`idlead`),
-  KEY `idx_comentario_usuario` (`idusuario`),
-  KEY `idx_comentario_fecha` (`created_at`),
-  CONSTRAINT `fk_comentario_lead` 
-    FOREIGN KEY (`idlead`) 
-    REFERENCES `leads` (`idlead`) 
-    ON DELETE CASCADE,
-  CONSTRAINT `fk_comentario_usuario` 
-    FOREIGN KEY (`idusuario`) 
-    REFERENCES `usuarios` (`idusuario`) 
-    ON DELETE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+-- =====================================================
+-- 1. TABLAS SIN DEPENDENCIAS (Primero)
+-- =====================================================
 
--- Vista: v_usuarios_permisos
-CREATE OR REPLACE VIEW `v_usuarios_permisos` AS
-SELECT 
-    u.idusuario,
-    u.nombre,
-    u.email,
-    u.turno,
-    u.estado,
-    r.idrol,
-    r.nombre as rol_nombre,
-    r.nivel as rol_nivel,
-    r.permisos,
-    z.nombre_zona as zona_asignada_nombre
-FROM usuarios u
-LEFT JOIN roles r ON u.idrol = r.idrol
-LEFT JOIN tb_zonas_campana z ON u.zona_asignada = z.id_zona
-WHERE u.estado = 'activo';
-
--- Vista: v_leads_completos
-CREATE OR REPLACE VIEW `v_leads_completos` AS
-SELECT 
-    l.idlead,
-    l.estado as lead_estado,
-    l.created_at as fecha_registro,
-    p.idpersona,
-    p.dni,
-    CONCAT(p.nombres, ' ', p.apellidos) as nombre_completo,
-    p.telefono,
-    p.correo,
-    -- Dirección personal
-    p.direccion as direccion_personal,
-    p.coordenadas as coordenadas_personal,
-    d.nombre as distrito_personal,
-    -- Dirección de servicio (puede ser diferente)
-    l.direccion_servicio,
-    l.coordenadas_servicio,
-    l.tipo_solicitud,
-    ds.nombre as distrito_servicio,
-    -- Dirección efectiva (prioriza la de servicio si existe)
-    COALESCE(l.direccion_servicio, p.direccion) as direccion_efectiva,
-    COALESCE(l.coordenadas_servicio, p.coordenadas) as coordenadas_efectivas,
-    COALESCE(ds.nombre, d.nombre) as distrito_efectivo,
-    -- Otros campos
-    o.nombre as origen,
-    e.nombre as etapa,
-    e.color as etapa_color,
-    u.nombre as vendedor,
-    c.nombre as campania,
-    -- Zona (prioriza la zona del servicio si existe)
-    COALESCE(zs.nombre_zona, z.nombre_zona) as zona
-FROM leads l
-INNER JOIN personas p ON l.idpersona = p.idpersona
-LEFT JOIN distritos d ON p.iddistrito = d.iddistrito
-LEFT JOIN distritos ds ON l.distrito_servicio = ds.iddistrito
-INNER JOIN origenes o ON l.idorigen = o.idorigen
-INNER JOIN etapas e ON l.idetapa = e.idetapa
-LEFT JOIN usuarios u ON l.idusuario = u.idusuario
-LEFT JOIN campanias c ON l.idcampania = c.idcampania
-LEFT JOIN tb_zonas_campana z ON p.id_zona = z.id_zona
-LEFT JOIN tb_zonas_campana zs ON l.zona_servicio = zs.id_zona;
-
--- Vista: v_leads_con_ubicacion
-CREATE OR REPLACE VIEW `v_leads_con_ubicacion` AS
-SELECT 
-    l.idlead,
-    l.idpersona,
-    CONCAT(p.nombres, ' ', p.apellidos) as cliente,
-    p.telefono,
-    p.correo,
-    p.direccion as direccion_personal,
-    dp.nombre as distrito_personal,    
-    COALESCE(l.direccion_servicio, p.direccion) as direccion_instalacion,
-    COALESCE(ds.nombre, dp.nombre) as distrito_instalacion,
-    l.tipo_solicitud,
-    COALESCE(l.coordenadas_servicio, p.coordenadas) as coordenadas,
-    COALESCE(l.zona_servicio, p.id_zona) as id_zona,
-    z.nombre_zona,
-    e.nombre as etapa,
-    l.estado,
-    l.created_at as fecha_solicitud
-FROM leads l
-INNER JOIN personas p ON l.idpersona = p.idpersona
-LEFT JOIN distritos dp ON p.iddistrito = dp.iddistrito
-LEFT JOIN distritos ds ON l.distrito_servicio = ds.iddistrito
-LEFT JOIN tb_zonas_campana z ON COALESCE(l.zona_servicio, p.id_zona) = z.id_zona
-INNER JOIN etapas e ON l.idetapa = e.idetapa
-WHERE l.estado = 'activo';
-
--- Vista: v_leads_con_campos_dinamicos
--- Nota: Versión compatible con MySQL 5.7+
-CREATE OR REPLACE VIEW `v_leads_con_campos_dinamicos` AS
-SELECT 
-    l.idlead,
-    l.idpersona,
-    CONCAT(p.nombres, ' ', p.apellidos) as cliente,
-    o.nombre as origen,
-    e.nombre as etapa,
-    l.estado,
-    l.created_at,
-    -- Campos dinámicos como texto concatenado (compatible con MySQL 5.7)
-    (SELECT GROUP_CONCAT(CONCAT(cd.campo, ':', cd.valor) SEPARATOR '|')
-     FROM campos_dinamicos_origen cd
-     WHERE cd.idlead = l.idlead) as campos_dinamicos
-FROM leads l
-INNER JOIN personas p ON l.idpersona = p.idpersona
-INNER JOIN origenes o ON l.idorigen = o.idorigen
-INNER JOIN etapas e ON l.idetapa = e.idetapa;
-
-
-DELIMITER $
-
-CREATE PROCEDURE `sp_crear_lead_con_direccion`(
-    IN p_idpersona INT,
-    IN p_idusuario INT,
-    IN p_idorigen INT,
-    IN p_direccion_servicio VARCHAR(255),
-    IN p_distrito_servicio INT,
-    IN p_tipo_solicitud VARCHAR(20),
-    OUT p_idlead INT
-)
-BEGIN
-    -- Insertar el lead
-    INSERT INTO leads (
-        idpersona, 
-        idusuario,
-        idusuario_registro,
-        idorigen, 
-        idetapa,
-        direccion_servicio,
-        distrito_servicio,
-        tipo_solicitud,
-        estado
-    ) VALUES (
-        p_idpersona,
-        p_idusuario,
-        p_idusuario,
-        p_idorigen,
-        1, -- CAPTACIÓN
-        p_direccion_servicio,
-        p_distrito_servicio,
-        p_tipo_solicitud,
-        'activo'
-    );
-    
-    SET p_idlead = LAST_INSERT_ID();
-END$
-
-DELIMITER ;
-
-
--- Insertar roles
+-- Roles
 INSERT INTO `roles` (`idrol`, `nombre`, `descripcion`, `permisos`, `nivel`) VALUES
 (1, 'Administrador', 'Acceso total al sistema', '["*"]', 1),
 (2, 'Supervisor', 'Gestiona equipo de ventas', '["leads.*", "seguimientos.*", "tareas.*", "cotizaciones.*", "reportes.*", "zonas.*"]', 2),
 (3, 'Vendedor', 'Gestiona sus propios leads', '["leads.*", "seguimientos.*", "tareas.*", "cotizaciones.*"]', 3);
 
--- Insertar departamentos, provincias y distritos de Ica
+-- Departamentos
 INSERT INTO `departamentos` (`iddepartamento`, `nombre`, `codigo`) VALUES
 (1, 'Ica', '11');
 
+-- Provincias
 INSERT INTO `provincias` (`idprovincia`, `iddepartamento`, `nombre`, `codigo`) VALUES
 (1, 1, 'Chincha', '1101'),
 (2, 1, 'Ica', '1102'),
 (3, 1, 'Pisco', '1103');
 
+-- Distritos
 INSERT INTO `distritos` (`iddistrito`, `idprovincia`, `nombre`, `codigo`) VALUES
 -- Chincha
 (1, 1, 'Chincha Alta', '110101'),
@@ -852,7 +638,7 @@ INSERT INTO `distritos` (`iddistrito`, `idprovincia`, `nombre`, `codigo`) VALUES
 (15, 3, 'San Andrés', '110302'),
 (16, 3, 'Paracas', '110303');
 
--- Insertar orígenes
+-- Orígenes
 INSERT INTO `origenes` (`idorigen`, `nombre`, `descripcion`, `color`, `estado`) VALUES
 (1, 'Facebook', 'Leads provenientes de Facebook', '#1877f2', 'activo'),
 (2, 'WhatsApp', 'Consultas por WhatsApp', '#25d366', 'activo'),
@@ -862,16 +648,20 @@ INSERT INTO `origenes` (`idorigen`, `nombre`, `descripcion`, `color`, `estado`) 
 (6, 'Llamada Directa', 'Cliente llamó directamente', '#9b59b6', 'activo'),
 (7, 'Campaña', 'Cliente vino por una campaña específica', '#ff6b6b', 'activo');
 
--- Insertar etapas
-INSERT INTO `etapas` (`idetapa`, `nombre`, `descripcion`, `orden`, `color`, `estado`) VALUES
-(1, 'CAPTACIÓN', 'Primer contacto con el prospecto', 1, '#95a5a6', 'activo'),
-(2, 'INTERÉS', 'Prospecto muestra interés', 2, '#3498db', 'activo'),
-(3, 'COTIZACIÓN', 'Se envió cotización', 3, '#f39c12', 'activo'),
-(4, 'NEGOCIACIÓN', 'En proceso de negociación', 4, '#e67e22', 'activo'),
-(5, 'CIERRE', 'Venta cerrada exitosamente', 5, '#27ae60', 'activo'),
-(6, 'DESCARTADO', 'Lead descartado', 6, '#e74c3c', 'activo');
+-- Pipelines (IMPORTANTE: Antes de etapas)
+INSERT INTO `pipelines` (`idpipeline`, `nombre`, `descripcion`, `estado`) VALUES
+(1, 'Pipeline Principal', 'Pipeline de ventas principal del CRM', 'activo');
 
--- Insertar modalidades
+-- Etapas (Después de pipelines)
+INSERT INTO `etapas` (`idetapa`, `idpipeline`, `nombre`, `descripcion`, `orden`, `color`, `estado`) VALUES
+(1, 1, 'CAPTACIÓN', 'Primer contacto con el prospecto', 1, '#95a5a6', 'activo'),
+(2, 1, 'INTERÉS', 'Prospecto muestra interés', 2, '#3498db', 'activo'),
+(3, 1, 'COTIZACIÓN', 'Se envió cotización', 3, '#f39c12', 'activo'),
+(4, 1, 'NEGOCIACIÓN', 'En proceso de negociación', 4, '#e67e22', 'activo'),
+(5, 1, 'CIERRE', 'Venta cerrada exitosamente', 5, '#27ae60', 'activo'),
+(6, 1, 'DESCARTADO', 'Lead descartado', 6, '#e74c3c', 'activo');
+
+-- Modalidades
 INSERT INTO `modalidades` (`idmodalidad`, `nombre`, `icono`, `estado`) VALUES
 (1, 'Llamada Telefónica', 'phone', 'activo'),
 (2, 'WhatsApp', 'whatsapp', 'activo'),
@@ -880,26 +670,16 @@ INSERT INTO `modalidades` (`idmodalidad`, `nombre`, `icono`, `estado`) VALUES
 (5, 'Mensaje de Texto', 'message', 'activo'),
 (6, 'Facebook Messenger', 'facebook', 'activo');
 
--- Insertar servicios (SOLO SERVICIOS REALES - Los planes se obtienen de la BD delatel)
--- NOTA: Los planes de internet detallados se cargan desde el Sistema de Gestión (BD: delatel)
--- Aquí solo se incluyen servicios adicionales para cotizaciones
+-- Servicios
 INSERT INTO `servicios` (`idservicio`, `nombre`, `descripcion`, `velocidad`, `precio`, `categoria`, `estado`) VALUES
-(1, 'Internet 50 Mbps', 'Plan de internet fibra óptica 50 Mbps', '50 Mbps', 60.00, 'internet', 'activo'),
-(2, 'Internet 100 Mbps', 'Plan de internet fibra óptica 100 Mbps', '100 Mbps', 80.00, 'internet', 'activo'),
-(3, 'Internet 200 Mbps', 'Plan de internet fibra óptica 200 Mbps', '200 Mbps', 120.00, 'internet', 'activo'),
+(1, 'Internet 50 Mbps', 'Plan de internet fibra óptica 50 Mbps', '50 Mbps', 60.00, 'hogar', 'activo'),
+(2, 'Internet 100 Mbps', 'Plan de internet fibra óptica 100 Mbps', '100 Mbps', 80.00, 'hogar', 'activo'),
+(3, 'Internet 200 Mbps', 'Plan de internet fibra óptica 200 Mbps', '200 Mbps', 120.00, 'hogar', 'activo'),
 (4, 'Instalación', 'Costo de instalación del servicio', NULL, 50.00, 'adicional', 'activo'),
 (5, 'Router WiFi', 'Equipo router WiFi', NULL, 80.00, 'adicional', 'activo');
 
--- IMPORTANTE: Para sincronizar con los planes del Sistema de Gestión (GST),
--- ejecuta el comando: php spark sync:servicios
--- Esto copiará automáticamente los paquetes desde la BD 'delatel'
-
--- Insertar pipeline por defecto
-INSERT IGNORE INTO `pipelines` (`idpipeline`, `nombre`, `descripcion`, `estado`) VALUES
-(1, 'Pipeline Principal', 'Pipeline de ventas principal del CRM', 'activo');
-
--- Insertar medios de publicidad
-INSERT IGNORE INTO `medios` (`idmedio`, `nombre`, `descripcion`, `activo`) VALUES
+-- Medios
+INSERT INTO `medios` (`idmedio`, `nombre`, `descripcion`, `activo`) VALUES
 (1, 'Facebook Ads', 'Publicidad pagada en Facebook', 1),
 (2, 'Google Ads', 'Publicidad en Google', 1),
 (3, 'Volantes', 'Distribución de volantes físicos', 1),
@@ -907,11 +687,10 @@ INSERT IGNORE INTO `medios` (`idmedio`, `nombre`, `descripcion`, `activo`) VALUE
 (5, 'Banners Publicitarios', 'Banners en ubicaciones estratégicas', 1);
 
 -- =====================================================
--- SECCIÓN 6: DATOS DE PRUEBA
+-- 2. TABLAS CON DEPENDENCIA USUARIOS
 -- =====================================================
 
--- Insertar usuarios de prueba
--- Password para todos: password123 (hash: $2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi)
+-- Usuarios (Después de roles)
 INSERT INTO `usuarios` (`idusuario`, `nombre`, `email`, `password`, `idrol`, `turno`, `telefono`, `estado`) VALUES
 (1, 'Administrador', 'admin@delafiber.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 1, 'completo', '999999999', 'activo'),
 (2, 'Carlos Mendoza', 'carlos@delafiber.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 2, 'completo', '987654321', 'activo'),
@@ -919,13 +698,13 @@ INSERT INTO `usuarios` (`idusuario`, `nombre`, `email`, `password`, `idrol`, `tu
 (4, 'Juan Pérez', 'juan@delafiber.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'tarde', '987654323', 'activo'),
 (5, 'Ana Torres', 'ana@delafiber.com', '$2y$10$92IXUNpkjO0rOQ5byMi.Ye4oKoEa3Ro9llC/.og/at2.uheWG/igi', 3, 'completo', '987654324', 'activo');
 
--- Insertar campañas de prueba
+-- Campañas
 INSERT INTO `campanias` (`idcampania`, `nombre`, `tipo`, `descripcion`, `fecha_inicio`, `fecha_fin`, `presupuesto`, `estado`) VALUES
 (1, 'Campaña Verano 2025', 'Marketing Digital', 'Promoción de internet para temporada de verano', '2025-10-01', '2025-12-31', 15000.00, 'activa'),
 (2, 'Campaña Fiestas Patrias', 'Publicidad', 'Ofertas especiales por fiestas patrias', '2025-10-08', '2025-11-30', 10000.00, 'activa'),
 (3, 'Campaña Navidad 2025', 'Redes Sociales', 'Promociones navideñas', '2025-12-01', '2025-12-31', 20000.00, 'activa');
 
--- Insertar zonas de campaña
+-- Zonas de campaña
 INSERT INTO `tb_zonas_campana` (`id_zona`, `id_campana`, `nombre_zona`, `descripcion`, `poligono`, `color`, `prioridad`, `estado`) VALUES
 (1, 1, 'Zona Centro Chincha', 'Centro de Chincha Alta', '[{"lat":-13.4099,"lng":-76.1317},{"lat":-13.4099,"lng":-76.1217},{"lat":-13.4199,"lng":-76.1217},{"lat":-13.4199,"lng":-76.1317}]', '#3498db', 'alta', 'activa'),
 (2, 1, 'Zona Pueblo Nuevo', 'Distrito de Pueblo Nuevo', '[{"lat":-13.4299,"lng":-76.1417},{"lat":-13.4299,"lng":-76.1317},{"lat":-13.4399,"lng":-76.1317},{"lat":-13.4399,"lng":-76.1417}]', '#27ae60', 'media', 'activa'),
@@ -937,7 +716,11 @@ INSERT INTO `tb_asignaciones_zona` (`id_zona`, `idusuario`, `meta_contactos`, `e
 (2, 4, 40, 'activa'),
 (3, 5, 30, 'activa');
 
--- Insertar personas de prueba
+-- =====================================================
+-- 3. PERSONAS Y LEADS (Orden importante)
+-- =====================================================
+
+-- Personas
 INSERT INTO `personas` (`idpersona`, `dni`, `nombres`, `apellidos`, `telefono`, `correo`, `direccion`, `referencias`, `iddistrito`, `coordenadas`, `id_zona`) VALUES
 (1, '12345678', 'Roberto', 'Sánchez López', '987123456', 'roberto.sanchez@gmail.com', 'Av. Benavides 123', 'Cerca al parque principal', 1, '-13.4099,-76.1317', 1),
 (2, '23456789', 'Lucía', 'Ramírez Flores', '987123457', 'lucia.ramirez@gmail.com', 'Jr. Lima 456', 'Frente a la iglesia', 1, '-13.4109,-76.1327', 1),
@@ -950,7 +733,7 @@ INSERT INTO `personas` (`idpersona`, `dni`, `nombres`, `apellidos`, `telefono`, 
 (9, '90123456', 'Fernando', 'Huamán Silva', '987123464', 'fernando.huaman@gmail.com', 'Calle Comercio 369', 'Casa amarilla', 1, '-13.4129,-76.1347', 1),
 (10, '01234567', 'Patricia', 'Rojas Fernández', '987123465', 'patricia.rojas@hotmail.com', 'Av. Industrial 741', 'Al frente de la fábrica', 5, '-13.4319,-76.1437', 2);
 
--- Insertar leads de prueba
+-- Leads
 INSERT INTO `leads` (`idlead`, `idpersona`, `idusuario`, `idusuario_registro`, `idorigen`, `idetapa`, `idcampania`, `nota_inicial`, `estado`, `created_at`) VALUES
 (1, 1, 3, 3, 1, 2, 1, 'Cliente interesado en plan de 100 Mbps', 'activo', '2025-10-01 10:30:00'),
 (2, 2, 3, 3, 2, 3, 1, 'Solicitó cotización por WhatsApp', 'activo', '2025-10-02 14:20:00'),
@@ -963,7 +746,7 @@ INSERT INTO `leads` (`idlead`, `idpersona`, `idusuario`, `idusuario_registro`, `
 (9, 9, 4, 4, 1, 2, 1, 'Preguntó por cobertura en su zona', 'activo', '2025-10-08 15:30:00'),
 (10, 10, 5, 5, 3, 6, 2, 'No le interesó el servicio', 'descartado', '2025-10-08 12:00:00');
 
--- Insertar seguimientos
+-- Seguimientos
 INSERT INTO `seguimientos` (`idlead`, `idusuario`, `idmodalidad`, `nota`, `fecha`) VALUES
 (1, 3, 1, 'Primera llamada - Cliente muy interesado', '2025-10-01 10:35:00'),
 (1, 3, 2, 'Envié información por WhatsApp', '2025-10-01 11:00:00'),
@@ -974,7 +757,7 @@ INSERT INTO `seguimientos` (`idlead`, `idusuario`, `idmodalidad`, `nota`, `fecha
 (8, 3, 1, 'Confirmación de instalación', '2025-10-08 10:30:00'),
 (9, 4, 2, 'Envié mapa de cobertura', '2025-10-08 16:00:00');
 
--- Insertar tareas
+-- Tareas
 INSERT INTO `tareas` (`idlead`, `idusuario`, `titulo`, `descripcion`, `fecha_vencimiento`, `prioridad`, `estado`) VALUES
 (1, 3, 'Enviar cotización formal', 'Preparar cotización detallada para plan 100 Mbps', '2025-10-10 17:00:00', 'alta', 'pendiente'),
 (2, 3, 'Llamar para confirmar interés', 'Hacer seguimiento de cotización enviada', '2025-10-11 10:00:00', 'media', 'pendiente'),
@@ -984,14 +767,14 @@ INSERT INTO `tareas` (`idlead`, `idusuario`, `titulo`, `descripcion`, `fecha_ven
 (7, 5, 'Preparar combo personalizado', 'Armar paquete internet + cable TV', '2025-10-14 16:00:00', 'media', 'pendiente'),
 (9, 4, 'Verificar cobertura en zona', 'Consultar con técnicos disponibilidad', '2025-10-15 10:00:00', 'alta', 'pendiente');
 
--- Insertar cotizaciones
+-- Cotizaciones
 INSERT INTO `cotizaciones` (`idcotizacion`, `idlead`, `idusuario`, `numero_cotizacion`, `subtotal`, `igv`, `total`, `precio_cotizado`, `descuento_aplicado`, `precio_instalacion`, `vigencia_dias`, `observaciones`, `estado`, `fecha_envio`) VALUES
 (1, 2, 3, 'COT-2025-0001', 80.00, 14.40, 94.40, 80.00, 0, 50.00, 30, 'Plan Internet 100 Mbps', 'enviada', '2025-10-02 15:00:00'),
 (2, 7, 5, 'COT-2025-0002', 120.00, 21.60, 141.60, 120.00, 0, 50.00, 30, 'Combo: Internet 100 Mbps + Cable TV HD', 'enviada', '2025-10-07 14:00:00'),
 (3, 8, 3, 'COT-2025-0003', 60.00, 10.80, 70.80, 60.00, 0, 50.00, 30, 'Plan Internet 50 Mbps', 'aceptada', '2025-10-08 09:00:00'),
 (4, 4, 5, 'COT-2025-0004', 120.00, 21.60, 141.60, 120.00, 10, 50.00, 30, 'Plan Internet 200 Mbps con 10% descuento', 'borrador', NULL);
 
--- Insertar detalles de cotizaciones
+-- Detalle cotizaciones
 INSERT INTO `cotizacion_detalle` (`idcotizacion`, `idservicio`, `cantidad`, `precio_unitario`, `subtotal`) VALUES
 (1, 2, 1, 80.00, 80.00),
 (2, 2, 1, 80.00, 80.00),
@@ -999,13 +782,13 @@ INSERT INTO `cotizacion_detalle` (`idcotizacion`, `idservicio`, `cantidad`, `pre
 (3, 1, 1, 60.00, 60.00),
 (4, 3, 1, 120.00, 108.00);
 
--- Insertar eventos de calendario
+-- Eventos calendario
 INSERT INTO `eventos_calendario` (`idusuario`, `idlead`, `tipo_evento`, `titulo`, `descripcion`, `fecha_inicio`, `fecha_fin`, `color`, `estado`) VALUES
 (3, 1, 'llamada', 'Llamar a cliente Roberto Sánchez', 'Seguimiento de cotización enviada', '2025-10-10 10:00:00', '2025-10-10 10:30:00', '#3498db', 'pendiente'),
 (3, NULL, 'reunion', 'Reunión de equipo', 'Revisión semanal de metas', '2025-10-11 09:00:00', '2025-10-11 10:00:00', '#27ae60', 'pendiente'),
 (4, 2, 'instalacion', 'Instalación - Lucía Ramírez', 'Instalación de fibra óptica 100 Mbps', '2025-10-12 14:00:00', '2025-10-12 16:00:00', '#e74c3c', 'pendiente');
 
--- Insertar historial de leads
+-- Historial leads
 INSERT INTO `historial_leads` (`idlead`, `idusuario`, `etapa_anterior`, `etapa_nueva`, `motivo`, `fecha`) VALUES
 (1, 3, 1, 2, 'Cliente mostró interés después de la llamada', '2025-10-01 11:00:00'),
 (2, 3, 2, 3, 'Se envió cotización formal', '2025-10-02 15:00:00'),
@@ -1013,19 +796,18 @@ INSERT INTO `historial_leads` (`idlead`, `idusuario`, `etapa_anterior`, `etapa_n
 (8, 3, 4, 5, 'Cliente aceptó cotización y firmó contrato', '2025-10-08 10:00:00'),
 (10, 5, 2, 6, 'Cliente no tiene interés en el servicio', '2025-10-08 12:00:00');
 
--- Insertar campos dinámicos de ejemplo
+-- Campos dinámicos
 INSERT INTO `campos_dinamicos_origen` (`idlead`, `campo`, `valor`) VALUES
 (1, 'detalle_facebook', 'Anuncio pagado'),
 (3, 'referido_por', 'Roberto Sánchez'),
 (5, 'tipo_publicidad', 'Volante'),
 (5, 'ubicacion_publicidad', 'Av. Benavides');
 
--- Insertar auditoría de ejemplo
+-- Auditoría
 INSERT INTO `auditoria` (`idusuario`, `accion`, `tabla_afectada`, `registro_id`, `datos_nuevos`, `ip_address`) VALUES
 (1, 'LOGIN', NULL, NULL, '{"usuario":"admin@delafiber.com"}', '127.0.0.1'),
 (3, 'CREATE_LEAD', 'leads', 1, '{"idpersona":1,"idetapa":1}', '192.168.1.100'),
 (3, 'UPDATE_LEAD', 'leads', 1, '{"idetapa":2}', '192.168.1.100'),
 (3, 'CREATE_COTIZACION', 'cotizaciones', 1, '{"idlead":2,"total":94.40}', '192.168.1.100');
-
 -- Reactivar verificación de claves foráneas
 SET FOREIGN_KEY_CHECKS = 1;

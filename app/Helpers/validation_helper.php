@@ -132,7 +132,7 @@ if (!function_exists('reglas_lead')) {
                 ]
             ],
             'tipo_solicitud' => [
-                'rules' => 'permit_empty|in_list[Casa,Negocio,Oficina,Otro]',
+                'rules' => 'permit_empty|in_list[casa,negocio,oficina,otro]',
                 'errors' => [
                     'in_list' => 'Tipo de solicitud inválido'
                 ]

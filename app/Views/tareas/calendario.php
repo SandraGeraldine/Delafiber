@@ -1,4 +1,4 @@
-<?= $this->extend('layouts/base') ?>
+<?= $this->extend('Layouts/base') ?>
 
 <?= $this->section('styles') ?>
 <!-- FullCalendar CSS -->

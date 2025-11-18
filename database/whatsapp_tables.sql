@@ -29,6 +29,8 @@ CREATE TABLE IF NOT EXISTS `whatsapp_conversaciones` (
   KEY `idx_whatsapp_persona` (`idpersona`),
   KEY `idx_whatsapp_estado` (`estado`),
   KEY `idx_whatsapp_asignado` (`asignado_a`),
+  KEY `idx_conv_fecha_ultimo` (`fecha_ultimo_mensaje`),
+  KEY `idx_conv_no_leidos` (`no_leidos`),
   CONSTRAINT `fk_whatsapp_conv_lead` 
     FOREIGN KEY (`idlead`) 
     REFERENCES `leads` (`idlead`) 
@@ -74,6 +76,8 @@ CREATE TABLE IF NOT EXISTS `whatsapp_mensajes` (
   KEY `idx_mensaje_direccion` (`direccion`),
   KEY `idx_mensaje_tipo` (`tipo_mensaje`),
   KEY `idx_mensaje_fecha` (`created_at`),
+  KEY `idx_mensaje_no_leido` (`leido`, `direccion`),
+  KEY `idx_mensaje_estado` (`estado_envio`),
   CONSTRAINT `fk_mensaje_conversacion` 
     FOREIGN KEY (`id_conversacion`) 
     REFERENCES `whatsapp_conversaciones` (`id_conversacion`) 
@@ -108,7 +112,24 @@ CREATE TABLE IF NOT EXISTS `whatsapp_plantillas` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- =====================================================
--- 4. AGREGAR CAMPOS A TABLA PERSONAS (si no existen)
+-- 4. TABLA DE CONFIGURACIÓN WHATSAPP
+-- =====================================================
+CREATE TABLE IF NOT EXISTS `whatsapp_config` (
+  `id` INT UNSIGNED AUTO_INCREMENT,
+  `proveedor` ENUM('twilio', 'meta_cloud', 'baileys') DEFAULT 'twilio',
+  `account_sid` VARCHAR(100) COMMENT 'Twilio Account SID o Meta App ID',
+  `auth_token` VARCHAR(200) COMMENT 'Token de autenticación (encriptado)',
+  `numero_whatsapp` VARCHAR(20) COMMENT 'Número de WhatsApp Business',
+  `webhook_url` VARCHAR(500) COMMENT 'URL del webhook',
+  `activo` BOOLEAN DEFAULT TRUE,
+  `configuracion_json` JSON COMMENT 'Configuración adicional',
+  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- =====================================================
+-- 5. AGREGAR CAMPOS A TABLA PERSONAS
 -- =====================================================
 ALTER TABLE `personas` 
 ADD COLUMN IF NOT EXISTS `whatsapp` VARCHAR(20) COMMENT 'Número de WhatsApp' AFTER `telefono`,
@@ -117,7 +138,7 @@ ADD COLUMN IF NOT EXISTS `whatsapp_opt_in` BOOLEAN DEFAULT FALSE COMMENT 'Acept�
 ADD COLUMN IF NOT EXISTS `whatsapp_opt_in_fecha` DATETIME COMMENT 'Fecha de opt-in' AFTER `whatsapp_opt_in`;
 
 -- =====================================================
--- 5. AGREGAR CAMPOS A TABLA LEADS (si no existen)
+-- 6. AGREGAR CAMPOS A TABLA LEADS
 -- =====================================================
 ALTER TABLE `leads`
 ADD COLUMN IF NOT EXISTS `origen_whatsapp` BOOLEAN DEFAULT FALSE COMMENT 'Lead originado por WhatsApp' AFTER `idorigen`,
@@ -125,7 +146,7 @@ ADD COLUMN IF NOT EXISTS `ubicacion_whatsapp` VARCHAR(500) COMMENT 'URL de ubica
 ADD COLUMN IF NOT EXISTS `coordenadas_whatsapp` VARCHAR(100) COMMENT 'Coordenadas desde WhatsApp' AFTER `ubicacion_whatsapp`;
 
 -- =====================================================
--- 6. INSERTAR PLANTILLAS PREDETERMINADAS
+-- 7. INSERTAR PLANTILLAS PREDETERMINADAS
 -- =====================================================
 INSERT INTO `whatsapp_plantillas` (`nombre`, `categoria`, `contenido`, `variables`) VALUES
 ('Bienvenida Inicial', 'bienvenida', 
@@ -153,7 +174,7 @@ INSERT INTO `whatsapp_plantillas` (`nombre`, `categoria`, `contenido`, `variable
  '["nombre"]'),
 
 ('Confirmar Instalación', 'confirmacion',
- ' ¡Perfecto {{nombre}}!\n\nTu instalación está programada para:\n📅 {{fecha}}\n🕐 {{hora}}\n\nNuestro técnico llegará a tu domicilio. ¿Alguna pregunta?',
+ '✅ ¡Perfecto {{nombre}}!\n\nTu instalación está programada para:\n📅 {{fecha}}\n🕐 {{hora}}\n\nNuestro técnico llegará a tu domicilio. ¿Alguna pregunta?',
  '["nombre", "fecha", "hora"]'),
 
 ('Recordatorio Pago', 'recordatorio',
@@ -163,7 +184,7 @@ INSERT INTO `whatsapp_plantillas` (`nombre`, `categoria`, `contenido`, `variable
 ON DUPLICATE KEY UPDATE contenido = VALUES(contenido);
 
 -- =====================================================
--- 7. VISTA PARA CONVERSACIONES ACTIVAS
+-- 8. VISTA PARA CONVERSACIONES ACTIVAS
 -- =====================================================
 CREATE OR REPLACE VIEW `v_whatsapp_conversaciones_activas` AS
 SELECT 
@@ -199,26 +220,16 @@ GROUP BY c.id_conversacion, c.numero_whatsapp, c.nombre_contacto, c.estado,
 ORDER BY c.fecha_ultimo_mensaje DESC;
 
 -- =====================================================
--- 8. ÍNDICES ADICIONALES PARA PERFORMANCE
--- =====================================================
-ALTER TABLE `whatsapp_mensajes` 
-ADD INDEX `idx_mensaje_no_leido` (`leido`, `direccion`),
-ADD INDEX `idx_mensaje_estado` (`estado_envio`);
-
-ALTER TABLE `whatsapp_conversaciones`
-ADD INDEX `idx_conv_fecha_ultimo` (`fecha_ultimo_mensaje`),
-ADD INDEX `idx_conv_no_leidos` (`no_leidos`);
-
--- =====================================================
 -- 9. TRIGGER PARA ACTUALIZAR CONVERSACIÓN
 -- =====================================================
 DELIMITER $$
+
+DROP TRIGGER IF EXISTS `trg_actualizar_conversacion_mensaje`$$
 
 CREATE TRIGGER `trg_actualizar_conversacion_mensaje` 
 AFTER INSERT ON `whatsapp_mensajes`
 FOR EACH ROW
 BEGIN
-    -- Actualizar último mensaje y fecha en la conversación
     UPDATE whatsapp_conversaciones 
     SET 
         ultimo_mensaje = NEW.contenido,
@@ -235,58 +246,9 @@ END$$
 DELIMITER ;
 
 -- =====================================================
--- 10. CONFIGURACIÓN WHATSAPP
+-- 10. VERIFICACIÓN FINAL
 -- =====================================================
-CREATE TABLE IF NOT EXISTS `whatsapp_config` (
-  `id` INT UNSIGNED AUTO_INCREMENT,
-  `proveedor` ENUM('twilio', 'meta_cloud', 'baileys') DEFAULT 'twilio',
-  `account_sid` VARCHAR(100) COMMENT 'Twilio Account SID o Meta App ID',
-  `auth_token` VARCHAR(200) COMMENT 'Token de autenticación (encriptado)',
-  `numero_whatsapp` VARCHAR(20) COMMENT 'Número de WhatsApp Business',
-  `webhook_url` VARCHAR(500) COMMENT 'URL del webhook',
-  `activo` BOOLEAN DEFAULT TRUE,
-  `configuracion_json` JSON COMMENT 'Configuración adicional',
-  `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  `updated_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-  PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+SELECT 'Integración WhatsApp instalada exitosamente ✅' as Estado;
 
--- =====================================================
--- VERIFICACIÓN FINAL
--- =====================================================
-SELECT 'Tablas WhatsApp creadas exitosamente' as Resultado;
+-- Verificar tablas creadas
 SHOW TABLES LIKE 'whatsapp%';
-
-ALTER TABLE whatsapp_conversaciones DROP FOREIGN KEY IF EXISTS fk_conversacion_cuenta;
-ALTER TABLE whatsapp_conversaciones DROP COLUMN IF EXISTS id_cuenta;
-DROP TABLE IF EXISTS usuario_whatsapp_cuentas;
-DROP TABLE IF EXISTS whatsapp_cuentas;
-SET FOREIGN_KEY_CHECKS = 0;
-DROP TABLE IF EXISTS usuario_whatsapp_cuentas;
-DROP TABLE IF EXISTS whatsapp_cuentas;
-ALTER TABLE whatsapp_conversaciones DROP FOREIGN KEY IF EXISTS fk_conversacion_cuenta;
-ALTER TABLE whatsapp_conversaciones DROP COLUMN IF EXISTS id_cuenta;
-SET FOREIGN_KEY_CHECKS = 1;
-
-SELECT * FROM whatsapp_cuentas;
-
--- Verifica tu usuario y roles
-SELECT idusuario, nombre, roles FROM usuarios WHERE idusuario = [tu_id];
-
--- Verifica cuentas existentes
-SELECT idusuario, nombre, roles FROM usuarios WHERE idusuario = 1;
-SELECT * FROM whatsapp_cuentas;
-
--- Verifica asignaciones de cuentas
-SELECT * FROM usuario_whatsapp_cuentas;
-
--- Verifica tu usuario y roles (reemplaza 1 con tu ID de usuario)
-SELECT idusuario, nombre, roles FROM usuarios WHERE idusuario = 1;
-
--- Verifica cuentas existentes
-SELECT * FROM whatsapp_cuentas;
-
--- Verifica asignaciones de cuentas
-SELECT * FROM usuario_whatsapp_cuentas;
-
-DESCRIBE roles;

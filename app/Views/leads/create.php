@@ -185,10 +185,10 @@
                                             <label for="tipo_solicitud">Tipo de Instalación</label>
                                             <select class="form-control" id="tipo_solicitud" name="tipo_solicitud">
                                                 <option value="">Seleccione (opcional)</option>
-                                                <option value="Casa">Casa / Hogar</option>
-                                                <option value="Negocio">Negocio / Empresa</option>
-                                                <option value="Oficina">Oficina</option>
-                                                <option value="Otro">Otro</option>
+                                                <option value="casa">Casa / Hogar</option>
+                                                <option value="negocio">Negocio / Empresa</option>
+                                                <option value="oficina">Oficina</option>
+                                                <option value="otro">Otro</option>
                                             </select>
                                         </div>
                                     </div>
