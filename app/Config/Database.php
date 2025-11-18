@@ -27,9 +27,9 @@ class Database extends Config
     public array $default = [
         'DSN'          => '',
         'hostname'     => 'localhost',
-        'username'     => 'root',
-        'password'     => '',
-        'database'     => 'delafiber',
+        'username'     => 'u647805867_delafibercrm',
+        'password'     => 'Dsandra72',
+        'database'     => 'u647805867_delafibercrm',
         'DBDriver'     => 'MySQLi',
         'DBPrefix'     => '',
         'pConnect'     => false,
