@@ -203,15 +203,15 @@ class Leads extends BaseController
                 ->with('error', 'No tienes permisos para registrar leads desde campo');
         }
 
-        // Validación básica para campo
+        // Validación básica para campo (alineada con lead_form.php)
         $rules = [
-            'dni' => 'required|min_length[8]|max_length[8]',
-            'nombres' => 'required|min_length[2]',
-            'apellidos' => 'required|min_length[2]',
-            'telefono' => 'required|min_length[9]|max_length[9]',
-            'direccion' => 'required|min_length[5]',
-            'idorigen' => 'required|numeric',
-            'plan_interes' => 'required',
+            'dni'         => 'required|min_length[8]|max_length[8]',
+            'nombres'     => 'required|min_length[2]',
+            'apellidos'   => 'required|min_length[2]',
+            'telefono1'   => 'required|min_length[9]|max_length[9]',
+            'direccion'   => 'required|min_length[5]',
+            'idorigen'    => 'required|numeric',
+            'plan_interes'=> 'required',
         ];
 
         if (!$this->validate($rules)) {
@@ -247,15 +247,17 @@ class Leads extends BaseController
                 $personaId = $persona['idpersona'];
             } else {
                 // Crear nueva persona básica desde campo
+                $telefonoPrincipal = $this->request->getPost('telefono1');
+
                 $personaData = [
-                    'dni' => $dni,
-                    'nombres' => $this->request->getPost('nombres'),
-                    'apellidos' => $this->request->getPost('apellidos'),
-                    'telefono' => $this->request->getPost('telefono'),
-                    'correo' => $this->request->getPost('correo') ?: null,
-                    'direccion' => $this->request->getPost('direccion'),
+                    'dni'         => $dni,
+                    'nombres'     => $this->request->getPost('nombres'),
+                    'apellidos'   => $this->request->getPost('apellidos'),
+                    'telefono'    => $telefonoPrincipal,
+                    'correo'      => $this->request->getPost('correo') ?: null,
+                    'direccion'   => $this->request->getPost('direccion'),
                     'referencias' => $this->request->getPost('referencias') ?: null,
-                    'iddistrito' => null,
+                    'iddistrito'  => null,
                     'coordenadas' => $this->request->getPost('coordenadas_servicio') ?: null,
                 ];
 

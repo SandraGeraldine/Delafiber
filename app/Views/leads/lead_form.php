@@ -28,7 +28,7 @@
 
                 <?php $errors = session()->getFlashdata('errors') ?? []; ?>
 
-                <form action="<?= base_url('leads/store') ?>" method="POST" enctype="multipart/form-data">
+                <form action="<?= base_url('leads/campoStore') ?>" method="POST" enctype="multipart/form-data">
                     <?= csrf_field() ?>
 
                     <!-- DNI CON BOTÓN DE BÚSQUEDA -->
@@ -44,6 +44,28 @@
                         </div>
                         <?php if (isset($errors['dni'])): ?>
                             <div class="invalid-feedback d-block"><?= $errors['dni'] ?></div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- NOMBRES -->
+                    <div class="mb-3">
+                        <label for="nombres" class="form-label fw-bold">NOMBRES</label>
+                        <input type="text" name="nombres" id="nombres"
+                               class="form-control <?= isset($errors['nombres']) ? 'is-invalid' : '' ?>"
+                               value="<?= old('nombres') ?>" required>
+                        <?php if (isset($errors['nombres'])): ?>
+                            <div class="invalid-feedback d-block"><?= $errors['nombres'] ?></div>
+                        <?php endif; ?>
+                    </div>
+
+                    <!-- APELLIDOS -->
+                    <div class="mb-3">
+                        <label for="apellidos" class="form-label fw-bold">APELLIDOS</label>
+                        <input type="text" name="apellidos" id="apellidos"
+                               class="form-control <?= isset($errors['apellidos']) ? 'is-invalid' : '' ?>"
+                               value="<?= old('apellidos') ?>" required>
+                        <?php if (isset($errors['apellidos'])): ?>
+                            <div class="invalid-feedback d-block"><?= $errors['apellidos'] ?></div>
                         <?php endif; ?>
                     </div>
 
@@ -78,6 +100,24 @@
                                        value="<?= old('telefono3') ?>">
                             </div>
                         </div>
+                    </div>
+
+                    <!-- ORIGEN DEL LEAD -->
+                    <div class="mb-3">
+                        <label for="idorigen" class="form-label fw-bold">ORIGEN</label>
+                        <select name="idorigen" id="idorigen" class="form-control <?= isset($errors['idorigen']) ? 'is-invalid' : '' ?>" required>
+                            <option value="">Seleccione origen</option>
+                            <?php if (!empty($origenes)): ?>
+                                <?php foreach ($origenes as $origen): ?>
+                                    <option value="<?= esc($origen['idorigen']) ?>" <?= old('idorigen') == $origen['idorigen'] ? 'selected' : '' ?>>
+                                        <?= esc($origen['nombre']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                        <?php if (isset($errors['idorigen'])): ?>
+                            <div class="invalid-feedback d-block"><?= $errors['idorigen'] ?></div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- POSIBLE PLAN -->
