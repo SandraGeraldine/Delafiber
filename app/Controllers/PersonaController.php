@@ -72,7 +72,7 @@ class PersonaController extends BaseController
             }
         }
 
-        return view('personas/crear', $data);
+        return view('Personas/crear', $data);
     }
 
     // Verificar si DNI ya existe (AJAX)

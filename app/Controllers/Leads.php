@@ -1144,12 +1144,18 @@ class Leads extends BaseController
 
     public function edit($idlead)
     {
-        $userId = session()->get('idusuario');
-        $lead = $this->leadModel->getLeadCompleto($idlead, $userId);
-        
+        // Obtener siempre el lead por ID (sin filtrar por usuario)
+        $lead = $this->leadModel->getLeadCompleto($idlead);
+
         if (!$lead) {
             return redirect()->to('/leads')
                 ->with('error', 'Lead no encontrado');
+        }
+
+        // Validar permisos de edición según el helper de seguridad
+        if (!puede_editar_lead($lead)) {
+            return redirect()->to('/leads')
+                ->with('error', 'No tienes permisos para editar este lead');
         }
 
         $data = [
