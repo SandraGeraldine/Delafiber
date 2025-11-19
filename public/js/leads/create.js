@@ -295,7 +295,7 @@ class PersonaManager {
                 
                 // Verificar si SweetAlert está disponible
                 if (typeof Swal === 'undefined') {
-                    console.error('❌ SweetAlert2 no está cargado!');
+                    console.error('SweetAlert2 no está cargado!');
                     alert(`Cobertura: ${result.mensaje || 'Verificación completada'}`);
                     return;
                 }
@@ -306,8 +306,8 @@ class PersonaManager {
                     this.mostrarAlertaCobertura(result);
                 }
             } catch (error) {
-                console.error('❌ Error al verificar cobertura:', error);
-                console.error('❌ Stack:', error.stack);
+                console.error('Error al verificar cobertura:', error);
+                console.error('Stack:', error.stack);
                 
                 if (typeof Swal !== 'undefined') {
                     Swal.fire({
@@ -394,11 +394,269 @@ class PersonaManager {
 
 // =========================================
 // INICIALIZAR
-// =========================================
+
 document.addEventListener('DOMContentLoaded', () => {
     if (typeof BASE_URL !== 'undefined') {
         window.personaManager = new PersonaManager(BASE_URL);
     } else {
         console.error('BASE_URL no está definida');
+    }
+});
+
+// MEJORAS PARA EL FORMULARIO DE LEADS
+
+document.addEventListener('DOMContentLoaded', () => {
+    // ============================================
+    // 1. GESTIÓN MEJORADA DEL MAPA EN MODAL
+
+    let mapaInicializado = false;
+    const mapModalEl = document.getElementById('mapModal');
+    const btnGuardar = document.getElementById('btnGuardarModalMapa');
+    const slcTipoServicio = document.getElementById('slcTipoServicio');
+
+    if (mapModalEl) {
+        mapModalEl.addEventListener('shown.bs.modal', async () => {
+            if (!mapaInicializado) {
+                const tipo = (slcTipoServicio?.value === '2') ? 'Antenas' : 'Cajas';
+                try {
+                    const mapa = await import(`${BASE_URL}js/api/Mapa.js`);
+                    await mapa.iniciarMapa(tipo, 'mapContainer', 'modal');
+                    await mapa.eventoMapa(true);
+                    mapa.obtenerCoordenadasClick();
+                    mapaInicializado = true;
+                    if (mapa.ultimaCoordenada) {
+                        if (btnGuardar) btnGuardar.disabled = false;
+                    }
+                } catch (err) {
+                    console.error('Error al iniciar mapa:', err);
+                    if (typeof Swal !== 'undefined') {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error al cargar el mapa',
+                            text: 'No se pudo inicializar el mapa. Por favor, recarga la página.'
+                        });
+                    } else {
+                        alert('No se pudo inicializar el mapa. Por favor, recarga la página.');
+                    }
+                }
+            }
+        });
+
+        mapModalEl.addEventListener('hidden.bs.modal', async () => {
+            try {
+                const mapa = await import(`${BASE_URL}js/api/Mapa.js`);
+                await mapa.eliminarMapa();
+                mapaInicializado = false;
+                if (btnGuardar) btnGuardar.disabled = true;
+            } catch (err) {
+                console.error('Error al limpiar mapa:', err);
+            }
+        });
+    }
+
+    // ============================================
+    // 2. CONFIGURACIÓN MEJORADA DE SELECT2
+
+    function initSelect2(selector, options = {}) {
+        const element = document.querySelector(selector);
+        if (!element) {
+            console.warn(`Elemento no encontrado: ${selector}`);
+            return;
+        }
+
+        // Verificar que jQuery y Select2 estén cargados
+        if (typeof $ === 'undefined' || !$.fn.select2) {
+            console.error('jQuery o Select2 no están cargados');
+            return;
+        }
+
+        const $element = $(element);
+
+        // Destruir instancia anterior si existe
+        if ($element.hasClass('select2-hidden-accessible')) {
+            try {
+                $element.select2('destroy');
+            } catch (e) {
+                // Ignorar errores al destruir
+            }
+        }
+
+        // Configuración por defecto
+        const defaultConfig = {
+            theme: 'bootstrap-5',
+            width: '100%',
+            dropdownAutoWidth: false,
+            language: {
+                noResults: function () {
+                    return 'No se encontraron resultados';
+                },
+                searching: function () {
+                    return 'Buscando...';
+                }
+            },
+            placeholder: options.placeholder || 'Seleccione una opción',
+            allowClear: true,
+            escapeMarkup: function (markup) {
+                return markup; // Permite HTML en las opciones
+            }
+        };
+
+        // Si está dentro de un modal, configurar dropdownParent
+        const $modal = $element.closest('.modal');
+        if ($modal.length > 0) {
+            defaultConfig.dropdownParent = $modal;
+        }
+
+        // Combinar configuraciones
+        const finalConfig = { ...defaultConfig, ...options };
+
+        try {
+            $element.select2(finalConfig);
+            console.log(`Select2 inicializado correctamente: ${selector}`);
+        } catch (error) {
+            console.error(`Error inicializando Select2 en ${selector}:`, error);
+        }
+    }
+
+    // Inicializar Select2 cuando el DOM esté listo
+    if (typeof $ !== 'undefined') {
+        $(document).ready(function () {
+            setTimeout(function () {
+                // #iddistrito y #tipo_servicio se mantienen como selects nativos
+                initSelect2('#idorigen', { placeholder: 'Seleccione origen' });
+                initSelect2('#idmodalidad', { placeholder: 'Seleccione modalidad' });
+                initSelect2('#plan_interes', {
+                    placeholder: 'Buscar plan...',
+                    minimumResultsForSearch: 0,
+                    width: '100%'
+                });
+            }, 100);
+        });
+    }
+
+    // ============================================
+    // 3. CARGA DINÁMICA DE PLANES 
+
+    const selServicio = document.getElementById('tipo_servicio');
+    const selPlan = document.getElementById('plan_interes');
+    const planInfo = document.getElementById('plan_info');
+
+    let cargandoPlanes = false;
+
+    async function cargarPlanes() {
+        if (cargandoPlanes || !selPlan) return;
+
+        try {
+            cargandoPlanes = true;
+            selPlan.disabled = true;
+
+            if (planInfo) {
+                planInfo.innerHTML = '<i class="icon-refresh rotating"></i> Cargando planes...';
+            }
+
+            const opt = selServicio?.selectedOptions?.[0];
+            const tipoRaw = opt ? (opt.getAttribute('data-tipo') || '').trim() : '';
+
+            const mapaTipos = {
+                'Fibra Óptica': 'FIBR',
+                'Fibra Optica': 'FIBR',
+                'Fibra': 'FIBR',
+                'Cable': 'CABL',
+                'Wireless Internet Service Provider': 'WISP',
+            };
+
+            let tipo = mapaTipos[tipoRaw] || (tipoRaw || '').split(':')[0].trim();
+
+            const url = tipo
+                ? `${BASE_URL}api/catalogo/planes?tipo=${encodeURIComponent(tipo)}`
+                : `${BASE_URL}api/catalogo/planes`;
+
+            const res = await fetch(url);
+
+            if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
+
+            const planes = await res.json();
+
+            selPlan.innerHTML = '<option value="">Seleccione un plan</option>';
+
+            if (Array.isArray(planes) && planes.length > 0) {
+                planes.forEach(p => {
+                    const vel = (p.velocidad && p.velocidad !== '[]')
+                        ? ` - ${p.velocidad} Mbps`
+                        : '';
+                    const precio = p.precio ? ` - S/ ${p.precio}` : '';
+                    const nombre = `${p.nombre}${vel}${precio}`;
+
+                    const option = document.createElement('option');
+                    option.value = (p.id ?? p.codigo ?? p.nombre ?? '').toString();
+                    option.textContent = nombre || 'Plan';
+                    option.dataset.velocidad = p.velocidad || '';
+                    option.dataset.precio = p.precio || '';
+
+                    selPlan.appendChild(option);
+                });
+
+                if (planInfo) {
+                    planInfo.textContent = `${planes.length} planes disponibles`;
+                }
+            } else {
+                selPlan.innerHTML = '<option value="">No hay planes disponibles</option>';
+                if (planInfo) {
+                    planInfo.textContent = 'No hay planes disponibles para este servicio';
+                }
+            }
+            selPlan.disabled = false;
+
+        } catch (error) {
+            console.error('Error cargando planes:', error);
+            if (selPlan) selPlan.innerHTML = '<option value="">Error al cargar planes</option>';
+            if (planInfo) {
+                planInfo.innerHTML = '<span class="text-danger">No se pudo cargar los planes</span>';
+            }
+            if (selPlan) selPlan.disabled = false;
+
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al cargar planes',
+                    text: 'No se pudieron cargar los planes. Por favor, intenta de nuevo.',
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+            } else {
+                alert('No se pudieron cargar los planes. Por favor, intenta de nuevo.');
+            }
+        } finally {
+            cargandoPlanes = false;
+        }
+    }
+
+    if (selServicio) {
+        if (typeof $ !== 'undefined') {
+            $(selServicio).on('select2:select select2:clear change', function () {
+                const valor = $(this).val();
+                if (!valor && selPlan) {
+                    selPlan.innerHTML = '<option value="">Primero seleccione un servicio</option>';
+                    if (planInfo) {
+                        planInfo.textContent = '';
+                    }
+                    return;
+                }
+                cargarPlanes();
+            });
+        } else {
+            selServicio.addEventListener('change', function () {
+                if (!this.value && selPlan) {
+                    selPlan.innerHTML = '<option value="">Primero seleccione un servicio</option>';
+                    if (planInfo) {
+                        planInfo.textContent = '';
+                    }
+                    return;
+                }
+                cargarPlanes();
+            });
+        }
     }
 });
