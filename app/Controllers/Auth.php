@@ -133,15 +133,15 @@ class Auth extends BaseController
             }
             
             $sessionData = [
-                'idusuario' => $user['idusuario'],
-                'nombre' => $user['nombre_completo'],
-                'email' => $user['correo'],
-                'nombreRol' => $rol['nombre'] ?? 'Vendedor',
-                'idrol' => $rol['idrol'] ?? 3,
-                'rol_nivel' => $rol['nivel'] ?? 3,
-                'nivel' => $rol['nivel'] ?? 3,
-                'permisos' => $permisos,
-                'logged_in' => true
+                'idusuario'  => $user['idusuario'],
+                'nombre'     => $user['nombre_completo'],
+                'email'      => $user['correo'],
+                'nombreRol'  => $rol['nombre'] ?? 'Vendedor',
+                'idrol'      => $rol['idrol'] ?? 3,
+                'rol_nivel'  => $rol['nivel'] ?? 3,
+                'nivel'      => $rol['nivel'] ?? 3,
+                'permisos'   => $permisos,
+                'logged_in'  => true
             ];
 
             session()->set($sessionData);
@@ -149,6 +149,16 @@ class Auth extends BaseController
             $this->usuarioModel->actualizarUltimoLogin($user['idusuario']);
             session()->setFlashdata('success', 'Bienvenido, ' . $user['nombre_completo']);
 
+            // Si es Promotor Campo, enviarlo directo al formulario de campo.
+            // Usamos tanto el nombre como el nivel para ser más tolerantes a variaciones en el texto.
+            $nombreRol = $rol['nombre'] ?? '';
+            $nivelRol  = $rol['nivel'] ?? null;
+
+            if ($nombreRol === 'Promotor Campo' || (string)$nivelRol === '4') {
+                return redirect()->to('/leads/campo');
+            }
+
+            // Resto de roles van al dashboard principal
             return redirect()->to('/dashboard');
         }
 
