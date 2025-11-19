@@ -36,7 +36,8 @@ class UsuarioController extends BaseController
             'roles'    => $this->rolesModel->findAll(),
         ];
 
-        return view('usuarios/index', $data);
+        // Nota: la carpeta de vistas se llama 'Usuarios' (con U mayúscula)
+        return view('Usuarios/index', $data);
     }
 
     public function crear()
@@ -50,7 +51,7 @@ class UsuarioController extends BaseController
             'roles' => $this->rolesModel->findAll()
         ];
         
-        return view('usuarios/crear', $data);
+        return view('Usuarios/crear', $data);
     }
 
     public function guardar()
@@ -319,7 +320,7 @@ class UsuarioController extends BaseController
             'roles' => $this->rolesModel->findAll()
         ];
 
-        return view('usuarios/editar', $data);
+        return view('Usuarios/editar', $data);
     }
 
     public function actualizar($idusuario)
