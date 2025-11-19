@@ -175,20 +175,8 @@ class Leads extends BaseController
             return redirect()->to('/leads')
                 ->with('error', 'No tienes permisos para acceder al formulario de campo');
         }
-
-        // Cargar planes/paquetes desde sistema de gestión externo
+        // Por ahora no dependemos de la BD externa 'gestion' para evitar timeouts
         $paquetes = [];
-        try {
-            $dbGestion = \Config\Database::connect('gestion');
-            $paquetes = $dbGestion->query(
-                "SELECT idpaquete, nombre, servicio, precio FROM tb_paquetes WHERE inactive_at IS NULL ORDER BY precio ASC"
-            )->getResultArray();
-        } catch (\Exception $e) {
-            log_message('error', 'No se pudieron cargar paquetes para campo: ' . $e->getMessage());
-            if (ENVIRONMENT === 'development') {
-                echo "<!-- ERROR AL CARGAR PAQUETES CAMPO: " . $e->getMessage() . " -->";
-            }
-        }
 
         // Orígenes disponibles (el promotor puede elegir uno, ej. CAMPO)
         $origenes = $this->origenModel->getOrigenesActivos();
