@@ -107,26 +107,22 @@ class Leads extends BaseController
         $usuarioModel = new \App\Models\UsuarioModel();
         $vendedores = $usuarioModel->getUsuariosActivos();
         
-        // Obtener servicios y paquetes del sistema de gestión
+        // Obtener servicios del sistema de gestión (catálogo GST)
         $servicios = [];
         $paquetes = [];
         try {
             $dbGestion = \Config\Database::connect('gestion');
-            
-            // Obtener servicios activos (donde inactive_at es NULL)
+
+            // Obtener solo columnas necesarias de servicios activos
             $servicios = $dbGestion->query(
-                "SELECT * FROM tb_servicios WHERE inactive_at IS NULL ORDER BY servicio ASC"
+                "SELECT id_servicio, tipo_servicio, servicio FROM tb_servicios WHERE inactive_at IS NULL ORDER BY servicio ASC"
             )->getResultArray();
-            
-            // Obtener paquetes activos (donde inactive_at es NULL)
-            $paquetes = $dbGestion->query(
-                "SELECT * FROM tb_paquetes WHERE inactive_at IS NULL ORDER BY precio ASC"
-            )->getResultArray();
+
+            // Nota: los paquetes/planes ahora se cargan vía API GST en el frontend,
+            // por lo que no es necesario traer tb_paquetes aquí para este formulario.
         } catch (\Exception $e) {
-            log_message('error', 'No se pudieron cargar servicios/paquetes del sistema de gestión: ' . $e->getMessage());
+            log_message('error', 'No se pudieron cargar servicios del sistema de gestión: ' . $e->getMessage());
             log_message('error', 'Stack trace: ' . $e->getTraceAsString());
-            // Si falla, continuar sin servicios/paquetes (campo será opcional)
-            // DEBUG: Mostrar error en desarrollo
             if (ENVIRONMENT === 'development') {
                 echo "<!-- ERROR AL CARGAR SERVICIOS: " . $e->getMessage() . " -->";
             }
@@ -159,7 +155,7 @@ class Leads extends BaseController
             'modalidades' => $modalidades, 
             'vendedores' => $vendedores,  // Lista de usuarios para asignar
             'servicios' => $servicios,  // Tipos de servicio (FIBR, CABL, WISP, etc.)
-            'paquetes' => $paquetes,  // Planes/paquetes del sistema de gestión
+            'paquetes' => $paquetes,  // Mantenido por compatibilidad, actualmente no se usa en la vista
             'user_name' => session()->get('user_name'),
             'persona' => $personaData,  // Datos de la persona para autocompletar
             'campania_preseleccionada' => $campaniaId  // ID de campaña para pre-seleccionar
@@ -185,7 +181,7 @@ class Leads extends BaseController
         try {
             $dbGestion = \Config\Database::connect('gestion');
             $paquetes = $dbGestion->query(
-                "SELECT * FROM tb_paquetes WHERE inactive_at IS NULL ORDER BY precio ASC"
+                "SELECT idpaquete, nombre, servicio, precio FROM tb_paquetes WHERE inactive_at IS NULL ORDER BY precio ASC"
             )->getResultArray();
         } catch (\Exception $e) {
             log_message('error', 'No se pudieron cargar paquetes para campo: ' . $e->getMessage());
