@@ -231,34 +231,42 @@
                 </ul>
               </div>
             </li>
-                <span class="badge badge-danger ms-auto"><?= $tareas_pendientes_count ?></span>
-              <?php endif; ?>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse <?= (strpos(uri_string(), 'tareas') !== false) ? 'show' : '' ?>" id="tareas-menu">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('tareas') ?>">Lista de Tareas</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('tareas/calendario') ?>">Calendario</a></li>
-              </ul>
-            </div>
-          </li>
 
-          <!-- Cotizaciones -->
-          <li class="nav-item <?= (strpos(uri_string(), 'cotizaciones') !== false) ? 'active' : '' ?>">
-            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#cotizaciones-menu" role="button"
-               aria-expanded="<?= (strpos(uri_string(), 'cotizaciones') !== false) ? 'true' : 'false' ?>">
-              <i class="ti-receipt menu-icon"></i>
-              <span class="menu-title">Cotizaciones</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse <?= (strpos(uri_string(), 'cotizaciones') !== false) ? 'show' : '' ?>" id="cotizaciones-menu">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('cotizaciones') ?>">Todas</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('cotizaciones/create') ?>">Nueva</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('servicios') ?>">Servicios</a></li>
-              </ul>
-            </div>
-          </li>
+            <!-- Tareas -->
+            <li class="nav-item <?= (strpos(uri_string(), 'tareas') !== false) ? 'active' : '' ?>">
+              <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#tareas-menu" role="button"
+                 aria-expanded="<?= (strpos(uri_string(), 'tareas') !== false) ? 'true' : 'false' ?>">
+                <i class="ti-calendar menu-icon"></i>
+                <span class="menu-title">Mis Tareas</span>
+                <?php if(isset($tareas_pendientes_count) && $tareas_pendientes_count > 0): ?>
+                  <span class="badge badge-danger ms-auto"><?= $tareas_pendientes_count ?></span>
+                <?php endif; ?>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse <?= (strpos(uri_string(), 'tareas') !== false) ? 'show' : '' ?>" id="tareas-menu">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('tareas') ?>">Lista de Tareas</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('tareas/calendario') ?>">Calendario</a></li>
+                </ul>
+              </div>
+            </li>
+
+            <!-- Cotizaciones -->
+            <li class="nav-item <?= (strpos(uri_string(), 'cotizaciones') !== false) ? 'active' : '' ?>">
+              <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#cotizaciones-menu" role="button"
+                 aria-expanded="<?= (strpos(uri_string(), 'cotizaciones') !== false) ? 'true' : 'false' ?>">
+                <i class="ti-receipt menu-icon"></i>
+                <span class="menu-title">Cotizaciones</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse <?= (strpos(uri_string(), 'cotizaciones') !== false) ? 'show' : '' ?>" id="cotizaciones-menu">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('cotizaciones') ?>">Todas</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('cotizaciones/create') ?>">Nueva</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('servicios') ?>">Servicios</a></li>
+                </ul>
+              </div>
+            </li>
 
           <li class="nav-item nav-category">
             <span class="nav-link">ANÁLISIS</span>
@@ -311,6 +319,7 @@
           </li>
           <?php endif; ?>
         </ul>
+        <?php endif; ?>
       </nav>
 
       <div class="main-panel">
