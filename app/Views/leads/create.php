@@ -463,7 +463,14 @@
                     </div>
 
                 </form>
-            </div>
+            </div> <!-- .card-body -->
+        </div> <!-- .card -->
+    </div> <!-- .col-md-12 -->
+ </div> <!-- .row -->
+</div> <!-- .container-fluid -->
+
+<?= $this->endSection() ?>
+
 <?= $this->section('scripts') ?>
   <!-- Botones de Acción   -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
