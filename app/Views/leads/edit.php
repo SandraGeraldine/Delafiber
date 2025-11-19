@@ -78,7 +78,7 @@
                                     <div class="form-group">
                                         <label>Teléfono Alternativo</label>
                                         <input type="tel" class="form-control" name="telefono_alternativo" 
-                                               value="<?= esc($lead['telefono_alternativo']) ?>">
+                                               value="<?= esc($lead['telefono_alternativo'] ?? '') ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
