@@ -15,7 +15,7 @@ class Notificaciones extends BaseController
 
     public function __construct()
     {
-        $this->db = \Config_DATABASE::connect();
+        $this->db = \Config\Database::connect();
         if ($this->tablaDisponible()) {
             $this->notificacionModel = new NotificacionModel();
         }
