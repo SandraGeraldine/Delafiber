@@ -132,34 +132,6 @@
             </div>
         </div>
     </div>
-    
-    <!-- CREDENCIALES DE DEMO luego se eliminaran -->
-    <?php if (ENVIRONMENT === 'development'): ?>
-    <div class="demo-credentials">
-        <div class="card">
-            <div class="card-header">
-                <i class="ti-info-alt"></i> Credenciales de Prueba
-            </div>
-            <div class="card-body">
-                <div class="mb-3">
-                    <strong><i class="ti-crown"></i> Administrador</strong><br>
-                    <small>
-                        <code>admin@delafiber.com</code><br>
-                        <code>password</code>
-                    </small>
-                </div>
-                <hr class="my-2">
-                <div>
-                    <strong><i class="ti-user"></i> Vendedor</strong><br>
-                    <small>
-                        <code>carlos@delafiber.com</code><br>
-                        <code>password</code>
-                    </small>
-                </div>
-            </div>
-        </div>
-    </div>
-    <?php endif; ?>
 
     <!--  JAVASCRIPT-->
     <script src="<?= base_url('assets/js/vendor.bundle.base.js') ?>"></script>

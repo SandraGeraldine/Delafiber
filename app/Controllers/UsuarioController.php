@@ -23,25 +23,20 @@ class UsuarioController extends BaseController
 
     public function index()
     {
-        try {
-            // Soportar búsqueda simple desde GET: q o dni
-            $search = $this->request->getGet('q') ?? $this->request->getGet('dni');
-            $usuarios = $this->usuarioModel->getUsuariosConDetalle($search);
-            
-            $data = [
-                'title' => 'Gestión de Usuarios - Delafiber CRM',
-                'usuarios' => $usuarios,
-                'personas' => $this->personaModel->findAll(),
-                'roles' => $this->rolesModel->findAll()
-            ];
+        // Soportar búsqueda simple desde GET: q o dni
+        $search = $this->request->getGet('q') ?? $this->request->getGet('dni');
 
-            return view('usuarios/index', $data);
-            
-        } catch (\Exception $e) {
-            log_message('error', 'Error en UsuarioController::index: ' . $e->getMessage());
-            
-            return redirect()->back()->with('error', 'Error al cargar usuarios. Por favor, contacte al administrador.');
-        }
+        // El propio modelo maneja internamente errores y tiene fallback a getUsuariosBasico()
+        $usuarios = $this->usuarioModel->getUsuariosConDetalle($search);
+
+        $data = [
+            'title'    => 'Gestión de Usuarios - Delafiber CRM',
+            'usuarios' => $usuarios,
+            'personas' => $this->personaModel->findAll(),
+            'roles'    => $this->rolesModel->findAll(),
+        ];
+
+        return view('usuarios/index', $data);
     }
 
     public function crear()
