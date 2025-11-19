@@ -214,6 +214,8 @@ class Leads extends BaseController
         }
 
         // Validación básica para campo (alineada con lead_form.php)
+        // Nota: plan_interes está deshabilitado/oculto en el formulario de campo,
+        // por lo que NO debe ser requerido aquí para no bloquear el registro.
         $rules = [
             'dni'         => 'required|min_length[8]|max_length[8]',
             'nombres'     => 'required|min_length[2]',
@@ -221,7 +223,6 @@ class Leads extends BaseController
             'telefono1'   => 'required|min_length[9]|max_length[9]',
             'direccion'   => 'required|min_length[5]',
             'idorigen'    => 'required|numeric',
-            'plan_interes'=> 'required',
         ];
 
         if (!$this->validate($rules)) {
