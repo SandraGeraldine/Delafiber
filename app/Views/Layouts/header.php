@@ -170,59 +170,67 @@
     <div class="container-fluid page-body-wrapper">
       <!-- Sidebar -->
       <nav class="sidebar sidebar-offcanvas" id="sidebar">
-        <ul class="nav">
-          <!-- Dashboard -->
-          <li class="nav-item <?= (uri_string() == 'dashboard') ? 'active' : '' ?>">
-            <a class="nav-link" href="<?= base_url('dashboard') ?>">
-              <i class="ti-home menu-icon"></i>
-              <span class="menu-title">Dashboard</span>
-            </a>
-          </li>
+        <?php $rolSidebar = session()->get('nombreRol'); ?>
 
-          <li class="nav-item nav-category">
-            <span class="nav-link">VENTAS</span>
-          </li>
+        <?php if ($rolSidebar === 'Promotor Campo'): ?>
+          <!-- Sidebar simplificado para Promotor Campo -->
+          <ul class="nav">
+            <li class="nav-item nav-category">
+              <span class="nav-link">CAMPO</span>
+            </li>
+            <li class="nav-item <?= (uri_string() === 'leads/campo') ? 'active' : '' ?>">
+              <a class="nav-link" href="<?= base_url('leads/campo') ?>">
+                <i class="ti-map-alt menu-icon"></i>
+                <span class="menu-title">Registro de Campo</span>
+              </a>
+            </li>
+          </ul>
+        <?php else: ?>
+          <ul class="nav">
+            <!-- Dashboard -->
+            <li class="nav-item <?= (uri_string() == 'dashboard') ? 'active' : '' ?>">
+              <a class="nav-link" href="<?= base_url('dashboard') ?>">
+                <i class="ti-home menu-icon"></i>
+                <span class="menu-title">Dashboard</span>
+              </a>
+            </li>
 
-          <!-- Leads -->
-          <li class="nav-item <?= (strpos(uri_string(), 'leads') !== false) ? 'active' : '' ?>">
-            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#leads-menu" role="button"
-               aria-expanded="<?= (strpos(uri_string(), 'leads') !== false) ? 'true' : 'false' ?>">
-              <i class="ti-target menu-icon"></i>
-              <span class="menu-title">Leads</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse <?= (strpos(uri_string(), 'leads') !== false) ? 'show' : '' ?>" id="leads-menu">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('leads') ?>">Todos los Leads</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('leads/create') ?>">Nuevo Lead</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('leads/pipeline') ?>">Pipeline</a></li>
-              </ul>
-            </div>
-          </li>
+            <li class="nav-item nav-category">
+              <span class="nav-link">VENTAS</span>
+            </li>
 
-          <!-- Campañas -->
-          <li class="nav-item <?= (strpos(uri_string(), 'campanias') !== false) ? 'active' : '' ?>">
-            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#campaigns-menu" role="button"
-               aria-expanded="<?= (strpos(uri_string(), 'campanias') !== false) ? 'true' : 'false' ?>">
-              <i class="ti-layers menu-icon"></i>
-              <span class="menu-title">Campañas</span>
-              <i class="menu-arrow"></i>
-            </a>
-            <div class="collapse <?= (strpos(uri_string(), 'campanias') !== false) ? 'show' : '' ?>" id="campaigns-menu">
-              <ul class="nav flex-column sub-menu">
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('campanias') ?>">Todas las Campañas</a></li>
-                <li class="nav-item"><a class="nav-link" href="<?= base_url('campanias/create') ?>">Nueva Campaña</a></li>
-              </ul>
-            </div>
-          </li>
+            <!-- Leads -->
+            <li class="nav-item <?= (strpos(uri_string(), 'leads') !== false) ? 'active' : '' ?>">
+              <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#leads-menu" role="button"
+                 aria-expanded="<?= (strpos(uri_string(), 'leads') !== false) ? 'true' : 'false' ?>">
+                <i class="ti-target menu-icon"></i>
+                <span class="menu-title">Leads</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse <?= (strpos(uri_string(), 'leads') !== false) ? 'show' : '' ?>" id="leads-menu">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('leads') ?>">Todos los Leads</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('leads/create') ?>">Nuevo Lead</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('leads/pipeline') ?>">Pipeline</a></li>
+                </ul>
+              </div>
+            </li>
 
-          <!-- Tareas -->
-          <li class="nav-item <?= (strpos(uri_string(), 'tareas') !== false) ? 'active' : '' ?>">
-            <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#tareas-menu" role="button"
-               aria-expanded="<?= (strpos(uri_string(), 'tareas') !== false) ? 'true' : 'false' ?>">
-              <i class="ti-calendar menu-icon"></i>
-              <span class="menu-title">Mis Tareas</span>
-              <?php if(isset($tareas_pendientes_count) && $tareas_pendientes_count > 0): ?>
+            <!-- Campañas -->
+            <li class="nav-item <?= (strpos(uri_string(), 'campanias') !== false) ? 'active' : '' ?>">
+              <a class="nav-link" data-bs-toggle="collapse" data-bs-target="#campaigns-menu" role="button"
+                 aria-expanded="<?= (strpos(uri_string(), 'campanias') !== false) ? 'true' : 'false' ?>">
+                <i class="ti-layers menu-icon"></i>
+                <span class="menu-title">Campañas</span>
+                <i class="menu-arrow"></i>
+              </a>
+              <div class="collapse <?= (strpos(uri_string(), 'campanias') !== false) ? 'show' : '' ?>" id="campaigns-menu">
+                <ul class="nav flex-column sub-menu">
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('campanias') ?>">Todas las Campañas</a></li>
+                  <li class="nav-item"><a class="nav-link" href="<?= base_url('campanias/create') ?>">Nueva Campaña</a></li>
+                </ul>
+              </div>
+            </li>
                 <span class="badge badge-danger ms-auto"><?= $tareas_pendientes_count ?></span>
               <?php endif; ?>
               <i class="menu-arrow"></i>

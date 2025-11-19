@@ -121,7 +121,7 @@
                     </div>
 
                     <!-- POSIBLE PLAN -->
-                    <div class="mb-3">
+                   <!--  <div class="mb-3">
                         <label for="plan_interes" class="form-label fw-bold">POSIBLE PLAN</label>
                         <select name="plan_interes" id="plan_interes" 
                                 class="form-control <?= isset($errors['plan_interes']) ? 'is-invalid' : '' ?>" required>
@@ -138,7 +138,7 @@
                         <?php if (isset($errors['plan_interes'])): ?>
                             <div class="invalid-feedback"><?= $errors['plan_interes'] ?></div>
                         <?php endif; ?>
-                    </div>
+                    </div> -->
 
                     <!-- DETALLES -->
                     <div class="mb-3">
