@@ -819,6 +819,77 @@ class Leads extends BaseController
         return view('leads/view', $data);
     }
 
+    /**
+     * Descartar un lead (cambiar estado a 'descartado' sin borrar datos)
+     */
+    public function descartar($leadId)
+    {
+        if ($this->request->getMethod() !== 'post') {
+            return redirect()->to('/leads/view/' . $leadId);
+        }
+
+        $motivo = trim((string) $this->request->getPost('motivo'));
+        if ($motivo === '') {
+            return redirect()->back()
+                ->with('error', 'Debes indicar un motivo para descartar el lead.')
+                ->withInput();
+        }
+
+        $db = \Config\Database::connect();
+        $db->transStart();
+
+        try {
+            $lead = $this->leadModel->find($leadId);
+            if (!$lead) {
+                throw new \Exception('Lead no encontrado');
+            }
+
+            // Actualizar estado y motivo en la tabla leads
+            $this->leadModel->update($leadId, [
+                'estado' => 'descartado',
+                'motivo_descarte' => $motivo,
+            ]);
+
+            // Registrar en historial de etapas si es posible
+            if (class_exists('App\\Models\\HistorialLeadModel')) {
+                $historialModel = new HistorialLeadModel();
+                $historialModel->registrarCambio(
+                    $leadId,
+                    session()->get('idusuario'),
+                    $lead['idetapa'] ?? null,
+                    $lead['idetapa'] ?? null,
+                    'Lead descartado: ' . $motivo
+                );
+            }
+
+            // Auditoría básica
+            if (function_exists('log_auditoria')) {
+                log_auditoria(
+                    'Descartar Lead',
+                    'leads',
+                    $leadId,
+                    $lead,
+                    ['motivo' => $motivo]
+                );
+            }
+
+            $db->transComplete();
+            if ($db->transStatus() === false) {
+                throw new \Exception('Error al descartar el lead');
+            }
+
+            return redirect()->to('/leads/view/' . $leadId)
+                ->with('success', 'Lead descartado correctamente');
+        } catch (\Throwable $e) {
+            $db->transRollback();
+            log_message('error', 'Error al descartar lead ' . $leadId . ': ' . $e->getMessage());
+
+            return redirect()->back()
+                ->with('error', 'No se pudo descartar el lead: ' . $e->getMessage())
+                ->withInput();
+        }
+    }
+
     // Buscar lead por teléfono (AJAX)
     public function buscarPorTelefono()
     {
