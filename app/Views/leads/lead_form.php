@@ -194,6 +194,21 @@
 <?= $this->section('scripts') ?>
 <script>
     document.addEventListener('DOMContentLoaded', function () {
+        // Mensaje de éxito después de registrar desde Campo
+        <?php if (session()->getFlashdata('swal_success')): ?>
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'success',
+                title: 'Registro guardado',
+                text: 'El lead de campo se registró correctamente y ya está en el sistema central.',
+                timer: 2500,
+                showConfirmButton: false
+            });
+        } else {
+            alert('Lead de campo registrado correctamente.');
+        }
+        <?php endif; ?>
+
         // Botón para buscar DNI
         const btnBuscarDni = document.getElementById('btn-buscar-dni');
         if (btnBuscarDni) {

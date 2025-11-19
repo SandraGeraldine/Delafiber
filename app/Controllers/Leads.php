@@ -307,6 +307,20 @@ class Leads extends BaseController
                 throw new \Exception('Error al crear el lead desde campo: ' . $errorMsg);
             }
 
+            // Guardar foto de domicilio enviada desde el formulario de campo (si existe)
+            $fotoCampo = $this->request->getFile('foto');
+            if ($fotoCampo && $fotoCampo->isValid()) {
+                $documentoModel = new \App\Models\DocumentoLeadModel();
+                $documentoModel->guardarDocumento(
+                    $fotoCampo,
+                    $leadId,
+                    $personaId,
+                    'foto_domicilio',
+                    $usuarioRegistro,
+                    'formulario_campo'
+                );
+            }
+
             // Registrar en historial de leads
             $historialModel = new HistorialLeadModel();
             $historialModel->registrarCambio(

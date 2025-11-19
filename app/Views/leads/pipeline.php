@@ -76,7 +76,14 @@
                                 <div class="pipeline-body" id="etapa-<?= $etapa['etapa_id'] ?>">
                                     <?php if (!empty($etapa['leads'])): ?>
                                         <?php foreach ($etapa['leads'] as $lead): ?>
-                                            <div class="lead-card" data-lead-id="<?= $lead['idlead'] ?>" draggable="true">
+                                            <div class="lead-card" 
+                                                 data-lead-id="<?= $lead['idlead'] ?>" 
+                                                 data-direccion="<?= esc($lead['direccion_servicio'] ?? '') ?>"
+                                                 data-coordenadas="<?= esc($lead['coordenadas_servicio'] ?? '') ?>"
+                                                 data-origen="<?= esc($lead['origen'] ?? '') ?>"
+                                                 data-nombre="<?= esc(trim(($lead['nombres'] ?? '') . ' ' . ($lead['apellidos'] ?? ''))) ?>"
+                                                 data-telefono="<?= esc($lead['telefono'] ?? '') ?>"
+                                                 draggable="true">
                                                 <div class="lead-card-header">
                                                     <strong><?= esc($lead['nombres']) ?> <?= esc($lead['apellidos']) ?></strong>
                                                 </div>
@@ -132,6 +139,36 @@
                         </div>
                     <?php endif; ?>
                 </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal pequeño para detalles rápidos del lead (incluye datos de Campo) -->
+<div class="modal fade" id="leadQuickViewModal" tabindex="-1" aria-labelledby="leadQuickViewLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content">
+            <div class="modal-header py-2">
+                <h6 class="modal-title" id="leadQuickViewLabel">Detalle rápido del lead</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p class="mb-1"><strong id="modalLeadNombre"></strong></p>
+                <p class="mb-1 small text-muted" id="modalLeadOrigen"></p>
+                <p class="mb-1"><i class="ti-mobile text-success"></i> <span id="modalLeadTelefono"></span></p>
+                <p class="mb-1"><i class="ti-location-pin text-primary"></i> <span id="modalLeadDireccion"></span></p>
+                <p class="mb-1 small" id="modalLeadCoordenadas"></p>
+                <div id="modalLeadFoto" class="mt-2">
+                    <img src="" alt="Foto del lead" class="img-fluid">
+                </div>
+            </div>
+            <div class="modal-footer py-2 d-flex justify-content-between">
+                <a href="#" target="_blank" id="modalBtnMapa" class="btn btn-sm btn-outline-primary">
+                    <i class="ti-map-alt"></i> Ver mapa
+                </a>
+                <a href="#" id="modalBtnVerLead" class="btn btn-sm btn-primary">
+                    Ver lead
+                </a>
             </div>
         </div>
     </div>

@@ -3,6 +3,15 @@
  * Funcionalidad de Drag & Drop para mover leads entre etapas
  */
 
+let quickViewModal = null;
+let modalNombre = null;
+let modalOrigen = null;
+let modalTelefono = null;
+let modalDireccion = null;
+let modalCoords = null;
+let modalBtnMapa = null;
+let modalBtnVerLead = null;
+
 class PipelineManager {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
@@ -35,9 +44,6 @@ class PipelineManager {
                 btn.addEventListener('mousedown', (e) => {
                     e.stopPropagation();
                 });
-                btn.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                });
             });
             
             card.addEventListener('dragstart', (e) => {
@@ -48,6 +54,45 @@ class PipelineManager {
             card.addEventListener('dragend', () => {
                 card.style.cursor = 'grab';
                 this.handleDragEnd(card);
+            });
+            
+            // Agregar evento de clic para mostrar detalles rápidos
+            card.addEventListener('click', (e) => {
+                // No disparar el modal si se hizo clic en un botón dentro de la tarjeta
+                if (e.target.closest('a.btn')) {
+                    return;
+                }
+                if (!quickViewModal) return;
+
+                const nombre = card.getAttribute('data-nombre') || '';
+                const origen = card.getAttribute('data-origen') || '';
+                const telefono = card.getAttribute('data-telefono') || '';
+                const direccion = card.getAttribute('data-direccion') || '';
+                const coords = card.getAttribute('data-coordenadas') || '';
+                const idLead = card.getAttribute('data-lead-id');
+
+                if (modalNombre) modalNombre.textContent = nombre;
+                if (modalOrigen) modalOrigen.textContent = origen ? ('Origen: ' + origen) : '';
+                if (modalTelefono) modalTelefono.textContent = telefono;
+                if (modalDireccion) modalDireccion.textContent = direccion;
+                if (modalCoords) modalCoords.textContent = coords ? ('Coordenadas: ' + coords) : 'Sin coordenadas';
+
+                // Configurar botón de mapa si hay coordenadas
+                if (modalBtnMapa) {
+                    if (coords && coords.includes(',')) {
+                        modalBtnMapa.style.display = '';
+                        modalBtnMapa.href = 'https://www.google.com/maps?q=' + encodeURIComponent(coords);
+                    } else {
+                        modalBtnMapa.style.display = 'none';
+                    }
+                }
+
+                // Botón para ver el lead completo
+                if (modalBtnVerLead && idLead) {
+                    modalBtnVerLead.href = BASE_URL.replace(/\/$/, '') + '/leads/view/' + idLead;
+                }
+
+                quickViewModal.show();
             });
         });
         
@@ -228,6 +273,18 @@ class PipelineManager {
 }
 // Inicializar cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
+    const quickViewModalEl = document.getElementById('leadQuickViewModal');
+    if (quickViewModalEl && typeof bootstrap !== 'undefined') {
+        quickViewModal = new bootstrap.Modal(quickViewModalEl);
+    }
+    modalNombre = document.getElementById('modalLeadNombre');
+    modalOrigen = document.getElementById('modalLeadOrigen');
+    modalTelefono = document.getElementById('modalLeadTelefono');
+    modalDireccion = document.getElementById('modalLeadDireccion');
+    modalCoords = document.getElementById('modalLeadCoordenadas');
+    modalBtnMapa = document.getElementById('modalBtnMapa');
+    modalBtnVerLead = document.getElementById('modalBtnVerLead');
+
     if (typeof BASE_URL !== 'undefined') {
         window.pipelineManager = new PipelineManager(BASE_URL);
     } else {
