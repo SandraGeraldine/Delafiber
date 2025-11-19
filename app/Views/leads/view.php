@@ -19,7 +19,7 @@ $modalidades = $modalidades ?? [];
 $historial = $historial ?? [];
 ?>
 
-<div class="row" 
+<div class="row lead-view-page" 
      data-lead-id="<?= $lead['idlead'] ?? '' ?>"
      data-lead-nombre="<?= esc(($lead['nombres'] ?? '') . ' ' . ($lead['apellidos'] ?? '')) ?>"
      data-lead-telefono="<?= esc($lead['telefono'] ?? '') ?>"

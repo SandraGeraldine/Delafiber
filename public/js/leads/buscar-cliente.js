@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
 function buscarClientePorTelefono() {
     const telefono = document.getElementById('buscar_telefono').value.trim();
     const resultadoDiv = document.getElementById('resultado-busqueda');
+    const btnBuscarTelefono = document.getElementById('btnBuscarTelefono');
     
     // Validar teléfono
     if (!telefono || telefono.length !== 9) {
@@ -38,13 +39,19 @@ function buscarClientePorTelefono() {
         return;
     }
     
-    // Mostrar loading
+    // Mostrar loading y deshabilitar botón para evitar múltiples clics
     resultadoDiv.innerHTML = `
         <div class="alert alert-info">
             <i class="icon-refresh rotating"></i> Buscando cliente...
         </div>
     `;
     resultadoDiv.style.display = 'block';
+
+    if (btnBuscarTelefono) {
+        btnBuscarTelefono.disabled = true;
+        btnBuscarTelefono.dataset.originalText = btnBuscarTelefono.innerHTML;
+        btnBuscarTelefono.innerHTML = '<i class="icon-refresh rotating"></i> Buscando...';
+    }
     
     // Hacer petición AJAX
     fetch(`${BASE_URL}/leads/buscarPorTelefono`, {
@@ -72,6 +79,15 @@ function buscarClientePorTelefono() {
                 <i class="icon-close"></i> Error al buscar cliente. Intente nuevamente.
             </div>
         `;
+    })
+    .finally(() => {
+        if (btnBuscarTelefono) {
+            btnBuscarTelefono.disabled = false;
+            if (btnBuscarTelefono.dataset.originalText) {
+                btnBuscarTelefono.innerHTML = btnBuscarTelefono.dataset.originalText;
+                delete btnBuscarTelefono.dataset.originalText;
+            }
+        }
     });
 }
 

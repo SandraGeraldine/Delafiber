@@ -21,3 +21,64 @@
     height: 14px;
     border-radius: 50%;
 }
+
+/* Estilos específicos para la vista de detalle de Lead */
+.lead-view-page .card {
+    border: 1px solid #e5e7eb;
+    box-shadow: 0 1px 2px rgba(15, 23, 42, 0.06);
+    border-radius: 10px;
+}
+
+.lead-view-page .card-header {
+    background-color: #ffffff;
+    border-bottom: 1px solid #eef0f4;
+}
+
+.lead-view-page .btn-primary {
+    background-color: #4b3bb8;
+    border-color: #4b3bb8;
+}
+
+.lead-view-page .btn-primary:hover,
+.lead-view-page .btn-primary:focus {
+    background-color: #3a2f90;
+    border-color: #3a2f90;
+}
+
+.lead-view-page .btn-outline-primary,
+.lead-view-page .btn-outline-success,
+.lead-view-page .btn-outline-info {
+    background-color: #ffffff;
+    border-width: 1px;
+}
+
+.lead-view-page .btn-outline-primary:hover,
+.lead-view-page .btn-outline-success:hover,
+.lead-view-page .btn-outline-info:hover {
+    background-color: #f3f4ff;
+}
+
+.lead-view-page h3,
+.lead-view-page h5 {
+    font-weight: 600;
+}
+
+.lead-view-page .badge {
+    border-radius: 999px;
+    padding: 0.3rem 0.75rem;
+}
+
+.lead-view-page .badge-info {
+    background-color: #e0ecff;
+    color: #1d4ed8;
+}
+
+.lead-view-page .badge-success {
+    background-color: #dcfce7;
+    color: #15803d;
+}
+
+.lead-view-page .badge-warning {
+    background-color: #fef3c7;
+    color: #92400e;
+}

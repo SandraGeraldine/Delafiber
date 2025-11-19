@@ -477,6 +477,14 @@ class Leads extends BaseController
                         $persona = (array)$persona;
                     }
                 }
+
+                // Si en el formulario viene un DNI y la persona aún no lo tiene, actualizarlo
+                $dniPost = $this->request->getPost('dni');
+                if (!empty($dniPost) && (empty($persona['dni']) || $persona['dni'] === null)) {
+                    $this->personaModel->update($personaId, ['dni' => $dniPost]);
+                    $persona['dni'] = $dniPost;
+                }
+
                 $nombreCompleto = ($persona['nombres'] ?? '') . ' ' . ($persona['apellidos'] ?? '');
             } else {
                 // Crear nueva persona
