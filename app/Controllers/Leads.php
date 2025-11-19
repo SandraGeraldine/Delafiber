@@ -436,6 +436,7 @@ class Leads extends BaseController
             return $this->response->setJSON([
                 'success'    => true,
                 'encontrado' => true,
+                'registrado' => true,
                 'persona'    => [
                     'nombres'     => $persona['nombres']     ?? '',
                     'apellidos'   => $persona['apellidos']   ?? '',
@@ -448,6 +449,73 @@ class Leads extends BaseController
             ]);
         }
 
+        // Si no se encontró en BD local, intentar obtener datos desde RENIEC (API Decolecta)
+        try {
+            $api_token = env('API_DECOLECTA_TOKEN');
+
+            if ($api_token) {
+                $api_endpoint = "https://api.decolecta.com/v1/reniec/dni?numero=" . $dni;
+
+                $ch = curl_init();
+                curl_setopt($ch, CURLOPT_URL, $api_endpoint);
+                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+                curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+                curl_setopt($ch, CURLOPT_HTTPHEADER, [
+                    'Content-Type: application/json',
+                    'Authorization: Bearer ' . $api_token,
+                ]);
+
+                $api_response = curl_exec($ch);
+                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+                curl_close($ch);
+
+                if ($api_response !== false && $http_code === 200) {
+                    $decoded_response = json_decode($api_response, true);
+
+                    if (isset($decoded_response['first_name'])) {
+                        $apellidos = trim(($decoded_response['first_last_name'] ?? '') . ' ' . ($decoded_response['second_last_name'] ?? ''));
+
+                        // Guardar automáticamente la persona en BD usando los datos obtenidos
+                        try {
+                            $personaData = [
+                                'dni'         => $dni,
+                                'nombres'     => $decoded_response['first_name'] ?? '',
+                                'apellidos'   => $apellidos,
+                                'telefono'    => null,
+                                'correo'      => null,
+                                'direccion'   => null,
+                                'referencias' => null,
+                                'iddistrito'  => null,
+                                'coordenadas' => null,
+                            ];
+
+                            $this->personaModel->insert($personaData);
+                        } catch (\Throwable $e) {
+                            log_message('error', 'Error al guardar persona desde Decolecta en campoBuscarDni: ' . $e->getMessage());
+                        }
+
+                        return $this->response->setJSON([
+                            'success'    => true,
+                            'encontrado' => true,
+                            'registrado' => false,
+                            'persona'    => [
+                                'nombres'     => $decoded_response['first_name'] ?? '',
+                                'apellidos'   => $apellidos,
+                                'telefono'    => '',
+                                'correo'      => '',
+                                'direccion'   => '',
+                                'referencias' => '',
+                            ],
+                            'message'    => 'Datos obtenidos de RENIEC (Decolecta)'
+                        ]);
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            log_message('error', 'Error en campoBuscarDni (Decolecta): ' . $e->getMessage());
+        }
+
+        // Si tampoco se pudo obtener desde RENIEC, mantener respuesta actual
         return $this->response->setJSON([
             'success'    => true,
             'encontrado' => false,

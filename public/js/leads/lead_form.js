@@ -81,10 +81,14 @@ document.addEventListener('DOMContentLoaded', function () {
                     if (direccionInput && !direccionInput.value) direccionInput.value = p.direccion || '';
 
                     if (typeof Swal !== 'undefined') {
+                        const mensaje = data.registrado === false
+                            ? (data.message || 'Datos obtenidos de RENIEC. Revisa y completa la información.')
+                            : (data.message || 'Se cargaron los datos del cliente asociado a este DNI.');
+
                         Swal.fire({
                             icon: 'success',
                             title: 'Datos encontrados',
-                            text: 'Se cargaron los datos del cliente asociado a este DNI.',
+                            text: mensaje,
                             timer: 2000,
                             showConfirmButton: false
                         });
