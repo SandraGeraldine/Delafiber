@@ -125,6 +125,20 @@ $historial = $historial ?? [];
                 </div>
 
                 <!-- Información del Lead -->
+                <?php
+                // Texto de ayuda para las etapas, pensado para usuarios de oficina
+                $etapaActualNombre = $lead['etapa_nombre'] ?? '';
+                $etapaClave = strtoupper($etapaActualNombre);
+                $ayudasEtapas = [
+                    'CAPTACION'   => 'Cliente recién contactado. Aún se está tomando datos y validando interés.',
+                    'INTERES'     => 'Cliente interesado que pidió más información o está evaluando el servicio.',
+                    'COTIZACION'  => 'Cliente con propuesta enviada. Pendiente de respuesta o ajustes.',
+                    'NEGOCIACION' => 'Se está conversando condiciones finales (precio, fecha, instalación).',
+                    'INSTALADO'   => 'Servicio ya instalado. Lead convertido en cliente.',
+                ];
+                $textoAyudaEtapa = $ayudasEtapas[$etapaClave] ?? '';
+                ?>
+
                 <div class="card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0">Información del Lead</h5>
@@ -133,7 +147,10 @@ $historial = $historial ?? [];
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label class="text-muted">Etapa Actual</label>
-                                <h6><?= esc($lead['etapa_nombre'] ?? 'Sin etapa') ?></h6>
+                                <h6><?= esc($etapaActualNombre ?: 'Sin etapa') ?></h6>
+                                <?php if ($textoAyudaEtapa): ?>
+                                    <small class="text-muted d-block"><?= esc($textoAyudaEtapa) ?></small>
+                                <?php endif; ?>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="text-muted">Origen</label>
@@ -148,7 +165,7 @@ $historial = $historial ?? [];
                                 <h6><?= esc(session()->get('user_name') ?? 'Sin asignar') ?></h6>
                             </div>
                             <div class="col-md-6 mb-3">
-                                <label class="text-muted">Plan de Interés 🌐</label>
+                                <label class="text-muted">Plan de Interés </label>
                                 <h6>
                                     <?php if (!empty($lead['plan_interes'])): ?>
                                         <span class="badge badge-primary" style="font-size: 14px;">
@@ -170,7 +187,7 @@ $historial = $historial ?? [];
                 <!-- Ubicación en Mapa -->
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0">📍 Ubicación en Mapa</h5>
+                        <h5 class="mb-0"> Ubicación en Mapa</h5>
                     </div>
                     <div class="card-body">
                         <?php if (!empty($lead['coordenadas'])): ?>
@@ -226,7 +243,7 @@ $historial = $historial ?? [];
                 <!-- Documentos del Lead -->
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">📎 Documentos</h5>
+                        <h5 class="mb-0"> Documentos</h5>
                         <?php if (!empty($resumen_documentos)): ?>
                         <div>
                             <span class="badge badge-secondary mr-1">Total: <?= (int)($resumen_documentos['total'] ?? 0) ?></span>
@@ -314,9 +331,34 @@ $historial = $historial ?? [];
                 </div>
 
                 <!-- Seguimientos -->
+                <?php
+                // Indicador simple de "Último seguimiento" para que se vea urgencia
+                $textoUltimoSeg = 'Sin seguimientos';
+                if (!empty($seguimientos) && isset($seguimientos[0]['fecha'])) {
+                    try {
+                        $fechaUltimo = new \DateTime($seguimientos[0]['fecha']);
+                        $hoy = new \DateTime();
+                        $diff = $hoy->diff($fechaUltimo);
+                        $dias = (int) $diff->days;
+                        if ($dias === 0) {
+                            $textoUltimoSeg = 'Hoy';
+                        } elseif ($dias === 1) {
+                            $textoUltimoSeg = 'Hace 1 día';
+                        } else {
+                            $textoUltimoSeg = 'Hace ' . $dias . ' días';
+                        }
+                    } catch (\Exception $e) {
+                        $textoUltimoSeg = 'Fecha no disponible';
+                    }
+                }
+                ?>
+
                 <div class="card mb-4">
                     <div class="card-header d-flex justify-content-between align-items-center">
-                        <h5 class="mb-0">Seguimientos</h5>
+                        <div>
+                            <h5 class="mb-0">Seguimientos</h5>
+                            <small class="text-muted">Último seguimiento: <?= esc($textoUltimoSeg) ?></small>
+                        </div>
                         <button class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#modalSeguimiento">
                             <i class="icon-plus"></i> Agregar
                         </button>
