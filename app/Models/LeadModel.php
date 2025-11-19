@@ -38,9 +38,9 @@ class LeadModel extends Model
     ];
 
     /**
-     * Obtener leads con filtros - COMPLETO
+     * Obtener leads con filtros y paginación básica
      */
-    public function getLeadsConFiltros($userId, $filtros = [])
+    public function getLeadsConFiltros($userId, $filtros = [], int $perPage = 25, int $page = 1): array
     {
         $builder = $this->db->table('leads l')
             ->select('l.idlead, l.created_at, l.estado, l.idusuario, l.idusuario_registro,
@@ -60,34 +60,28 @@ class LeadModel extends Model
             ->join('usuarios u_asignado', 'u_asignado.idusuario = l.idusuario', 'LEFT')
             ->join('usuarios u_registro', 'u_registro.idusuario = l.idusuario_registro', 'LEFT');
 
-        // Solo filtrar por usuario si no es null (admin ve todos)
         if ($userId !== null) {
             $builder->where('l.idusuario', $userId);
         }
         
-        // Filtro por etapa
         if (!empty($filtros['etapa'])) {
             $builder->where('l.idetapa', $filtros['etapa']);
         }
         
-        // Filtro por origen
         if (!empty($filtros['origen'])) {
             $builder->where('l.idorigen', $filtros['origen']);
         }
         
-        // Filtro por campaña
         if (!empty($filtros['campania'])) {
             $builder->where('l.idcampania', $filtros['campania']);
         }
         
-        // Filtro por estado (usando valores ENUM)
         if (isset($filtros['estado']) && !empty($filtros['estado'])) {
             $builder->where('l.estado', $filtros['estado']);
         } else {
-            $builder->where('l.estado', 'activo'); // Por defecto solo activos
+            $builder->where('l.estado', 'activo');
         }
         
-        // Búsqueda por nombre, teléfono o DNI
         if (!empty($filtros['busqueda'])) {
             $builder->groupStart()
                 ->like('p.nombres', $filtros['busqueda'])
@@ -97,7 +91,23 @@ class LeadModel extends Model
                 ->groupEnd();
         }
 
-        return $builder->orderBy('l.created_at', 'DESC')->get()->getResultArray();
+        $perPage = $perPage > 0 ? $perPage : 25;
+        $page = $page > 0 ? $page : 1;
+
+        $builder->orderBy('l.created_at', 'DESC');
+
+        $countBuilder = clone $builder;
+        $total = $countBuilder->countAllResults(false);
+
+        $offset = ($page - 1) * $perPage;
+        $rows = $builder->limit($perPage, $offset)->get()->getResultArray();
+
+        return [
+            'data'       => $rows,
+            'total'      => $total,
+            'perPage'    => $perPage,
+            'page'       => $page,
+        ];
     }
 
     /**

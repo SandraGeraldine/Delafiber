@@ -45,46 +45,53 @@ class Leads extends BaseController
         $this->distritoModel = new DistritoModel();
     }
 
-    // Lista de leads con filtros
+    // Lista de leads con filtros y paginación
     public function index()
     {
         $userId = session()->get('idusuario');
         $rol = session()->get('nombreRol');
-        
-        // Filtrar por usuario según permisos
-        // Admin y Supervisor ven todos, Vendedor solo los suyos
+
         if (!es_supervisor()) {
-            // Vendedor solo ve sus leads
             $userId = session()->get('idusuario');
         } else {
-            // Admin y Supervisor ven todos
             $userId = null;
         }
-        
-        $filtro_etapa = $this->request->getGet('etapa');
-        $filtro_origen = $this->request->getGet('origen');
+
+        $filtro_etapa    = $this->request->getGet('etapa');
+        $filtro_origen   = $this->request->getGet('origen');
         $filtro_busqueda = $this->request->getGet('buscar');
-        $leads = $this->leadModel->getLeadsConFiltros($userId, [
-            'etapa' => $filtro_etapa,
-            'origen' => $filtro_origen,
-            'busqueda' => $filtro_busqueda
-        ]);
-        // Obtener campañas desde el modelo
-        $campaignsModel = new CampaniaModel(); 
-        $campanias = $campaignsModel->findAll();
+        $page            = max(1, (int) $this->request->getGet('page'));
+        $perPage         = max(10, (int) $this->request->getGet('per_page') ?: 25);
+
+        $result = $this->leadModel->getLeadsConFiltros($userId, [
+            'etapa'    => $filtro_etapa,
+            'origen'   => $filtro_origen,
+            'busqueda' => $filtro_busqueda,
+        ], $perPage, $page);
+
+        $leads       = $result['data'];
+        $totalLeads  = $result['total'];
+        $totalPages  = (int) ceil($totalLeads / $perPage);
+
+        $campaignsModel = new CampaniaModel();
+        $campanias      = $campaignsModel->findAll();
 
         $data = [
-            'title' => 'Mis Leads - Delafiber CRM',
-            'leads' => $leads,
-            'total_leads' => count($leads),
-            'etapas' => $this->etapaModel->getEtapasActivas(),
-            'origenes' => $this->origenModel->getOrigenesActivos(),
-            'filtro_etapa' => $filtro_etapa,
-            'filtro_origen' => $filtro_origen,
-            'filtro_busqueda' => $filtro_busqueda,
-            'user_name' => session()->get('user_name'),
-            'campanias' => $campanias,
+            'title'          => 'Mis Leads - Delafiber CRM',
+            'leads'          => $leads,
+            'total_leads'    => $totalLeads,
+            'total_pages'    => $totalPages,
+            'current_page'   => $page,
+            'per_page'       => $perPage,
+            'etapas'         => $this->etapaModel->getEtapasActivas(),
+            'origenes'       => $this->origenModel->getOrigenesActivos(),
+            'filtro_etapa'   => $filtro_etapa,
+            'filtro_origen'  => $filtro_origen,
+            'filtro_busqueda'=> $filtro_busqueda,
+            'user_name'      => session()->get('user_name'),
+            'campanias'      => $campanias,
         ];
+
         return view('leads/index', $data);
     }
       public function create()   

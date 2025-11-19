@@ -182,11 +182,32 @@
                     </table>
                 </div>
 
-                <!-- Resumen -->
-                <div class="mt-3">
-                    <p class="text-muted">
-                        <strong>Total de leads:</strong> <?= count($leads) ?>
+                <!-- Resumen y paginación -->
+                <div class="mt-3 d-flex justify-content-between align-items-center flex-wrap">
+                    <p class="text-muted mb-2">
+                        <strong>Total de leads:</strong> <?= esc($total_leads ?? count($leads)) ?>
+                        &nbsp;|&nbsp;
+                        <strong>Página:</strong> <?= esc($current_page ?? 1) ?> de <?= esc($total_pages ?? 1) ?>
                     </p>
+
+                    <?php if (!empty($total_pages) && $total_pages > 1): ?>
+                    <nav aria-label="Paginación de leads">
+                        <ul class="pagination mb-0">
+                            <?php $page = $current_page ?? 1; $pages = $total_pages ?? 1; ?>
+                            <li class="page-item <?= ($page <= 1) ? 'disabled' : '' ?>">
+                                <a class="page-link" href="<?= base_url('leads?' . http_build_query(array_merge($_GET, ['page' => max(1, $page - 1)]))) ?>">&laquo;</a>
+                            </li>
+                            <?php for ($p = 1; $p <= $pages; $p++): ?>
+                                <li class="page-item <?= ($p == $page) ? 'active' : '' ?>">
+                                    <a class="page-link" href="<?= base_url('leads?' . http_build_query(array_merge($_GET, ['page' => $p]))) ?>"><?= $p ?></a>
+                                </li>
+                            <?php endfor; ?>
+                            <li class="page-item <?= ($page >= $pages) ? 'disabled' : '' ?>">
+                                <a class="page-link" href="<?= base_url('leads?' . http_build_query(array_merge($_GET, ['page' => min($pages, $page + 1)]))) ?>">&raquo;</a>
+                            </li>
+                        </ul>
+                    </nav>
+                    <?php endif; ?>
                 </div>
             </div>
         </div>
