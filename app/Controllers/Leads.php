@@ -169,9 +169,14 @@ class Leads extends BaseController
      */
     public function campo()
     {
-        // Solo Promotor Campo o supervisores/admin pueden usar esta vista
-        $rol = session()->get('nombreRol');
-        if ($rol !== 'Promotor Campo' && !function_exists('es_supervisor') ? false : !es_supervisor()) {
+        // Solo Promotor Campo o roles de nivel alto (admin/supervisor) pueden usar esta vista
+        $rolNombre = session()->get('nombreRol');
+        $rolNivel  = (int)(session()->get('rol_nivel') ?? 0);
+
+        $esPromotorCampo = ($rolNombre === 'Promotor Campo');
+        $esAdminOSupervisor = in_array($rolNivel, [1, 2], true);
+
+        if (!$esPromotorCampo && !$esAdminOSupervisor) {
             return redirect()->to('/leads')
                 ->with('error', 'No tienes permisos para acceder al formulario de campo');
         }
@@ -196,9 +201,14 @@ class Leads extends BaseController
      */
     public function campoStore()
     {
-        // Solo Promotor Campo o supervisores/admin pueden registrar desde esta vista
-        $rol = session()->get('nombreRol');
-        if ($rol !== 'Promotor Campo' && !function_exists('es_supervisor') ? false : !es_supervisor()) {
+        // Solo Promotor Campo o roles de nivel alto (admin/supervisor) pueden registrar desde esta vista
+        $rolNombre = session()->get('nombreRol');
+        $rolNivel  = (int)(session()->get('rol_nivel') ?? 0);
+
+        $esPromotorCampo = ($rolNombre === 'Promotor Campo');
+        $esAdminOSupervisor = in_array($rolNivel, [1, 2], true);
+
+        if (!$esPromotorCampo && !$esAdminOSupervisor) {
             return redirect()->to('/leads')
                 ->with('error', 'No tienes permisos para registrar leads desde campo');
         }
