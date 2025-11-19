@@ -232,6 +232,10 @@ $routes->group('perfil', ['filter' => 'auth'], function($routes) {
     $routes->get('/', 'Perfil::index');
     $routes->get('edit', 'Perfil::edit');
     $routes->post('update', 'Perfil::update');
+    // Actualizar datos personales del perfil
+    $routes->post('actualizar', 'Perfil::actualizar');
+    // Cambiar contraseña desde la pestaña de perfil
+    $routes->post('cambiar-password', 'Perfil::cambiarPassword');
 });
 
 // === CONFIGURACIÓN ===
