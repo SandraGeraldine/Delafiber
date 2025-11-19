@@ -194,9 +194,13 @@ class LeadModel extends Model
         foreach ($etapas as $etapa) {
             // Contar leads en esta etapa
             $totalLeads = $this->db->table('leads l')
-                ->where('l.idusuario', $userId)
+                ->join('origenes o', 'l.idorigen = o.idorigen')
                 ->where('l.idetapa', $etapa['idetapa'])
                 ->where('l.estado', 'activo')
+                ->groupStart()
+                    ->where('l.idusuario', $userId)
+                    ->orWhere('o.nombre', 'Trab. Campo')
+                ->groupEnd()
                 ->countAllResults();
 
             // Obtener algunos leads con información básica para el pipeline
@@ -205,9 +209,12 @@ class LeadModel extends Model
                 ->join('origenes o', 'l.idorigen = o.idorigen')
                 ->join('documentos_lead d', 'd.idlead = l.idlead AND d.tipo_documento = "foto_domicilio"', 'left')
                 ->select('l.idlead, p.nombres, p.apellidos, p.telefono, o.nombre as origen, l.created_at, l.direccion_servicio, l.coordenadas_servicio, d.ruta_archivo as foto_domicilio')
-                ->where('l.idusuario', $userId)
                 ->where('l.idetapa', $etapa['idetapa'])
                 ->where('l.estado', 'activo')
+                ->groupStart()
+                    ->where('l.idusuario', $userId)
+                    ->orWhere('o.nombre', 'Trab. Campo')
+                ->groupEnd()
                 ->orderBy('l.created_at', 'DESC')
                 ->limit(10)
                 ->get()
