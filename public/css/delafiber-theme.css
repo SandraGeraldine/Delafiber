@@ -248,7 +248,7 @@
     }
 
     .page-body-wrapper {
-        padding-top: 70px;
+        padding-top: 82px; /* un poco más de espacio en móvil para que no se oculte el título */
     }
 }
 
