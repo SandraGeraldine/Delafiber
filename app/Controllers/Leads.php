@@ -454,6 +454,10 @@ class Leads extends BaseController
             $t_end = microtime(true);
             log_message('info', "[PERF] Leads::campoStore total time: " . round(($t_end - $t_start), 3) . "s");
             if ($db->transStatus() === false) {
+                $dbError = $db->error();
+                $codigo = $dbError['code'] ?? 'N/A';
+                $mensaje = $dbError['message'] ?? 'Sin mensaje de error de BD';
+                log_message('error', "Transacción fallida en campoStore (DB error {$codigo}): {$mensaje}");
                 throw new \Exception('Error en la transacción al crear lead de campo');
             }
 
@@ -866,7 +870,13 @@ class Leads extends BaseController
             $db->transComplete();
             $t_end = microtime(true);
             log_message('info', "[PERF] Leads::store total time: " . round(($t_end - $t_start), 3) . "s");
-            if ($db->transStatus() === false) throw new \Exception('Error en la transacción');
+            if ($db->transStatus() === false) {
+                $dbError = $db->error();
+                $codigo = $dbError['code'] ?? 'N/A';
+                $mensaje = $dbError['message'] ?? 'Sin mensaje de error de BD';
+                log_message('error', "Transacción fallida en Leads::store (DB error {$codigo}): {$mensaje}");
+                throw new \Exception('Error en la transacción al crear lead');
+            }
             
             // Verificar si la solicitud es AJAX
         $isAjax = $this->request->isAJAX();
