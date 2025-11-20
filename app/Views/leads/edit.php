@@ -197,7 +197,11 @@
                                             <?php foreach ($vendedores as $vendedor): ?>
                                             <option value="<?= $vendedor['idusuario'] ?>"
                                                     <?= ($lead['idusuario'] == $vendedor['idusuario']) ? 'selected' : '' ?>>
-                                                <?= esc($vendedor['nombres'] . ' ' . $vendedor['apellidos']) ?>
+                                                <?php
+                                                    $venNombres   = $vendedor['nombres']   ?? $vendedor['nombre'] ?? '';
+                                                    $venApellidos = $vendedor['apellidos'] ?? '';
+                                                ?>
+                                                <?= esc(trim($venNombres . ' ' . $venApellidos)) ?>
                                             </option>
                                             <?php endforeach; ?>
                                         </select>
