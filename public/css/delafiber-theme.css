@@ -248,7 +248,7 @@
     }
 
     .page-body-wrapper {
-        padding-top: 90px; /* más espacio en móvil para asegurar que no se oculte el título */
+        padding-top: 95px; /* más espacio en móvil para asegurar que no se oculte el título */
     }
 }
 
@@ -1100,10 +1100,10 @@ a:hover {
         margin-right: 0.25rem;
     }
 
-    /* Levantar un poco los iconos en móvil para que queden más arriba */
+    /* Levantar un poco más los iconos en móvil para que queden al mismo margen que el logo */
     .navbar .navbar-nav.navbar-nav-right > li,
     .navbar #mobileMenuToggle {
-        margin-top: -4px;
+        margin-top: -8px;
     }
 
     /* Opcional: ocultar la barra de búsqueda en celular
