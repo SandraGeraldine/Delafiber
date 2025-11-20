@@ -270,7 +270,7 @@ export async function iniciarMapa(objetoRender = "Cajas", id = "map", renderizad
     puntosMarcadorCajas = turf.featureCollection([]);
     unionCajas = null;
 
-    const response = await fetch(`http://crm.delafiber.com/api/mapa/listarCajas`);
+    const response = await fetch(`/api/mapa/listarCajas`);
     const datosCajas = await response.json();
     
     datosCajas.forEach(caja => {
@@ -317,7 +317,7 @@ export async function iniciarMapa(objetoRender = "Cajas", id = "map", renderizad
     puntosMarcadorAntenas = turf.featureCollection([]);
     unionAntenas = null;
 
-    const response = await fetch(`http://crm.delafiber.com/api/mapa/listarAntenas`);
+    const response = await fetch(`/api/mapa/listarAntenas`);
     const datosAntenas = await response.json();
     
     datosAntenas.forEach(antena => {
