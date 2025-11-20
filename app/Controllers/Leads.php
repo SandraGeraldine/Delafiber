@@ -107,24 +107,99 @@ class Leads extends BaseController
         $usuarioModel = new \App\Models\UsuarioModel();
         $vendedores = $usuarioModel->getUsuariosActivos();
         
-        // Obtener servicios del sistema de gestión (catálogo GST)
+        // Obtener servicios desde el catálogo GST vía API externa
         $servicios = [];
         $paquetes = [];
         try {
-            $dbGestion = \Config\Database::connect('gestion');
+            $apiKeyServicios = env('gst.api.key') ?: '';
+            $serviciosUrl    = env('gst.catalogo.servicios.url') ?: 'https://gst.delafiber.com/api/servicios';
 
-            // Obtener solo columnas necesarias de servicios activos
-            $servicios = $dbGestion->query(
-                "SELECT id_servicio, tipo_servicio, servicio FROM tb_servicios WHERE inactive_at IS NULL ORDER BY servicio ASC"
-            )->getResultArray();
+            if (!empty($apiKeyServicios)) {
+                $headers = "Authorization: Api-Key {$apiKeyServicios}\r\n" .
+                           "Accept: application/json\r\n" .
+                           "Content-Type: application/json\r\n";
+
+                $payload = json_encode([
+                    'operacion'  => 'obtencionTiposServicio',
+                    'parametros' => new \stdClass(),
+                ]);
+
+                $context = stream_context_create([
+                    'http' => [
+                        'method'        => 'POST',
+                        'header'        => $headers,
+                        'content'       => $payload,
+                        'ignore_errors' => true,
+                        'timeout'       => 15,
+                    ],
+                ]);
+
+                $response = @file_get_contents($serviciosUrl, false, $context);
+                if ($response !== false) {
+                    $decoded = json_decode($response, true);
+
+                    if (is_array($decoded)) {
+                        $lista = [];
+
+                        // Si la respuesta es una lista plana
+                        $isList = array_keys($decoded) === range(0, count($decoded) - 1);
+                        if ($isList) {
+                            $lista = $decoded;
+                        } else {
+                            // Intentar claves comunes: data, servicios, items, etc.
+                            $candidatos = ['data', 'servicios', 'items', 'results', 'records', 'rows'];
+                            foreach ($candidatos as $k) {
+                                if (array_key_exists($k, $decoded) && is_array($decoded[$k])) {
+                                    $lista = $decoded[$k];
+                                    break;
+                                }
+                            }
+                        }
+
+                        // Mapear a formato uniforme utilizado por la vista
+                        foreach ($lista as $item) {
+                            if (!is_array($item)) {
+                                continue;
+                            }
+
+                            $idServicio = $item['id_servicio']
+                                ?? $item['idServicio']
+                                ?? $item['id']
+                                ?? null;
+
+                            $tipoServicio = $item['tipo_servicio']
+                                ?? $item['tipos_servicio']
+                                ?? $item['tipoServicio']
+                                ?? $item['codigo']
+                                ?? null;
+
+                            $nombreServicio = $item['servicio']
+                                ?? $item['servicios']
+                                ?? $item['nombre']
+                                ?? $item['descripcion']
+                                ?? null;
+
+                            if ($idServicio === null || $tipoServicio === null || $nombreServicio === null) {
+                                continue;
+                            }
+
+                            $servicios[] = [
+                                'id_servicio'   => $idServicio,
+                                'tipo_servicio' => $tipoServicio,
+                                'servicio'      => $nombreServicio,
+                            ];
+                        }
+                    }
+                }
+            }
 
             // Nota: los paquetes/planes ahora se cargan vía API GST en el frontend,
             // por lo que no es necesario traer tb_paquetes aquí para este formulario.
         } catch (\Exception $e) {
-            log_message('error', 'No se pudieron cargar servicios del sistema de gestión: ' . $e->getMessage());
+            log_message('error', 'No se pudieron cargar servicios desde el catálogo GST: ' . $e->getMessage());
             log_message('error', 'Stack trace: ' . $e->getTraceAsString());
             if (ENVIRONMENT === 'development') {
-                echo "<!-- ERROR AL CARGAR SERVICIOS: " . $e->getMessage() . " -->";
+                echo "<!-- ERROR AL CARGAR SERVICIOS GST: " . $e->getMessage() . " -->";
             }
         }
     
