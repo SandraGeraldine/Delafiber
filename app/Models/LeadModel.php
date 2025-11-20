@@ -56,7 +56,7 @@ class LeadModel extends Model
             ->join('etapas e', 'e.idetapa = l.idetapa')
             ->join('origenes o', 'o.idorigen = l.idorigen')
             ->join('campanias c', 'c.idcampania = l.idcampania', 'LEFT')
-            ->join('distritos d', 'd.iddistrito = p.iddistrito', 'LEFT')
+            ->join('distritos d', 'd.iddistrito = l.distrito_servicio', 'LEFT')
             ->join('usuarios u_asignado', 'u_asignado.idusuario = l.idusuario', 'LEFT')
             ->join('usuarios u_registro', 'u_registro.idusuario = l.idusuario_registro', 'LEFT');
 
