@@ -46,13 +46,14 @@
     text-align: center;
 }
 
-/* Sidebar collapse (modo solo íconos en desktop) */
+/* Sidebar collapse en desktop: ocultar completamente el sidebar y expandir el contenido */
 .sidebar-icon-only .sidebar { 
-    width: 70px !important;
+    width: 0 !important;
+    overflow: hidden !important;
 }
 
 .sidebar-icon-only .sidebar .nav .nav-item .nav-link { 
-    padding: 12px;
+    padding: 0;
     text-align: center;
 }
 
@@ -65,11 +66,12 @@
 }
 
 .sidebar-icon-only .main-panel { 
-    width: calc(100% - 70px) !important;
+    width: 100% !important;
+    margin-left: 0 !important;
 }
 
 .sidebar-icon-only .navbar .navbar-menu-wrapper {
-    width: calc(100% - 70px) !important;
+    width: 100% !important;
 }
 
 /* Prevenir scroll cuando sidebar está abierto en mobile */
