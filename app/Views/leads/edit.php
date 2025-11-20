@@ -44,24 +44,20 @@
                                 <div class="col-md-3">
                                     <div class="form-group">
                                         <label>DNI <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" name="dni" 
-                                               value="<?= esc($lead['dni']) ?>" 
-                                               maxlength="8" readonly>
+                                        <input type="text" class="form-control" name="dni"  value="<?= esc($lead['dni']) ?>" maxlength="8" readonly>
                                         <small class="text-muted">El DNI no se puede modificar</small>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Nombres <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" name="nombres" 
-                                               value="<?= esc($lead['nombres']) ?>" required>
+                                        <input type="text" class="form-control" name="nombres" value="<?= esc($lead['nombres']) ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-md-5">
                                     <div class="form-group">
                                         <label>Apellidos <span class="text-danger">*</span></label>
-                                        <input type="text" class="form-control" name="apellidos" 
-                                               value="<?= esc($lead['apellidos']) ?>" required>
+                                        <input type="text" class="form-control" name="apellidos" value="<?= esc($lead['apellidos']) ?>" required>
                                     </div>
                                 </div>
                             </div>
@@ -70,22 +66,19 @@
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Teléfono <span class="text-danger">*</span></label>
-                                        <input type="tel" class="form-control" name="telefono" 
-                                               value="<?= esc($lead['telefono']) ?>" required>
+                                        <input type="tel" class="form-control" name="telefono" value="<?= esc($lead['telefono']) ?>" required>
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Teléfono Alternativo</label>
-                                        <input type="tel" class="form-control" name="telefono_alternativo" 
-                                               value="<?= esc($lead['telefono_alternativo'] ?? '') ?>">
+                                        <input type="tel" class="form-control" name="telefono_alternativo" value="<?= esc($lead['telefono_alternativo'] ?? '') ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-4">
                                     <div class="form-group">
                                         <label>Correo Electrónico</label>
-                                        <input type="email" class="form-control" name="correo" 
-                                               value="<?= esc($lead['correo']) ?>">
+                                        <input type="email" class="form-control" name="correo" value="<?= esc($lead['correo']) ?>">
                                     </div>
                                 </div>
                             </div>
