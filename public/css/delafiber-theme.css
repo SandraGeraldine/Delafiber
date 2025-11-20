@@ -59,24 +59,24 @@
     top: 70px; /* Debajo del navbar */
     left: 0;
     bottom: 0;
-    width: 250px;
+    width: 240px; /* Estado expandido en escritorio */
     overflow-y: auto;
     overflow-x: hidden;
     z-index: 100;
     height: calc(100vh - 70px); /* Altura menos el navbar */
-    transition: all 0.3s ease-in-out; /* Animación suave */
+    transition: width 0.3s ease-in-out, left 0.3s ease-in-out; /* Animación suave sólo en ancho/posición */
     box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
-/* Sidebar colapsado (cuando se presiona hamburguesa) */
+/* Sidebar colapsado (cuando se presiona hamburguesa en escritorio) */
 .sidebar-icon-only .sidebar {
-    width: 70px;
+    width: 64px;
 }
 
 /* Ajustar contenido cuando sidebar está colapsado */
 .sidebar-icon-only .main-panel {
-    margin-left: 70px !important;
-    width: calc(100% - 70px) !important;
+    margin-left: 64px !important;
+    width: calc(100% - 64px) !important;
 }
 
 /* Ocultar texto cuando está colapsado */
@@ -142,7 +142,7 @@
 .sidebar-icon-only .sidebar .nav-item .nav-link:hover::after {
     content: attr(data-title);
     position: absolute;
-    left: 70px;
+    left: 64px;
     top: 50%;
     transform: translateY(-50%);
     background: var(--delafiber-primary);
@@ -170,10 +170,10 @@
 @media (min-width: 992px) {
     .container-scroller .page-body-wrapper .main-panel,
     .main-panel {
-        margin-left: 250px !important;
-        width: calc(100% - 250px) !important;
-        transition: width 0.25s ease, margin 0.25s ease !important;
-        max-width: calc(100% - 250px) !important;
+        margin-left: 240px !important; /* coincide con sidebar expandido */
+        width: calc(100% - 240px) !important;
+        transition: width 0.3s ease, margin 0.3s ease !important;
+        max-width: 100% !important; /* evitar min/max que bloquee el colapso */
     }
 }
 
@@ -188,7 +188,7 @@
         position: fixed !important;
         left: 0 !important;
         top: 70px !important;
-        width: 250px !important;
+        width: 240px !important; /* estado expandido por defecto */
         z-index: 100 !important;
     }
 }
@@ -198,8 +198,8 @@
     body:not(.sidebar-icon-only) .container-scroller .page-body-wrapper .main-panel,
     body.sidebar-fixed .container-scroller .page-body-wrapper .main-panel,
     body.sidebar-mini .container-scroller .page-body-wrapper .main-panel {
-        margin-left: 250px !important;
-        width: calc(100% - 250px) !important;
+        margin-left: 240px !important;
+        width: calc(100% - 240px) !important;
     }
 }
 

@@ -46,14 +46,14 @@
     text-align: center;
 }
 
-/* Sidebar collapse en desktop: ocultar completamente el sidebar y expandir el contenido */
+/* Sidebar collapse en desktop: ancho reducido (64px) y sólo íconos; el layout principal se ajusta en delafiber-theme.css */
 .sidebar-icon-only .sidebar { 
-    width: 0 !important;
+    width: 64px !important;
     overflow: hidden !important;
 }
 
 .sidebar-icon-only .sidebar .nav .nav-item .nav-link { 
-    padding: 0;
+    padding: 12px;
     text-align: center;
 }
 
@@ -65,14 +65,7 @@
     display: none; 
 }
 
-.sidebar-icon-only .main-panel { 
-    width: 100% !important;
-    margin-left: 0 !important;
-}
-
-.sidebar-icon-only .navbar .navbar-menu-wrapper {
-    width: 100% !important;
-}
+/* main-panel y navbar-menu-wrapper se ajustan en delafiber-theme.css para respetar los 64px */
 
 /* Prevenir scroll cuando sidebar está abierto en mobile */
 body.sidebar-open {
