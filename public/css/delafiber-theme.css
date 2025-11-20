@@ -188,7 +188,7 @@
         position: fixed !important;
         left: 0 !important;
         top: 70px !important;
-        width: 240px !important; /* estado expandido por defecto */
+        width: 240px; /* estado expandido por defecto */
         z-index: 100 !important;
     }
 }
