@@ -1060,6 +1060,14 @@ a:hover {
 
 /* Ajustes del header solo para CELULAR */
 @media (max-width: 575.98px) {
+    /* Navbar más compacto y de altura fija en móvil */
+    .navbar {
+        height: 60px;
+        padding-top: 0;
+        padding-bottom: 0;
+        align-items: center;
+    }
+
     /* El bloque del logo no debe ocupar tanto ancho fijo */
     .navbar .navbar-brand-wrapper {
         width: auto;
