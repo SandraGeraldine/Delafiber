@@ -143,7 +143,7 @@
                                             <option value="">Seleccionar...</option>
                                             <?php foreach ($modalidades as $modalidad): ?>
                                             <option value="<?= $modalidad['idmodalidad'] ?>"
-                                                    <?= ($lead['idmodalidad'] == $modalidad['idmodalidad']) ? 'selected' : '' ?>>
+                                                    <?= (($lead['idmodalidad'] ?? null) == $modalidad['idmodalidad']) ? 'selected' : '' ?>>
                                                 <?= esc($modalidad['nombre']) ?>
                                             </option>
                                             <?php endforeach; ?>
@@ -157,7 +157,7 @@
                                             <option value="">Sin campaña</option>
                                             <?php foreach ($campanias as $campania): ?>
                                             <option value="<?= $campania['idcampania'] ?>"
-                                                    <?= ($lead['idcampania'] == $campania['idcampania']) ? 'selected' : '' ?>>
+                                                    <?= (($lead['idcampania'] ?? null) == $campania['idcampania']) ? 'selected' : '' ?>>
                                                 <?= esc($campania['nombre']) ?>
                                             </option>
                                             <?php endforeach; ?>
@@ -171,7 +171,7 @@
                                     <div class="form-group">
                                         <label>Presupuesto Estimado</label>
                                         <input type="number" class="form-control" name="presupuesto_estimado" 
-                                               value="<?= esc($lead['presupuesto_estimado']) ?>" 
+                                               value="<?= esc($lead['presupuesto_estimado'] ?? '') ?>" 
                                                step="0.01" min="0">
                                     </div>
                                 </div>
@@ -179,7 +179,7 @@
                                     <div class="form-group">
                                         <label>Probabilidad de Cierre (%)</label>
                                         <input type="number" class="form-control" name="probabilidad_cierre" 
-                                               value="<?= esc($lead['probabilidad_cierre']) ?>" 
+                                               value="<?= esc($lead['probabilidad_cierre'] ?? '') ?>" 
                                                min="0" max="100">
                                     </div>
                                 </div>
@@ -187,7 +187,7 @@
                                     <div class="form-group">
                                         <label>Fecha Estimada Cierre</label>
                                         <input type="date" class="form-control" name="fecha_estimada_cierre" 
-                                               value="<?= esc($lead['fecha_estimada_cierre']) ?>">
+                                               value="<?= esc($lead['fecha_estimada_cierre'] ?? '') ?>">
                                     </div>
                                 </div>
                                 <div class="col-md-3">
@@ -209,7 +209,7 @@
                                 <div class="col-md-12">
                                     <div class="form-group">
                                         <label>Notas / Observaciones</label>
-                                        <textarea class="form-control" name="notas" rows="3"><?= esc($lead['notas']) ?></textarea>
+                                        <textarea class="form-control" name="notas" rows="3"><?= esc($lead['notas'] ?? '') ?></textarea>
                                     </div>
                                 </div>
                             </div>
