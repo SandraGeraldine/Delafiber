@@ -1092,6 +1092,12 @@ a:hover {
         margin-right: 0.25rem;
     }
 
+    /* Levantar un poco los iconos en móvil para que queden más arriba */
+    .navbar .navbar-nav.navbar-nav-right > li,
+    .navbar #mobileMenuToggle {
+        margin-top: -4px;
+    }
+
     /* Opcional: ocultar la barra de búsqueda en celular
        para que haya más espacio horizontal */
     .navbar .nav-search {
