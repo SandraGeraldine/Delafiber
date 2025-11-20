@@ -464,9 +464,12 @@ class Leads extends BaseController
         } catch (\Exception $e) {
             $db->transRollback();
             log_message('error', 'Error en campoStore: ' . $e->getMessage());
+
+            $mensajeUsuario = 'Ocurrió un problema al crear el lead desde campo. Intente nuevamente o contacte al administrador.';
+
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Error al crear el lead desde campo: ' . $e->getMessage())
+                ->with('error', $mensajeUsuario)
                 ->with('swal_error', true);
         }
     }
@@ -885,19 +888,23 @@ class Leads extends BaseController
         }
         } catch (\Exception $e) {
             $db->transRollback();
-            
+
+            log_message('error', 'Error en Leads::store: ' . $e->getMessage());
+
             // Verificar si la solicitud es AJAX
             $isAjax = $this->request->isAJAX();
-            
+
+            $mensajeUsuario = 'Ocurrió un problema al crear el lead. Intente nuevamente o contacte al administrador.';
+
             if ($isAjax) {
                 return $this->response->setJSON([
                     'success' => false,
-                    'message' => $e->getMessage()
+                    'message' => $mensajeUsuario
                 ]);
             }
             return redirect()->back()
                 ->withInput()
-                ->with('error', 'Error al crear el lead: ' . $e->getMessage())
+                ->with('error', $mensajeUsuario)
                 ->with('swal_error', true);
         }
     }
