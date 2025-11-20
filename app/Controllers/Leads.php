@@ -1158,6 +1158,10 @@ class Leads extends BaseController
                 ->with('error', 'No tienes permisos para editar este lead');
         }
 
+        // Obtener lista de vendedores activos para el combo "Asignar a"
+        $usuarioModel = new \App\Models\UsuarioModel();
+        $vendedores = $usuarioModel->getUsuariosActivos();
+
         $data = [
             'title' => 'Editar Lead - Delafiber CRM',
             'lead' => $lead,
@@ -1165,7 +1169,8 @@ class Leads extends BaseController
             'origenes' => $this->origenModel->getOrigenesActivos(),
             'modalidades' => $this->modalidadModel->getModalidadesActivas(),
             'campanias' => $this->campaniaModel->getCampaniasActivas(),
-            'user_name' => session()->get('user_name')
+            'user_name' => session()->get('user_name'),
+            'vendedores' => $vendedores
         ];
 
         return view('leads/edit', $data);
