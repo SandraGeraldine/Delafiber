@@ -172,7 +172,7 @@
                                     <div class="form-group">
                                         <label>Probabilidad de Cierre (%)</label>
                                         <input type="number" class="form-control" name="probabilidad_cierre" 
-                                               value="<?= esc($lead['probabilidad_cierre'] ?? '') ?>" 
+                                               value= "<?= esc($lead['probabilidad_cierre'] ?? '') ?>" 
                                                min="0" max="100">
                                     </div>
                                 </div>
