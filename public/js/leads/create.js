@@ -411,6 +411,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let mapaInicializado = false;
     const slcTipoServicio = document.getElementById('slcTipoServicio');
     const mapContainer = document.getElementById('mapContainer');
+    const coordInput = document.getElementById('coordenadas_manual');
+    const btnValidarCoberturaCoord = document.getElementById('btnValidarCoberturaCoord');
 
     async function initMapaCoberturaPaso2() {
         if (mapaInicializado) {
@@ -446,6 +448,86 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Exponer al ámbito global para que wizard.js pueda invocarlo al entrar al Paso 2
     window.initMapaCoberturaPaso2 = initMapaCoberturaPaso2;
+
+    // Cambiar entre Cajas y Antenas cuando el usuario cambie el select
+    if (slcTipoServicio) {
+        slcTipoServicio.addEventListener('change', async () => {
+            if (!mapContainer) return;
+
+            const tipoSeleccionado = slcTipoServicio.value === '2' ? 'Antenas' : 'Cajas';
+            try {
+                const mapa = await import(`${BASE_URL}js/api/Mapa.js`);
+                await mapa.iniciarMapa(tipoSeleccionado, 'mapContainer', 'inline');
+                await mapa.eventoMapa(true);
+                mapa.obtenerCoordenadasClick();
+            } catch (err) {
+                console.error('Error al cambiar tipo de red en el mapa:', err);
+            }
+        });
+    }
+
+    // Botón "Validar cobertura" usando coordenadas manuales (solo centra el mapa por ahora)
+    if (btnValidarCoberturaCoord && coordInput) {
+        btnValidarCoberturaCoord.addEventListener('click', async () => {
+            const valor = (coordInput.value || '').trim();
+            if (!valor) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'info',
+                        title: 'Coordenadas requeridas',
+                        text: 'Ingresa o pega unas coordenadas en formato lat,lng para validar visualmente.',
+                    });
+                }
+                return;
+            }
+
+            const partes = valor.split(',');
+            if (partes.length !== 2) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Formato inválido',
+                        text: 'Usa el formato latitud,longitud. Ejemplo: -13.4123,-76.1324',
+                    });
+                }
+                return;
+            }
+
+            const lat = parseFloat(partes[0]);
+            const lng = parseFloat(partes[1]);
+            if (Number.isNaN(lat) || Number.isNaN(lng)) {
+                if (typeof Swal !== 'undefined') {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Coordenadas inválidas',
+                        text: 'No se pudieron interpretar las coordenadas ingresadas.',
+                    });
+                }
+                return;
+            }
+
+            try {
+                const mapa = await import(`${BASE_URL}js/api/Mapa.js`);
+                // Centrar y marcar las coordenadas en el mapa
+                await mapa.buscarCoordenadassinMapa(lat, lng);
+
+                const resultado = await mapa.verificarCoberturaCoordenadas(lat, lng);
+                const alerta = document.getElementById('alerta-cobertura-ubicacion');
+                if (alerta) {
+                    alerta.style.display = 'block';
+                    if (resultado && resultado.tieneCobertura) {
+                        alerta.className = 'alert alert-success mt-2';
+                        alerta.textContent = 'Zona CON cobertura para ' + (resultado.tipo || 'la red seleccionada') + '.\nRevisa también el mapa para confirmar detalles.';
+                    } else {
+                        alerta.className = 'alert alert-danger mt-2';
+                        alerta.textContent = 'Zona SIN cobertura detectada para ' + (resultado.tipo || 'la red seleccionada') + '.\nPuedes igualmente registrar el lead, pero quedará fuera de cobertura.';
+                    }
+                }
+            } catch (err) {
+                console.error('Error al usar coordenadas manuales en el mapa:', err);
+            }
+        });
+    }
 
     // ============================================
     // 2. CONFIGURACIÓN MEJORADA DE SELECT2

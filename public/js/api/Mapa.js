@@ -432,6 +432,27 @@ export async function eventoMapa(valor) {
   return marcadorCoordenada;
 }
 
+export async function verificarCoberturaCoordenadas(latitud, longitud) {
+  if (typeof latitud !== 'number' || typeof longitud !== 'number') {
+    return { tieneCobertura: false, tipo: tipoActivo, lat: latitud, lng: longitud };
+  }
+
+  const punto = turf.point([longitud, latitud]);
+  const union = tipoActivo === "Cajas" ? unionCajas : unionAntenas;
+
+  if (!union) {
+    return { tieneCobertura: false, tipo: tipoActivo, lat: latitud, lng: longitud };
+  }
+
+  const dentro = turf.booleanPointInPolygon(punto, union);
+  return {
+    tieneCobertura: dentro,
+    tipo: tipoActivo,
+    lat: latitud,
+    lng: longitud,
+  };
+}
+
 let marcadorActivo = null;
 
 export async function buscarCoordenadassinMapa(latitud, longitud) {
