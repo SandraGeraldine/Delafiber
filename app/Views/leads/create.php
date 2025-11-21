@@ -501,4 +501,5 @@ const campanias = <?= json_encode($campanias ?? []) ?>;
 <script src="<?= base_url('js/leads/create.js') ?>"></script>
 <script src="<?= base_url('js/leads/campos-dinamicos-origen.js') ?>"></script>
 <script src="<?= base_url('js/leads/mapakey.js') ?>"></script>
+<script src="<?= base_url('js/leads/documentos-geolocalizacion.js') ?>"></script>
 <?= $this->endSection() ?>
