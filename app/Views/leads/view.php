@@ -162,7 +162,7 @@ $historial = $historial ?? [];
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="text-muted">Vendedor Asignado</label>
-                                <h6><?= esc(session()->get('user_name') ?? 'Sin asignar') ?></h6>
+                                <h6><?= esc($lead['vendedor_asignado'] ?? 'Sin asignar') ?></h6>
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="text-muted">Plan de Interés </label>
@@ -178,7 +178,20 @@ $historial = $historial ?? [];
                             </div>
                             <div class="col-md-6 mb-3">
                                 <label class="text-muted">Fecha de Registro</label>
-                                <h6><?= isset($lead['created_at']) ? date('d/m/Y H:i', strtotime($lead['created_at'])) : 'No disponible' ?></h6>
+                                <?php
+                                // Mostrar fecha en formato d/m/Y H:i. La zona horaria global debe estar
+                                // configurada en America/Lima en app/Config/App.php para reflejar hora peruana.
+                                $fechaRegistro = null;
+                                if (!empty($lead['created_at'])) {
+                                    try {
+                                        $dt = new \DateTime($lead['created_at']);
+                                        $fechaRegistro = $dt->format('d/m/Y H:i');
+                                    } catch (\Exception $e) {
+                                        $fechaRegistro = $lead['created_at'];
+                                    }
+                                }
+                                ?>
+                                <h6><?= $fechaRegistro ? esc($fechaRegistro) : 'No disponible' ?></h6>
                             </div>
                         </div>
                     </div>
@@ -191,6 +204,12 @@ $historial = $historial ?? [];
                     </div>
                     <div class="card-body">
                         <?php if (!empty($lead['coordenadas'])): ?>
+                            <p class="text-muted mb-2">
+                                <small>
+                                    <strong>Coordenadas:</strong>
+                                    <?= esc($lead['coordenadas']) ?>
+                                </small>
+                            </p>
                             <div id="miniMapLead" style="height: 350px; width: 100%; border-radius: 8px;"></div>
                             
                             <?php if (!empty($zona)): ?>
