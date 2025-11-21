@@ -2224,9 +2224,7 @@ public function completarTarea()
         }
     }
 
-    /**
-     * Verificar si un cliente ya existe (para WhatsApp)
-     */
+    /*Verificar si un cliente ya existe (para WhatsApp) */
     public function verificarClienteExistente()
     {
         $telefono = $this->request->getGet('telefono');
@@ -2302,9 +2300,7 @@ public function completarTarea()
         }
     }
 
-    /**
-     * Verificar cobertura por coordenadas GPS
-     */
+    /*Verificar cobertura por coordenadas GPS*/
     public function verificarCoberturaCoordenadas()
     {
         $lat = $this->request->getGet('lat');
@@ -2368,9 +2364,7 @@ public function completarTarea()
         }
     }
 
-    /**
-     * Subir documentos de un lead
-     */
+    /** Subir documentos de un lead*/
     public function subirDocumento($idlead)
     {
         requiere_permiso('leads.edit', 'No tienes permisos para subir documentos');
@@ -2407,9 +2401,7 @@ public function completarTarea()
         return $this->response->setJSON($resultado);
     }
 
-    /**
-     * Convertir lead a cliente (integración con sistema de gestión)
-     */
+    /*Convertir lead a cliente (integración con sistema de gestión) */
     public function convertirACliente($idlead)
     {
         // Obtener lead de forma simple
@@ -2521,7 +2513,6 @@ public function completarTarea()
 
     /**
      * Marcar lead como convertido manualmente
-     * (Después de crear contrato en sistema de gestión)
      */
     public function marcarConvertido($idlead)
     {
