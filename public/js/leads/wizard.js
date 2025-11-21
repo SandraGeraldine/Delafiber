@@ -1,5 +1,5 @@
 /**
- * Wizard de Registro de Leads - 2 Pasos
+ * Wizard de Registro de Leads - 3 Pasos
  * Controla la navegación entre pasos y validación
  * Compatible con campos dinámicos de origen
  */
@@ -7,15 +7,18 @@
 document.addEventListener('DOMContentLoaded', function() {
     const paso1 = document.getElementById('paso1');
     const paso2 = document.getElementById('paso2');
+    const paso3 = document.getElementById('paso3');
     const btnSiguiente = document.getElementById('btnSiguiente');
     const btnAtras = document.getElementById('btnAtras');
+    const btnSiguientePaso3 = document.getElementById('btnSiguientePaso3');
+    const btnAtrasPaso3 = document.getElementById('btnAtrasPaso3');
     const progressBar = document.getElementById('progressBar');
     const stepIndicator = document.getElementById('stepIndicator');
     const formLead = document.getElementById('formLead');
 
-    // Verificar que los elementos existan
-    if (!paso1 || !paso2 || !btnSiguiente || !btnAtras) {
-           console.error('No se encontraron los elementos del wizard');
+    // Verificar que los elementos base existan
+    if (!paso1 || !paso2 || !paso3 || !btnSiguiente || !btnAtras || !btnSiguientePaso3 || !btnAtrasPaso3) {
+        console.error('No se encontraron los elementos del wizard de 3 pasos');
         return;
     }
 
@@ -23,7 +26,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let pasoActual = 1;
 
     // ==========================================
-    // BOTÓN "SIGUIENTE" - IR AL PASO 2
+    // BOTÓN "SIGUIENTE" - PASO 1 -> PASO 2
     // ==========================================
     btnSiguiente.addEventListener('click', function() {
         if (validarPaso1()) {
@@ -32,10 +35,26 @@ document.addEventListener('DOMContentLoaded', function() {
     });
 
     // ==========================================
-    // BOTÓN "ATRÁS" - VOLVER AL PASO 1
+    // BOTÓN "ATRÁS" EN PASO 2 - VOLVER A PASO 1
     // ==========================================
     btnAtras.addEventListener('click', function() {
         irAPaso1();
+    });
+
+    // ==========================================
+    // BOTÓN "SIGUIENTE" - PASO 2 -> PASO 3
+    // ==========================================
+    btnSiguientePaso3.addEventListener('click', function() {
+        if (validarPaso2()) {
+            irAPaso3();
+        }
+    });
+
+    // ==========================================
+    // BOTÓN "ATRÁS" EN PASO 3 - VOLVER A PASO 2
+    // ==========================================
+    btnAtrasPaso3.addEventListener('click', function() {
+        irAPaso2();
     });
 
     // ==========================================
@@ -92,10 +111,19 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // ==========================================
-    // VALIDAR PASO 2 (Solicitud de Servicio)
+    // VALIDAR PASO 2 (Validar cobertura en mapa)
     // ==========================================
     function validarPaso2() {
-        const origen = document.getElementById('idorigen').value;
+        // Aquí puedes agregar la lógica de validación para el paso 2
+        return true;
+    }
+
+    // ==========================================
+    // VALIDAR PASO 3 (Origen y campos dinámicos)
+    // ==========================================
+    function validarPaso3() {
+        const origenSelect = document.getElementById('idorigen');
+        const origen = origenSelect ? origenSelect.value : '';
 
         // Validar solo el campo obligatorio: Origen
         if (!origen) {
@@ -160,53 +188,78 @@ document.addEventListener('DOMContentLoaded', function() {
     // IR AL PASO 2
     // ==========================================
     function irAPaso2() {
-        // Ocultar Paso 1
+        // Ocultar Paso 1 y Paso 3
         paso1.style.display = 'none';
-        
+        paso3.style.display = 'none';
+
         // Mostrar Paso 2
         paso2.style.display = 'block';
-        
+
         // Actualizar barra de progreso
-        progressBar.style.width = '100%';
-        stepIndicator.textContent = 'Paso 2 de 2';
-        stepIndicator.classList.remove('badge-primary');
-        stepIndicator.classList.add('badge-success');
-        
+        progressBar.style.width = '66%';
+        stepIndicator.textContent = 'Paso 2 de 3';
+        stepIndicator.classList.remove('badge-success');
+        stepIndicator.classList.add('badge-primary');
+
         // Scroll al inicio
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        
+
         pasoActual = 2;
-        
-        // IMPORTANTE: Inicializar verificación de cobertura ahora que el elemento es visible
-        setTimeout(() => {
-            if (window.personaManager && typeof window.personaManager.initVerificarCobertura === 'function') {
-                window.personaManager.initVerificarCobertura();
-            } else {
-                    console.error('PersonaManager no disponible');
-            }
-        }, 100); // Pequeño delay para asegurar que el DOM esté renderizado
     }
 
     // ==========================================
-    // VOLVER AL PASO 1
+    // IR AL PASO 1
     // ==========================================
     function irAPaso1() {
         // Mostrar Paso 1
         paso1.style.display = 'block';
-        
-        // Ocultar Paso 2
+
+        // Ocultar Paso 2 y Paso 3
         paso2.style.display = 'none';
-        
+        paso3.style.display = 'none';
+
         // Actualizar barra de progreso
-        progressBar.style.width = '50%';
-        stepIndicator.textContent = 'Paso 1 de 2';
+        progressBar.style.width = '33%';
+        stepIndicator.textContent = 'Paso 1 de 3';
         stepIndicator.classList.remove('badge-success');
         stepIndicator.classList.add('badge-primary');
-        
+
         // Scroll al inicio
         window.scrollTo({ top: 0, behavior: 'smooth' });
-        
+
         pasoActual = 1;
+    }
+
+    // ==========================================
+    // IR AL PASO 3
+    // ==========================================
+    function irAPaso3() {
+        // Ocultar Paso 1 y Paso 2
+        paso1.style.display = 'none';
+        paso2.style.display = 'none';
+
+        // Mostrar Paso 3
+        paso3.style.display = 'block';
+
+        // Actualizar barra de progreso
+        progressBar.style.width = '100%';
+        stepIndicator.textContent = 'Paso 3 de 3';
+        stepIndicator.classList.remove('badge-primary');
+        stepIndicator.classList.add('badge-success');
+
+        // Scroll al inicio
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+
+        pasoActual = 3;
+
+        // IMPORTANTE: Inicializar verificación de cobertura por distrito ahora que el elemento es visible
+        setTimeout(() => {
+            if (window.personaManager && typeof window.personaManager.initVerificarCobertura === 'function') {
+                window.personaManager.initVerificarCobertura();
+            } else {
+                console.error('PersonaManager no disponible');
+            }
+        }, 100); // Pequeño delay para asegurar que el DOM esté renderizado
     }
 
     // ==========================================

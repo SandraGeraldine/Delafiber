@@ -29,10 +29,10 @@
 
                     <div class="mb-4">
                         <div class="progress" style="height: 8px;">
-                            <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 50%"></div>
+                            <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 33%"></div>
                         </div>
                         <div class="text-center mt-2">
-                            <span class="badge badge-primary" id="stepIndicator">Paso 1 de 2</span>
+                            <span class="badge badge-primary" id="stepIndicator">Paso 1 de 3</span>
                         </div>
                     </div>
 
@@ -132,11 +132,72 @@
                             </button>
                         </div>
                     </div>
-                    <!-- PASO 2: SOLICITUD DE SERVICIO -->
+                    <!-- PASO 2: VALIDAR COBERTURA -->
                     <div id="paso2" style="display:none;">
                         <div class="card mb-4">
                             <div class="card-header paso2-header">
-                                <h5 class="mb-0"><i class="icon-home"></i> Paso 2: ¿Dónde instalará el servicio?</h5>
+                                <h5 class="mb-0"><i class="icon-map"></i> Paso 2: Validar cobertura</h5>
+                            </div>
+                            <div class="card-body">
+                                <div class="card border-warning mb-4">
+                                    <div class="card-header bg-warning text-dark">
+                                        <h6 class="mb-0">
+                                            <i class="icon-map"></i>
+                                            <strong>Validar Cobertura</strong>
+                                        </h6>
+                                    </div>
+                                    <div class="card-body">
+                                        <div class="alert alert-info mb-3">
+                                            <i class="icon-info"></i>
+                                            <strong>Importante:</strong> Antes de registrar el lead, verifica que la dirección del cliente
+                                            esté dentro del área de cobertura usando el mapa.
+                                        </div>
+
+                                        <div class="row mb-3">
+                                            <div class="col-md-4">
+                                                <div class="form-group">
+                                                    <label for="slcTipoServicio">Tipo de red</label>
+                                                    <select name="tipoServicio" id="slcTipoServicio" class="form-control">
+                                                        <option value="1">Cajas</option>
+                                                        <option value="2">Antenas</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-8">
+                                                <div class="form-group">
+                                                    <label for="coordenadas_manual">Coordenadas (lat,lng)</label>
+                                                    <div class="input-group">
+                                                        <input type="text" class="form-control" id="coordenadas_manual" placeholder="Ej: -13.4123,-76.1324">
+                                                        <button type="button" class="btn btn-primary" id="btnValidarCoberturaCoord">
+                                                            Validar cobertura
+                                                        </button>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div id="mapContainer" style="width:100%; height:400px; background:#f5f5f5;"></div>
+                                        <div id="alerta-cobertura-ubicacion" style="display:none;" class="mt-3"></div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-between">
+                                    <button type="button" class="btn btn-light" id="btnAtras">
+                                        <i class="icon-arrow-left"></i> Atrás
+                                    </button>
+                                    <button type="button" class="btn btn-primary btn-lg" id="btnSiguientePaso3">
+                                        Siguiente <i class="icon-arrow-right"></i>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- PASO 3: SOLICITUD DE SERVICIO Y DETALLES -->
+                    <div id="paso3" style="display:none;">
+                        <div class="card mb-4">
+                            <div class="card-header paso3-header">
+                                <h5 class="mb-0"><i class="icon-home"></i> Paso 3: Detalles del servicio y contacto</h5>
                             </div>
                             <div class="card-body">
                                 <div class="alert alert-warning mb-4">
@@ -178,6 +239,7 @@
                                     </div>
                                 </div>
                                 <div id="alerta-cobertura-zona" style="display: none;"></div>
+
                                 <!-- Segunda fila: Tipo Instalación, Tipo Servicio, Plan -->
                                 <div class="row">
                                     <div class="col-md-4">
@@ -220,56 +282,6 @@
                                     </div>
                                 </div>
 
-                                <!-- Contenedor para mensaje de cobertura de zonas -->
-                                <div class="card border-warning mb-4">
-                                    <div class="card-header bg-warning text-dark">
-                                        <h6 class="mb-0">
-                                            <i class="icon-map"></i> 
-                                            <strong>PASO 1: Validar Cobertura</strong>
-                                        </h6>
-                                    </div>
-                                    <div class="card-body">
-                                        <div class="alert alert-info mb-3">
-                                            <i class="icon-info"></i> 
-                                            <strong>Importante:</strong> Antes de registrar el lead, verifica que la dirección del cliente 
-                                            esté dentro del área de cobertura usando el mapa del sistema de gestión.
-                                        </div>
-                                        
-                                        <!-- Layout en dos columnas -->
-                                        <div class="container py-4">
-                                            <select name="tipoServicio" id="slcTipoServicio">
-                                            <option value="1">Cajas</option>
-                                            <option value="2">Antenas</option>
-                                            </select>
-                                            <button id="openModalBtn" type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#mapModal">
-                                            Abrir modal
-                                            </button>
-                                        </div>
-
-                                        <!-- Bootstrap Modal -->
-                                        <div class="modal fade" id="mapModal" tabindex="-1" aria-labelledby="mapModalLabel" aria-hidden="true">
-                                            <div class="modal-dialog modal-dialog-centered modal-lg">
-                                            <div class="modal-content">
-                                                <div class="modal-header">
-                                                <h5 class="modal-title" id="mapModalLabel">Mapa / Contenido</h5>
-                                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
-                                                </div>
-                                                <div class="modal-body">
-                                                <!-- Aquí va el contenido del modal (mapa, formularios, etc.) -->
-                                                <div id="mapContainer" style="width:100%; height:400px; background:#f5f5f5;">
-                                                    <!-- El script ./api/Mapa.js puede inicializar el mapa dentro de #mapContainer -->
-                                                </div>
-                                                </div>
-                                                <div class="modal-footer">
-                                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
-                                                <button type="button" id="btnGuardarModalMapa" class="btn btn-success" disabled>
-                                                    <i class="icon-check"></i> Usar coordenadas seleccionadas
-                                                </button>
-                                            </div>
-                                         </div>
-                                    </div>
-                                </div>
-
                                 <!-- Ubicación GPS -->
                                 <div class="row">
                                     <div class="col-md-12">
@@ -300,7 +312,7 @@
                                     </div>
                                     <div class="card-body">
                                         <div class="alert alert-warning">
-                                            <strong><i class="icon-info"></i> Importante:</strong> 
+                                            <strong><i class="icon-info"></i> Importante:</strong>
                                             Para validar la dirección y verificar identidad, solicita al cliente:
                                             <ul class="mb-0 mt-2">
                                                 <li>Foto del DNI (frontal y reverso)</li>
@@ -314,7 +326,7 @@
                                                     <label for="foto_dni_frontal">
                                                         <i class="icon-camera"></i> DNI - Frontal
                                                     </label>
-                                                    <input type="file" class="form-control-file" id="foto_dni_frontal" 
+                                                    <input type="file" class="form-control-file" id="foto_dni_frontal"
                                                            name="foto_dni_frontal" accept="image/*,.pdf">
                                                     <small class="text-muted">Formatos: JPG, PNG, PDF (máx. 5MB)</small>
                                                     <div id="preview_dni_frontal" class="mt-2"></div>
@@ -325,7 +337,7 @@
                                                     <label for="foto_dni_reverso">
                                                         <i class="icon-camera"></i> DNI - Reverso
                                                     </label>
-                                                    <input type="file" class="form-control-file" id="foto_dni_reverso" 
+                                                    <input type="file" class="form-control-file" id="foto_dni_reverso"
                                                            name="foto_dni_reverso" accept="image/*,.pdf">
                                                     <small class="text-muted">Formatos: JPG, PNG, PDF (máx. 3MB) - Se comprimirá automáticamente</small>
                                                     <div id="preview_dni_reverso" class="mt-2"></div>
@@ -343,7 +355,7 @@
                                                         <option value="recibo_luz">Recibo de Luz</option>
                                                         <option value="recibo_agua">Recibo de Agua</option>
                                                     </select>
-                                                    <input type="file" class="form-control-file" id="recibo_luz_agua" 
+                                                    <input type="file" class="form-control-file" id="recibo_luz_agua"
                                                            name="recibo_luz_agua" accept="image/*,.pdf">
                                                     <small class="text-muted">Para validar la dirección de instalación</small>
                                                     <div id="preview_recibo" class="mt-2"></div>
@@ -354,7 +366,7 @@
                                                     <label for="foto_domicilio">
                                                         <i class="icon-camera"></i> Foto del Domicilio (Opcional)
                                                     </label>
-                                                    <input type="file" class="form-control-file" id="foto_domicilio" 
+                                                    <input type="file" class="form-control-file" id="foto_domicilio"
                                                            name="foto_domicilio" accept="image/*">
                                                     <small class="text-muted">Foto de la fachada o referencia visual</small>
                                                     <div id="preview_domicilio" class="mt-2"></div>
@@ -368,7 +380,7 @@
 
                                 <!-- Origen y Campaña -->
                                 <h6 class="mb-3"><i class="icon-chart"></i> Origen del Contacto</h6>
-                                
+
                                 <div class="row">
                                     <div class="col-md-6">
                                         <div class="form-group">
@@ -422,7 +434,7 @@
                                 <input type="hidden" id="idcampania" name="idcampania" value="<?= $campania_preseleccionada ?? '' ?>">
 
                                 <?php if (!empty($campania_preseleccionada)): ?>
-                                    <?php 
+                                    <?php
                                     // Buscar el nombre de la campaña
                                     $nombreCampania = 'Campaña seleccionada';
                                     foreach ($campanias as $camp) {
@@ -445,15 +457,15 @@
                                 </div>
 
                                 <div class="alert alert-info">
-                                    <i class="icon-info"></i> <strong>Nota:</strong> Este lead se asignará automáticamente a ti. 
+                                    <i class="icon-info"></i> <strong>Nota:</strong> Este lead se asignará automáticamente a ti.
                                     Podrás crear tareas y asignarlas a otros usuarios después del registro.
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Botones Paso 2 -->
+                        <!-- Botones Paso 3 -->
                         <div class="d-flex justify-content-between">
-                            <button type="button" class="btn btn-light" id="btnAtras">
+                            <button type="button" class="btn btn-light" id="btnAtrasPaso3">
                                 <i class="icon-arrow-left"></i> Atrás
                             </button>
                             <button type="submit" class="btn btn-success btn-lg" id="btnGuardar">
@@ -466,7 +478,7 @@
             </div> <!-- .card-body -->
         </div> <!-- .card -->
     </div> <!-- .col-md-12 -->
- </div> <!-- .row -->
+</div> <!-- .row -->
 </div> <!-- .container-fluid -->
 
 <?= $this->endSection() ?>
