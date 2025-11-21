@@ -119,15 +119,12 @@ class LeadModel extends Model
             ->join('personas p', 'l.idpersona = p.idpersona')
             ->join('etapas e', 'l.idetapa = e.idetapa')
             ->join('origenes o', 'l.idorigen = o.idorigen')
-            // Usar el distrito del servicio asociado al lead
             ->join('distritos d', 'l.distrito_servicio = d.iddistrito', 'LEFT')
             ->join('provincias pr', 'd.idprovincia = pr.idprovincia', 'LEFT')
-            // Traer también el nombre del vendedor asignado
             ->join('usuarios u', 'l.idusuario = u.idusuario', 'LEFT')
             ->select('l.*, 
                      p.nombres, p.apellidos, p.dni, p.telefono, p.correo,
                      p.referencias,
-                     -- Dirección y coordenadas específicas del servicio
                      l.direccion_servicio as direccion,
                      l.coordenadas_servicio as coordenadas,
                      e.nombre as etapa_nombre,
