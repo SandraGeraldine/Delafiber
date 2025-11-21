@@ -205,6 +205,13 @@ document.addEventListener('DOMContentLoaded', function() {
         window.scrollTo({ top: 0, behavior: 'smooth' });
 
         pasoActual = 2;
+
+        // Inicializar mapa de cobertura embebido si la función está disponible
+        setTimeout(() => {
+            if (window.initMapaCoberturaPaso2 && typeof window.initMapaCoberturaPaso2 === 'function') {
+                window.initMapaCoberturaPaso2();
+            }
+        }, 100);
     }
 
     // ==========================================

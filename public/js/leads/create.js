@@ -406,53 +406,46 @@ document.addEventListener('DOMContentLoaded', () => {
 // MEJORAS PARA EL FORMULARIO DE LEADS
 
 document.addEventListener('DOMContentLoaded', () => {
-    // ============================================
-    // 1. GESTIÓN MEJORADA DEL MAPA EN MODAL
+    // 1. MAPA EMBEBIDO EN PASO 2 
 
     let mapaInicializado = false;
-    const mapModalEl = document.getElementById('mapModal');
-    const btnGuardar = document.getElementById('btnGuardarModalMapa');
     const slcTipoServicio = document.getElementById('slcTipoServicio');
+    const mapContainer = document.getElementById('mapContainer');
 
-    if (mapModalEl) {
-        mapModalEl.addEventListener('shown.bs.modal', async () => {
-            if (!mapaInicializado) {
-                const tipo = (slcTipoServicio?.value === '2') ? 'Antenas' : 'Cajas';
-                try {
-                    const mapa = await import(`${BASE_URL}js/api/Mapa.js`);
-                    await mapa.iniciarMapa(tipo, 'mapContainer', 'modal');
-                    await mapa.eventoMapa(true);
-                    mapa.obtenerCoordenadasClick();
-                    mapaInicializado = true;
-                    if (mapa.ultimaCoordenada) {
-                        if (btnGuardar) btnGuardar.disabled = false;
-                    }
-                } catch (err) {
-                    console.error('Error al iniciar mapa:', err);
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            icon: 'error',
-                            title: 'Error al cargar el mapa',
-                            text: 'No se pudo inicializar el mapa. Por favor, recarga la página.'
-                        });
-                    } else {
-                        alert('No se pudo inicializar el mapa. Por favor, recarga la página.');
-                    }
-                }
-            }
-        });
+    async function initMapaCoberturaPaso2() {
+        if (mapaInicializado) {
+            return;
+        }
 
-        mapModalEl.addEventListener('hidden.bs.modal', async () => {
-            try {
-                const mapa = await import(`${BASE_URL}js/api/Mapa.js`);
-                await mapa.eliminarMapa();
-                mapaInicializado = false;
-                if (btnGuardar) btnGuardar.disabled = true;
-            } catch (err) {
-                console.error('Error al limpiar mapa:', err);
+        if (!mapContainer) {
+            console.warn('mapContainer no encontrado para mapa de cobertura');
+            return;
+        }
+
+        const tipo = (slcTipoServicio && slcTipoServicio.value === '2') ? 'Antenas' : 'Cajas';
+
+        try {
+            const mapa = await import(`${BASE_URL}js/api/Mapa.js`);
+            await mapa.iniciarMapa(tipo, 'mapContainer', 'inline');
+            await mapa.eventoMapa(true);
+            mapa.obtenerCoordenadasClick();
+            mapaInicializado = true;
+        } catch (err) {
+            console.error('Error al iniciar mapa embebido:', err);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error al cargar el mapa',
+                    text: 'No se pudo inicializar el mapa de cobertura. Por favor, recarga la página.'
+                });
+            } else {
+                alert('No se pudo inicializar el mapa de cobertura. Por favor, recarga la página.');
             }
-        });
+        }
     }
+
+    // Exponer al ámbito global para que wizard.js pueda invocarlo al entrar al Paso 2
+    window.initMapaCoberturaPaso2 = initMapaCoberturaPaso2;
 
     // ============================================
     // 2. CONFIGURACIÓN MEJORADA DE SELECT2
