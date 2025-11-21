@@ -511,6 +511,23 @@ document.addEventListener('DOMContentLoaded', () => {
                 // Centrar y marcar las coordenadas en el mapa
                 await mapa.buscarCoordenadassinMapa(lat, lng);
 
+                // Guardar también las coordenadas para que se persistan en el lead
+                const inputCoordsServicio = document.getElementById('coordenadas_servicio');
+                if (inputCoordsServicio) {
+                    inputCoordsServicio.value = `${lat},${lng}`;
+                }
+
+                // Actualizar bloque informativo de coordenadas, si existe
+                const infoDiv = document.getElementById('coordenadas-info');
+                const textoDiv = document.getElementById('coordenadas-texto');
+                if (infoDiv && textoDiv) {
+                    textoDiv.innerHTML = `
+                        <strong>Ubicación capturada:</strong><br>
+                        Latitud: ${lat.toFixed(6)}, Longitud: ${lng.toFixed(6)}
+                    `;
+                    infoDiv.style.display = 'block';
+                }
+
                 const resultado = await mapa.verificarCoberturaCoordenadas(lat, lng);
                 const alerta = document.getElementById('alerta-cobertura-ubicacion');
                 if (alerta) {
