@@ -751,4 +751,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         }
     }
+
+    // Antes de enviar el formulario, guardar el NOMBRE del plan en lugar del ID
+    const formLead = document.getElementById('formLead');
+    if (formLead && selPlan) {
+        formLead.addEventListener('submit', () => {
+            const opt = selPlan.selectedOptions && selPlan.selectedOptions[0];
+            if (opt && opt.textContent) {
+                // Enviar al backend el texto completo del plan (nombre + velocidad + precio)
+                selPlan.value = opt.textContent.trim();
+            }
+        });
+    }
 });
