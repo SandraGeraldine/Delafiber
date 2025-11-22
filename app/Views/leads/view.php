@@ -718,8 +718,8 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
 
 <?= $this->section('scripts') ?>
 
-<!-- Google Maps API -->
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyAACo2qyElsl8RwIqW3x0peOA_20f7SEHA&libraries=geometry"></script>
+<!-- Google Maps API mediante mapakey.js (misma configuración que otros mapas) -->
+<script src="<?= base_url('js/leads/mapakey.js') ?>"></script>
 
 <!-- Scripts de Leads -->
 <script src="<?= base_url('js/leads/leads-view.js') ?>"></script>

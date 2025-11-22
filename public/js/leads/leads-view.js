@@ -38,71 +38,31 @@ document.addEventListener('DOMContentLoaded', function() {
 /**
  * Inicializar Mini Mapa
  */
-function initMiniMap(coordenadas) {
+async function initMiniMap(coordenadas) {
     if (!coordenadas || coordenadas === '') return;
-    
+
+    const coords = coordenadas.split(',');
+    const lat = parseFloat(coords[0]);
+    const lng = parseFloat(coords[1]);
+
+    if (Number.isNaN(lat) || Number.isNaN(lng)) {
+        console.error('❌ Coordenadas inválidas en vista de lead:', coordenadas);
+        return;
+    }
+
     try {
-        const coords = coordenadas.split(',');
-        const lat = parseFloat(coords[0]);
-        const lng = parseFloat(coords[1]);
-        
-        if (isNaN(lat) || isNaN(lng)) {
-            console.error('❌ Coordenadas inválidas:', coordenadas);
-            return;
-        }
-        
-        // Crear mapa
-        const map = new google.maps.Map(document.getElementById('miniMapLead'), {
-            zoom: 16,
-            center: { lat, lng },
-            mapTypeControl: true,
-            streetViewControl: false,
-            fullscreenControl: true,
-            zoomControl: true
-        });
-        
-        // Datos del lead
-        const leadNombre = document.querySelector('[data-lead-nombre]')?.dataset.leadNombre || '';
-        const leadTelefono = document.querySelector('[data-lead-telefono]')?.dataset.leadTelefono || '';
-        const leadDireccion = document.querySelector('[data-lead-direccion]')?.dataset.leadDireccion || 'Sin dirección';
-        
-        // Marker del lead
-        const marker = new google.maps.Marker({
-            position: { lat, lng },
-            map: map,
-            title: leadNombre,
-            icon: {
-                path: google.maps.SymbolPath.CIRCLE,
-                scale: 10,
-                fillColor: '#e74c3c',
-                fillOpacity: 1,
-                strokeColor: '#c0392b',
-                strokeWeight: 2
-            },
-            animation: google.maps.Animation.DROP
-        });
-        
-        // InfoWindow
-        const infoWindow = new google.maps.InfoWindow({
-            content: `
-                <div style="padding: 10px;">
-                    <h6 style="margin: 0 0 8px 0;">${leadNombre}</h6>
-                    <p style="margin: 0; font-size: 13px;">
-                        <i class="icon-phone"></i> ${leadTelefono}<br>
-                        <i class="icon-map-pin"></i> ${leadDireccion}
-                    </p>
-                </div>
-            `
-        });
-        
-        marker.addListener('click', () => {
-            infoWindow.open(map, marker);
-        });
-        
-    // Mapa inicializado correctamente
-        
+        // Reutilizar el mismo módulo de mapa que en Validar Cobertura
+        const mapa = await import(`${LeadView.baseUrl}/js/api/Mapa.js`);
+
+        // Usamos "Cajas" por defecto, mismo estilo que Validar Cobertura paso 2
+        await mapa.iniciarMapa('Cajas', 'miniMapLead', 'inline');
+        await mapa.eventoMapa(true);
+
+        // Centrar y mostrar la coordenada del lead
+        await mapa.buscarCoordenadassinMapa(lat, lng);
+
     } catch (error) {
-        console.error('❌ Error al inicializar mapa:', error);
+        console.error('❌ Error al inicializar mapa de cobertura en vista de lead:', error);
     }
 }
 
