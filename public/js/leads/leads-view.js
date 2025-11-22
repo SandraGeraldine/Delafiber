@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initFormCambiarEtapa();
     initFormSeguimiento();
     initFormTarea();
+    initVisorFotosDocumentos();
     
 });
 
@@ -46,7 +47,7 @@ async function initMiniMap(coordenadas) {
     const lng = parseFloat(coords[1]);
 
     if (Number.isNaN(lat) || Number.isNaN(lng)) {
-        console.error('❌ Coordenadas inválidas en vista de lead:', coordenadas);
+        console.error(' Coordenadas inválidas en vista de lead:', coordenadas);
         return;
     }
 
@@ -62,7 +63,7 @@ async function initMiniMap(coordenadas) {
         await mapa.buscarCoordenadassinMapa(lat, lng);
 
     } catch (error) {
-        console.error('❌ Error al inicializar mapa de cobertura en vista de lead:', error);
+        console.error(' Error al inicializar mapa de cobertura en vista de lead:', error);
     }
 }
 
@@ -109,7 +110,7 @@ function initFormCambiarEtapa() {
             }
         })
         .catch(error => {
-            console.error('❌ Error:', error);
+            console.error(' Error:', error);
             mostrarNotificacion('error', 'Error de conexión al cambiar etapa');
         });
     });
@@ -124,7 +125,7 @@ function initFormSeguimiento() {
     const formSeguimiento = document.getElementById('formSeguimiento');
     
     if (!formSeguimiento) {
-        console.warn('⚠️ Formulario de seguimiento no encontrado');
+        console.warn(' Formulario de seguimiento no encontrado');
         return;
     }
     
@@ -161,7 +162,7 @@ function initFormSeguimiento() {
         
         // Evitar envíos duplicados
         if (isSubmitting) {
-            console.warn('⚠️ Ya se está enviando el formulario');
+            console.warn(' Ya se está enviando el formulario');
             return;
         }
         
@@ -195,7 +196,7 @@ function initFormSeguimiento() {
             btnSubmit.innerHTML = '<span class="spinner-border spinner-border-sm"></span> Guardando...';
         }
         
-        console.log('📤 Enviando seguimiento...', {
+        console.log(' Enviando seguimiento...', {
             idlead,
             idmodalidad,
             nota: nota.substring(0, 50) + '...'
@@ -237,7 +238,7 @@ function initFormSeguimiento() {
             }
         })
         .catch(error => {
-            console.error('❌ Error al guardar seguimiento:', error);
+            console.error(' Error al guardar seguimiento:', error);
             mostrarNotificacion('error', 'Error de conexión: ' + error.message);
         })
         .finally(() => {
@@ -250,7 +251,7 @@ function initFormSeguimiento() {
         });
     });
     
-    console.log('✅ Formulario de seguimiento inicializado');
+    console.log(' Formulario de seguimiento inicializado');
 }
 
 /**
@@ -349,6 +350,44 @@ function initFormTarea() {
 }
 
 /**
+ * Inicializar visor de fotos de documentos (modal)
+ */
+function initVisorFotosDocumentos() {
+    const modalEl = document.getElementById('modalFotoDocumento');
+    const imgEl = document.getElementById('previewFotoDocumento');
+    const downloadEl = document.getElementById('downloadFotoDocumento');
+
+    if (!modalEl || !imgEl || !downloadEl) {
+        return;
+    }
+
+    // Usar delegación para todos los botones que abren imágenes
+    document.addEventListener('click', function (e) {
+        const btn = e.target.closest('.btn-ver-doc-imagen');
+        if (!btn) return;
+
+        const url = btn.getAttribute('data-url');
+        const nombre = btn.getAttribute('data-nombre') || 'foto-lead.jpg';
+
+        if (!url) return;
+
+        imgEl.src = url;
+        imgEl.alt = nombre;
+        downloadEl.href = url;
+        downloadEl.setAttribute('download', nombre);
+
+        // Bootstrap 5 modal
+        const modal = bootstrap.Modal ? new bootstrap.Modal(modalEl) : null;
+        if (modal) {
+            modal.show();
+        } else if (typeof $ !== 'undefined') {
+            // Fallback si se usa jQuery
+            $('#modalFotoDocumento').modal('show');
+        }
+    });
+}
+
+/**
  * Completar tarea
  */
 window.completarTarea = function(idtarea) {
@@ -397,7 +436,7 @@ window.completarTarea = function(idtarea) {
                 }
             })
             .catch(error => {
-                console.error('❌ Error:', error);
+                console.error(' Error:', error);
                 mostrarNotificacion('error', 'Error de conexión');
             });
         }
