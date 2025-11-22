@@ -33,7 +33,13 @@ document.addEventListener('DOMContentLoaded', function() {
     initFormSeguimiento();
     initFormTarea();
     initVisorFotosDocumentos();
-    
+
+    // Asegurar cierre correcto de todos los modals de la vista
+    initModalCloseBehavior('modalSeguimiento');
+    initModalCloseBehavior('modalTarea');
+    initModalCloseBehavior('modalConvertir');
+    initModalCloseBehavior('modalDescartar');
+    initModalCloseBehavior('modalFotoDocumento');
 });
 
 /**
@@ -361,7 +367,30 @@ function initVisorFotosDocumentos() {
         return;
     }
 
-    // Usar delegación para todos los botones que abren imágenes
+    // Instancia reutilizable para Bootstrap 5
+    let modalInstance = null;
+
+    function showModal() {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            if (!modalInstance) {
+                modalInstance = new bootstrap.Modal(modalEl);
+            }
+            modalInstance.show();
+        } else if (typeof $ !== 'undefined') {
+            // Fallback Bootstrap 4 / jQuery
+            $('#modalFotoDocumento').modal('show');
+        }
+    }
+
+    function hideModal() {
+        if (modalInstance && typeof modalInstance.hide === 'function') {
+            modalInstance.hide();
+        } else if (typeof $ !== 'undefined') {
+            $('#modalFotoDocumento').modal('hide');
+        }
+    }
+
+    // Delegación para abrir imágenes
     document.addEventListener('click', function (e) {
         const btn = e.target.closest('.btn-ver-doc-imagen');
         if (!btn) return;
@@ -376,14 +405,16 @@ function initVisorFotosDocumentos() {
         downloadEl.href = url;
         downloadEl.setAttribute('download', nombre);
 
-        // Bootstrap 5 modal
-        const modal = bootstrap.Modal ? new bootstrap.Modal(modalEl) : null;
-        if (modal) {
-            modal.show();
-        } else if (typeof $ !== 'undefined') {
-            // Fallback si se usa jQuery
-            $('#modalFotoDocumento').modal('show');
-        }
+        showModal();
+    });
+
+    // Forzar cierre explícito al hacer clic en la X o en el botón "Cerrar"
+    const closeButtons = modalEl.querySelectorAll('[data-bs-dismiss="modal"]');
+    closeButtons.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            hideModal();
+        });
     });
 }
 
@@ -470,6 +501,46 @@ function mostrarNotificacion(tipo, mensaje) {
     } else {
         alert(mensaje);
     }
+}
+
+/**
+ * Inicializar comportamiento de cierre para un modal Bootstrap
+ * - Cierra correctamente al hacer clic en la X o en botones con data-bs-dismiss="modal"
+ * - Soporta tanto bootstrap.Modal (v5) como jQuery modal (v4)
+ */
+function initModalCloseBehavior(modalId) {
+    const modalEl = document.getElementById(modalId);
+    if (!modalEl) return;
+
+    let instance = null;
+
+    function getInstance() {
+        if (typeof bootstrap !== 'undefined' && bootstrap.Modal) {
+            if (!instance) {
+                instance = bootstrap.Modal.getInstance(modalEl) || new bootstrap.Modal(modalEl);
+            }
+            return instance;
+        }
+        return null;
+    }
+
+    function hide() {
+        const inst = getInstance();
+        if (inst && typeof inst.hide === 'function') {
+            inst.hide();
+        } else if (typeof $ !== 'undefined') {
+            // Fallback Bootstrap 4
+            $('#' + modalId).modal('hide');
+        }
+    }
+
+    const closeButtons = modalEl.querySelectorAll('[data-bs-dismiss="modal"]');
+    closeButtons.forEach(btn => {
+        btn.addEventListener('click', function (e) {
+            e.preventDefault();
+            hide();
+        });
+    });
 }
 
 /**
