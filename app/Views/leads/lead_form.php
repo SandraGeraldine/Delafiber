@@ -196,5 +196,6 @@
     const BASE_URL = '<?= base_url() ?>';
     window.leadCampoSwalSuccess = <?= session()->getFlashdata('swal_success') ? 'true' : 'false' ?>;
 </script>
+<script src="<?= base_url('js/leads/mapakey.js') ?>"></script>
 <script src="<?= base_url('js/leads/lead_form.js') ?>"></script>
 <?= $this->endSection() ?>

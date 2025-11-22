@@ -122,11 +122,46 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-    // Botón para obtener coordenadas GPS
+    // Botón para obtener coordenadas GPS + integración con mapa
     const btnCoord = document.getElementById('btn-obtener-coordenada');
     const inputCoord = document.getElementById('coordenadas_servicio');
     const inputCoordMostrar = document.getElementById('coordenadas_mostrar');
     const mapaPreview = document.getElementById('mapa-preview');
+
+    // Referencia al módulo del mapa (js/api/Mapa.js)
+    let mapaModulo = null;
+
+    async function initMapaCampo() {
+        if (!mapaPreview) return;
+
+        try {
+            if (!mapaModulo) {
+                mapaModulo = await import(`${BASE_URL}js/api/Mapa.js`);
+            }
+
+            // Usamos el mismo tipo base que en create (Cajas por defecto)
+            await mapaModulo.iniciarMapa('Cajas', 'mapa-preview', 'inline');
+            await mapaModulo.eventoMapa(true);
+
+            // Si ya hay coordenadas guardadas, centramos y marcamos
+            const value = (inputCoord && inputCoord.value) ? inputCoord.value.trim() : '';
+            if (value) {
+                const partes = value.split(',');
+                if (partes.length === 2) {
+                    const lat = parseFloat(partes[0]);
+                    const lng = parseFloat(partes[1]);
+                    if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+                        await mapaModulo.buscarCoordenadassinMapa(lat, lng);
+                    }
+                }
+            }
+        } catch (err) {
+            console.error('Error al inicializar mapa en lead de campo:', err);
+        }
+    }
+
+    // Inicializar mapa al cargar la página
+    initMapaCampo();
 
     if (btnCoord) {
         btnCoord.addEventListener('click', function () {
@@ -138,7 +173,7 @@ document.addEventListener('DOMContentLoaded', function () {
             btnCoord.disabled = true;
             btnCoord.innerText = 'Obteniendo...';
 
-            navigator.geolocation.getCurrentPosition(function (position) {
+            navigator.geolocation.getCurrentPosition(async function (position) {
                 const lat = position.coords.latitude.toFixed(6);
                 const lng = position.coords.longitude.toFixed(6);
                 const value = lat + ',' + lng;
@@ -146,14 +181,16 @@ document.addEventListener('DOMContentLoaded', function () {
                 if (inputCoord) inputCoord.value = value;
                 if (inputCoordMostrar) inputCoordMostrar.value = value;
 
-                if (mapaPreview) {
-                    mapaPreview.innerHTML = `
-                        <div>
-                            <i class="ti-location-pin" style="font-size: 24px;"></i>
-                            <p class="mb-0 mt-2"><small>${value}</small></p>
-                            <small class="text-success">Ubicación capturada</small>
-                        </div>
-                    `;
+                try {
+                    if (!mapaModulo) {
+                        mapaModulo = await import(`${BASE_URL}js/api/Mapa.js`);
+                        await mapaModulo.iniciarMapa('Cajas', 'mapa-preview', 'inline');
+                        await mapaModulo.eventoMapa(true);
+                    }
+
+                    await mapaModulo.buscarCoordenadessinMapa(parseFloat(lat), parseFloat(lng));
+                } catch (err) {
+                    console.error('Error al actualizar mapa con coordenadas de campo:', err);
                 }
 
                 btnCoord.disabled = false;

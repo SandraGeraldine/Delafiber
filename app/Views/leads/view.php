@@ -19,12 +19,20 @@ $modalidades = $modalidades ?? [];
 $historial = $historial ?? [];
 ?>
 
+<?php
+// Coordenadas unificadas: usar primero las del lead, si no existen usar las de servicio
+$coordenadasLead = $lead['coordenadas'] ?? '';
+if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
+    $coordenadasLead = $lead['coordenadas_servicio'];
+}
+?>
+
 <div class="row lead-view-page" 
      data-lead-id="<?= $lead['idlead'] ?? '' ?>"
      data-lead-nombre="<?= esc(($lead['nombres'] ?? '') . ' ' . ($lead['apellidos'] ?? '')) ?>"
      data-lead-telefono="<?= esc($lead['telefono'] ?? '') ?>"
      data-lead-direccion="<?= esc($lead['direccion'] ?? 'Sin dirección') ?>"
-     data-coordenadas="<?= esc($lead['coordenadas'] ?? '') ?>"
+     data-coordenadas="<?= esc($coordenadasLead) ?>"
      <?php if (!empty($zona)): ?>
      data-zona-poligono='<?= $zona['poligono'] ?? '' ?>'
      data-zona-color="<?= $zona['color'] ?? '' ?>"
@@ -203,11 +211,11 @@ $historial = $historial ?? [];
                         <h5 class="mb-0"> Ubicación en Mapa</h5>
                     </div>
                     <div class="card-body">
-                        <?php if (!empty($lead['coordenadas'])): ?>
+                        <?php if (!empty($coordenadasLead)): ?>
                             <p class="text-muted mb-2">
                                 <small>
                                     <strong>Coordenadas:</strong>
-                                    <?= esc($lead['coordenadas']) ?>
+                                    <?= esc($coordenadasLead) ?>
                                 </small>
                             </p>
                             <div id="miniMapLead" style="height: 350px; width: 100%; border-radius: 8px;"></div>
