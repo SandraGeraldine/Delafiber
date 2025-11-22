@@ -313,13 +313,15 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
                                 <?php else: ?>
                                     <p class="text-muted small mb-0">Aún no hay fotos subidas para este lead.</p>
                                 <?php endif; ?>
-                                    </select>
-                                </div>
-                                <div class="form-group">
-                                    <textarea class="form-control" name="nota" placeholder="Nota (opcional)" rows="2"></textarea>
-                                </div>
-                                <button type="submit" class="btn btn-primary btn-block">Mover Etapa</button>
-                            </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Seguimientos -->
+                <?php
+                // Indicador simple de "Último seguimiento" para que se vea urgencia
+                $textoUltimoSeg = 'Sin seguimientos';
                 if (!empty($seguimientos) && isset($seguimientos[0]['fecha'])) {
                     try {
                         $fechaUltimo = new \DateTime($seguimientos[0]['fecha']);
