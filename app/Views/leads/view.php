@@ -541,10 +541,10 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
 
                 <!-- Documentos del Lead (columna derecha, versión compacta) -->
                 <div class="card">
-                    <div class="card-header d-flex justify-content-between align-items-center">
+                    <div class="card-header d-flex align-items-center">
                         <h5 class="mb-0"> Documentos</h5>
                         <?php if (!empty($resumen_documentos)): ?>
-                        <div>
+                        <div class="ml-auto text-right">
                             <span class="badge badge-secondary mr-1">Total: <?= (int)($resumen_documentos['total'] ?? 0) ?></span>
                             <span class="badge badge-success mr-1">Verificados: <?= (int)($resumen_documentos['verificados'] ?? 0) ?></span>
                             <span class="badge badge-warning">Pendientes: <?= (int)($resumen_documentos['pendientes'] ?? 0) ?></span>
