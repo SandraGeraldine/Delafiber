@@ -211,65 +211,110 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
                     </div>
                 </div>
 
-                <!-- Ubicación en Mapa -->
+                <!-- Ubicación en Mapa + Fotos del Lead -->
+                <?php
+                // Documentos que son imagen para mostrarlos como fotos del lead
+                $documentosImagen = [];
+                if (!empty($documentos) && is_array($documentos)) {
+                    foreach ($documentos as $d) {
+                        $ruta = $d['ruta_archivo'] ?? $d['nombre_archivo'] ?? '';
+                        $ext = strtolower(pathinfo($ruta, PATHINFO_EXTENSION));
+                        if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp'])) {
+                            $documentosImagen[] = $d;
+                        }
+                    }
+                }
+                ?>
+
                 <div class="card mb-4">
                     <div class="card-header">
                         <h5 class="mb-0"> Ubicación en Mapa</h5>
                     </div>
                     <div class="card-body">
-                        <?php if (!empty($coordenadasLead)): ?>
-                            <p class="text-muted mb-2">
-                                <small>
-                                    <strong>Coordenadas:</strong>
-                                    <?= esc($coordenadasLead) ?>
-                                </small>
-                            </p>
-                            <div id="miniMapLead" style="height: 350px; width: 100%; border-radius: 8px;"></div>
-                            
-                            <?php if (!empty($zona)): ?>
-                            <div class="alert alert-info mt-3 mb-0">
-                                <div class="d-flex align-items-center">
-                                    <i class="icon-map-pin mr-2" style="font-size: 1.5rem;"></i>
-                                    <div>
-                                        <strong>Zona asignada:</strong> <?= esc($zona['nombre_zona']) ?>
-                                        <br>
-                                        <small class="text-muted">Este lead está dentro de una zona de campaña activa</small>
-                                        <br>
-                                        <a href="<?= base_url('crm-campanas/zona-detalle/' . $zona['id_zona']) ?>" class="btn btn-sm btn-primary mt-2">
-                                            <i class="icon-eye"></i> Ver Zona Completa
-                                        </a>
-                                        <a href="<?= base_url('crm-campanas/mapa-campanas') ?>?lead=<?= $lead['idlead'] ?>" class="btn btn-sm btn-outline-primary mt-2">
-                                            <i class="icon-map"></i> Ver en Mapa General
-                                        </a>
-                                    </div>
-                                </div>
-                            </div>
-                            <?php else: ?>
-                            <div class="alert alert-warning mt-3 mb-0">
-                                <i class="icon-alert-triangle"></i> 
-                                <strong>Sin zona asignada</strong>
-                                <br>
-                                <small>Este lead no está asignado a ninguna zona de campaña.</small>
-                            </div>
-                            <?php endif; ?>
-                        <?php else: ?>
-                            <div class="alert alert-warning mb-0">
-                                <div class="d-flex align-items-start">
-                                    <i class="icon-alert-triangle mr-2" style="font-size: 1.5rem;"></i>
-                                    <div>
-                                        <strong>Este lead no tiene coordenadas</strong>
-                                        <br>
-                                        <small class="text-muted">
-                                            Para ver la ubicación en el mapa, necesitas agregar una dirección y geocodificarla.
+                        <div class="row">
+                            <div class="col-md-8 mb-3 mb-md-0">
+                                <?php if (!empty($coordenadasLead)): ?>
+                                    <p class="text-muted mb-2">
+                                        <small>
+                                            <strong>Coordenadas:</strong>
+                                            <?= esc($coordenadasLead) ?>
                                         </small>
-                                        <br>
-                                        <button class="btn btn-sm btn-primary mt-2" onclick="geocodificarLeadAhora()">
-                                            <i class="icon-map-pin"></i> Geocodificar Ahora
-                                        </button>
+                                    </p>
+                                    <div id="miniMapLead" style="height: 350px; width: 100%; border-radius: 8px;"></div>
+
+                                    <?php if (!empty($zona)): ?>
+                                    <div class="alert alert-info mt-3 mb-0">
+                                        <div class="d-flex align-items-center">
+                                            <i class="icon-map-pin mr-2" style="font-size: 1.5rem;"></i>
+                                            <div>
+                                                <strong>Zona asignada:</strong> <?= esc($zona['nombre_zona']) ?>
+                                                <br>
+                                                <small class="text-muted">Este lead está dentro de una zona de campaña activa</small>
+                                                <br>
+                                                <a href="<?= base_url('crm-campanas/zona-detalle/' . $zona['id_zona']) ?>" class="btn btn-sm btn-primary mt-2">
+                                                    <i class="icon-eye"></i> Ver Zona Completa
+                                                </a>
+                                                <a href="<?= base_url('crm-campanas/mapa-campanas') ?>?lead=<?= $lead['idlead'] ?>" class="btn btn-sm btn-outline-primary mt-2">
+                                                    <i class="icon-map"></i> Ver en Mapa General
+                                                </a>
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                    <?php else: ?>
+                                    <div class="alert alert-warning mt-3 mb-0">
+                                        <i class="icon-alert-triangle"></i>
+                                        <strong>Sin zona asignada</strong>
+                                        <br>
+                                        <small>Este lead no está asignado a ninguna zona de campaña.</small>
+                                    </div>
+                                    <?php endif; ?>
+                                <?php else: ?>
+                                    <div class="alert alert-warning mb-0">
+                                        <div class="d-flex align-items-start">
+                                            <i class="icon-alert-triangle mr-2" style="font-size: 1.5rem;"></i>
+                                            <div>
+                                                <strong>Este lead no tiene coordenadas</strong>
+                                                <br>
+                                                <small class="text-muted">
+                                                    Para ver la ubicación en el mapa, necesitas agregar una dirección y geocodificarla.
+                                                </small>
+                                                <br>
+                                                <button class="btn btn-sm btn-primary mt-2" onclick="geocodificarLeadAhora()">
+                                                    <i class="icon-map-pin"></i> Geocodificar Ahora
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                <?php endif; ?>
                             </div>
-                        <?php endif; ?>
+
+                            <div class="col-md-4">
+                                <h6 class="mb-2">Fotos del Lead</h6>
+                                <?php if (!empty($documentosImagen)): ?>
+                                    <div class="list-group small">
+                                        <?php foreach ($documentosImagen as $foto): ?>
+                                            <?php
+                                            $rutaFoto = $foto['ruta_archivo'] ?? $foto['nombre_archivo'] ?? '';
+                                            ?>
+                                            <button type="button"
+                                                    class="list-group-item list-group-item-action d-flex align-items-center btn-ver-doc-imagen"
+                                                    data-url="<?= base_url($rutaFoto) ?>"
+                                                    data-nombre="<?= esc($foto['nombre_archivo'] ?? 'foto') ?>">
+                                                <div class="mr-2" style="width: 56px; height: 56px; overflow: hidden; border-radius: 6px;">
+                                                    <img src="<?= base_url($rutaFoto) ?>" alt="Foto documento" style="width: 100%; height: 100%; object-fit: cover;">
+                                                </div>
+                                                <div class="text-left">
+                                                    <div class="font-weight-bold mb-0"><?= esc($foto['tipo_documento'] ?? 'Foto') ?></div>
+                                                    <small class="text-muted">Ver / Descargar</small>
+                                                </div>
+                                            </button>
+                                        <?php endforeach; ?>
+                                    </div>
+                                <?php else: ?>
+                                    <p class="text-muted small mb-0">Aún no hay fotos subidas para este lead.</p>
+                                <?php endif; ?>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
