@@ -102,26 +102,39 @@
                         </div>
                     </div>
 
-                    <!-- ORIGEN DEL LEAD -->
+                    <!-- ORIGEN DEL LEAD (fijo: TRAB. CAMPO) -->
+                    <?php
+                        $idorigenCampo = null;
+                        $nombreOrigenCampo = 'TRAB. CAMPO';
+
+                        if (!empty($origenes)) {
+                            foreach ($origenes as $origen) {
+                                $nombre = strtoupper(trim($origen['nombre'] ?? ''));
+                                if (strpos($nombre, 'TRAB') !== false && strpos($nombre, 'CAMPO') !== false) {
+                                    $idorigenCampo = $origen['idorigen'];
+                                    $nombreOrigenCampo = $origen['nombre'];
+                                    break;
+                                }
+                            }
+
+                            // Si no se encontró coincidencia, usar el primero como respaldo
+                            if ($idorigenCampo === null && isset($origenes[0]['idorigen'])) {
+                                $idorigenCampo = $origenes[0]['idorigen'];
+                                $nombreOrigenCampo = $origenes[0]['nombre'] ?? $nombreOrigenCampo;
+                            }
+                        }
+                    ?>
                     <div class="mb-3">
-                        <label for="idorigen" class="form-label fw-bold">ORIGEN</label>
-                        <select name="idorigen" id="idorigen" class="form-control <?= isset($errors['idorigen']) ? 'is-invalid' : '' ?>" required>
-                            <option value="">Seleccione origen</option>
-                            <?php if (!empty($origenes)): ?>
-                                <?php foreach ($origenes as $origen): ?>
-                                    <option value="<?= esc($origen['idorigen']) ?>" <?= old('idorigen') == $origen['idorigen'] ? 'selected' : '' ?>>
-                                        <?= esc($origen['nombre']) ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </select>
+                        <label class="form-label fw-bold">ORIGEN</label>
+                        <input type="hidden" name="idorigen" value="<?= esc($idorigenCampo) ?>">
+                        <input type="text" class="form-control" value="<?= esc($nombreOrigenCampo) ?>" readonly>
                         <?php if (isset($errors['idorigen'])): ?>
                             <div class="invalid-feedback d-block"><?= $errors['idorigen'] ?></div>
                         <?php endif; ?>
                     </div>
 
                     <!-- POSIBLE PLAN -->
-                   <!--  <div class="mb-3">
+                    <div class="mb-3">
                         <label for="plan_interes" class="form-label fw-bold">POSIBLE PLAN</label>
                         <select name="plan_interes" id="plan_interes" 
                                 class="form-control <?= isset($errors['plan_interes']) ? 'is-invalid' : '' ?>" required>
@@ -129,7 +142,8 @@
                             <?php if (!empty($paquetes)): ?>
                                 <?php foreach ($paquetes as $plan): ?>
                                     <option value="<?= esc($plan['id'] ?? $plan['idpaquete'] ?? '') ?>" 
-                                            <?= old('plan_interes') == ($plan['id'] ?? $plan['idpaquete'] ?? '') ? 'selected' : '' ?>>
+                                            <?= old('plan_interes') == ($plan['id'] ?? $plan['idpaquete'] ?? '') ? 'selected' : '' ?>
+                                    >
                                         <?= esc($plan['servicio'] ?? $plan['nombre'] ?? '') ?> - S/ <?= esc(number_format($plan['precio'] ?? 0, 2)) ?>
                                     </option>
                                 <?php endforeach; ?>
@@ -138,22 +152,19 @@
                         <?php if (isset($errors['plan_interes'])): ?>
                             <div class="invalid-feedback"><?= $errors['plan_interes'] ?></div>
                         <?php endif; ?>
-                    </div> -->
+                    </div>
 
                     <!-- DETALLES -->
                     <div class="mb-3">
                         <label for="detalles" class="form-label fw-bold">DETALLES</label>
-                        <textarea name="detalles" id="detalles" rows="4" 
-                                  class="form-control" 
-                                  placeholder="Ingrese detalles adicionales..."><?= old('detalles') ?></textarea>
+                        <textarea name="detalles" id="detalles" rows="4" class="form-control" placeholder="Ingrese detalles adicionales..."><?= old('detalles') ?></textarea>
                     </div>
 
                     <!-- UBICACIÓN CON MAPA -->
                     <div class="mb-3">
                         <label class="form-label fw-bold">UBICACION</label>
                         <div class="input-group mb-2">
-                            <input type="text" id="coordenadas_mostrar" class="form-control" 
-                                   placeholder="Coordenadas GPS" readonly>
+                            <input type="text" id="coordenadas_mostrar" class="form-control" placeholder="Coordenadas GPS" readonly>
                             <button type="button" class="btn btn-outline-secondary" id="btn-obtener-coordenada">
                                 BUSCAR
                             </button>

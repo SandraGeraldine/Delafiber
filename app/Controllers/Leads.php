@@ -255,8 +255,33 @@ class Leads extends BaseController
             return redirect()->to('/leads')
                 ->with('error', 'No tienes permisos para acceder al formulario de campo');
         }
-        // Por ahora no dependemos de la BD externa 'gestion' para evitar timeouts
-        $paquetes = [];
+        // Planes promocionales fijos para registro de campo
+        $paquetes = [
+            [
+                'id'      => 'PROMO_50',
+                'nombre'  => 'Plan 50 Mbps – S/ 50 (Promo Campo)',
+                'precio'  => 50.00,
+                'servicio'=> 'Internet Fibra 50 Mbps',
+            ],
+            [
+                'id'      => 'PROMO_60',
+                'nombre'  => 'Plan 100 Mbps – S/ 60 (Promo Campo)',
+                'precio'  => 60.00,
+                'servicio'=> 'Internet Fibra 100 Mbps',
+            ],
+            [
+                'id'      => 'PROMO_70',
+                'nombre'  => 'Plan 200 Mbps – S/ 70 (Promo Campo)',
+                'precio'  => 70.00,
+                'servicio'=> 'Internet Fibra 200 Mbps',
+            ],
+            [
+                'id'      => 'PROMO_88',
+                'nombre'  => 'Plan 300 Mbps – S/ 88 (Promo Campo)',
+                'precio'  => 88.00,
+                'servicio'=> 'Internet Fibra 300 Mbps',
+            ],
+        ];
 
         // Orígenes disponibles (el promotor puede elegir uno, ej. CAMPO)
         $origenes = $this->origenModel->getOrigenesActivos();
@@ -367,9 +392,10 @@ class Leads extends BaseController
                 'idusuario_registro' => $usuarioRegistro,
                 'idorigen' => $this->request->getPost('idorigen'),
                 'idcampania' => null,
-                'nota_inicial' => $this->request->getPost('nota_inicial') ?: null,
+                // Guardar detalles del formulario de campo como nota inicial
+                'nota_inicial' => $this->request->getPost('detalles') ?: null,
                 'tipo_solicitud' => $this->request->getPost('tipo_solicitud') ?: 'casa',
-                'plan_interes' => $this->request->getPost('plan_interes'),
+                'plan_interes' => $this->request->getPost('plan_interes') ?: null,
                 'direccion_servicio' => $this->request->getPost('direccion'),
                 'distrito_servicio' => null,
                 'coordenadas_servicio' => $this->request->getPost('coordenadas_servicio') ?: null,

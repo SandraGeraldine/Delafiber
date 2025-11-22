@@ -201,6 +201,12 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
                                 ?>
                                 <h6><?= $fechaRegistro ? esc($fechaRegistro) : 'No disponible' ?></h6>
                             </div>
+                            <?php if (!empty($lead['nota_inicial'])): ?>
+                            <div class="col-12 mb-3">
+                                <label class="text-muted">Detalles</label>
+                                <p class="mb-0"><?= nl2br(esc($lead['nota_inicial'])) ?></p>
+                            </div>
+                            <?php endif; ?>
                         </div>
                     </div>
                 </div>
