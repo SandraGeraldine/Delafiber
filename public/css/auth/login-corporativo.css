@@ -3,6 +3,11 @@
  * Archivo: public/css/auth/login-corporativo.css
  */
 
+html,
+body {
+    height: 100%;
+}
+
 :root {
     /* Colores Corporativos Delafiber - Versión Suave para CRM */
     --primary-purple: #4A1A6B;    /* Persian Indigo suavizado (más claro) */
@@ -54,11 +59,12 @@
         0 0 100px rgba(232, 93, 154, 0.25),
         0 0 0 1px rgba(232, 93, 154, 0.1);
     overflow: hidden;
-    max-width: 450px;
+    max-width: 380px;
     width: 100%;
     position: relative;
     z-index: 1;
     animation: slideUp 0.6s ease-out;
+    max-height: 90vh;
 }
 
 @keyframes slideUp {
@@ -391,6 +397,13 @@ a:hover {
 
 .demo-credentials .card-body i {
     margin-right: 0.25rem;
+}
+
+/* En pantallas con buena altura, ocultar el scroll vertical global en el login corporativo */
+@media (min-height: 720px) {
+    body.auth-page {
+        overflow-y: hidden;
+    }
 }
 
 @media (max-width: 576px) {

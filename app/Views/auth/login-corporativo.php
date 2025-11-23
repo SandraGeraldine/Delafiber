@@ -19,7 +19,7 @@
     <link rel="shortcut icon" href="<?= base_url('images/favicon.png') ?>" />
 </head>
 
-<body>
+<body class="auth-page">
     <div class="auth-wrapper">
         <div class="login-card">
             <!-- HEADER CORPORATIVO-->
