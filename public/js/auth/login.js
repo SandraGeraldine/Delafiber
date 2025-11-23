@@ -33,9 +33,15 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // Mostrar / ocultar contraseña
     if (togglePasswordBtn && passwordInput) {
+        const icon = togglePasswordBtn.querySelector('i');
         togglePasswordBtn.addEventListener('click', function () {
             const isPassword = passwordInput.getAttribute('type') === 'password';
             passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+
+            if (icon) {
+                icon.classList.toggle('ti-eye');
+                icon.classList.toggle('ti-eye-off');
+            }
         });
     }
 
