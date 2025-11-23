@@ -25,10 +25,24 @@ document.addEventListener('DOMContentLoaded', function() {
     
     // Validación simple del formulario
     const loginForm = document.querySelector('form');
+    const passwordInput = document.getElementById('password');
+    const togglePasswordBtn = document.querySelector('.btn-toggle-password');
+    const btnLogin = document.getElementById('btnLogin');
+    const btnLoginText = btnLogin ? btnLogin.querySelector('.btn-login-text') : null;
+    const btnLoginSpinner = btnLogin ? btnLogin.querySelector('.btn-login-spinner') : null;
+
+    // Mostrar / ocultar contraseña
+    if (togglePasswordBtn && passwordInput) {
+        togglePasswordBtn.addEventListener('click', function () {
+            const isPassword = passwordInput.getAttribute('type') === 'password';
+            passwordInput.setAttribute('type', isPassword ? 'text' : 'password');
+        });
+    }
+
     if (loginForm) {
         loginForm.addEventListener('submit', function(e) {
             const usuario = document.getElementById('usuario').value.trim();
-            const password = document.getElementById('password').value.trim();
+            const password = passwordInput ? passwordInput.value.trim() : '';
             
             if (!usuario || !password) {
                 e.preventDefault();
@@ -40,6 +54,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 e.preventDefault();
                 alert('Usuario y contraseña deben tener al menos 3 caracteres');
                 return false;
+            }
+
+            // Mostrar loader y deshabilitar botón mientras se envía
+            if (btnLogin && btnLoginText && btnLoginSpinner) {
+                btnLogin.disabled = true;
+                btnLoginText.classList.add('opacity-75');
+                btnLoginSpinner.classList.remove('d-none');
             }
         });
     }

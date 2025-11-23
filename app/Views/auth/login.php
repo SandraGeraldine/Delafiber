@@ -22,7 +22,7 @@
             <div class="login-header">
                 <img src="<?= base_url('images/logo-delafiber.png') ?>" alt="Delafiber" class="company-logo">
                 <h3>CRM Delafiber</h3>
-                <p class="mb-0">Inicia sesión para continuar</p>
+                <p class="mb-0">Sistema de Gestión de Clientes</p>
             </div>
             
             <!-- Body -->
@@ -50,28 +50,46 @@
                     </div>
                 <?php endif; ?>
                 
-                <form method="post" action="<?= base_url('auth/login') ?>">
+                <form method="post" action="<?= base_url('auth/login') ?>" autocomplete="on">
                     <?= csrf_field() ?>
                     
                     <div class="form-group">
                         <label for="usuario">Usuario o Email</label>
-                        <input type="text" 
-                               class="form-control" 
-                               id="usuario" 
-                               name="usuario" 
-                               placeholder="Ingresa tu nombre o email"
-                               value="<?= old('usuario') ?>"
-                               required
-                               autofocus>
+                        <div class="input-group input-group-login">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="ti-user"></i></span>
+                            </div>
+                            <input type="text" 
+                                   class="form-control" 
+                                   id="usuario" 
+                                   name="usuario" 
+                                   placeholder="Ingresa tu nombre o email"
+                                   value="<?= old('usuario') ?>"
+                                   required
+                                   autocomplete="username"
+                                   autofocus>
+                        </div>
                     </div>
                     
                     <div class="form-group">
-                        <input type="password" 
-                               class="form-control" 
-                               id="password" 
-                               name="password" 
-                               placeholder="Ingresa tu contraseña"
-                               required>
+                        <label for="password">Contraseña</label>
+                        <div class="input-group input-group-login">
+                            <div class="input-group-prepend">
+                                <span class="input-group-text"><i class="ti-lock"></i></span>
+                            </div>
+                            <input type="password" 
+                                   class="form-control" 
+                                   id="password" 
+                                   name="password" 
+                                   placeholder="Ingresa tu contraseña"
+                                   required
+                                   autocomplete="current-password">
+                            <div class="input-group-append">
+                                <button class="btn btn-outline-secondary btn-toggle-password" type="button" aria-label="Mostrar u ocultar contraseña">
+                                    <i class="ti-eye"></i>
+                                </button>
+                            </div>
+                        </div>
                     </div>
                     
                     <div class="form-group d-flex justify-content-between align-items-center">
@@ -84,41 +102,26 @@
                         <a href="#" class="text-muted small">¿Olvidaste tu contraseña?</a>
                     </div>
                     
-                    <button type="submit" class="btn btn-login">
-                        <i class="ti-lock"></i> Iniciar Sesión
+                    <button type="submit" class="btn btn-login" id="btnLogin">
+                        <span class="btn-login-text"><i class="ti-lock"></i> Iniciar Sesión</span>
+                        <span class="btn-login-spinner d-none" aria-hidden="true"></span>
                     </button>
                 </form>
                 
                 <!-- Información adicional -->
                 <div class="text-center mt-4">
-                    <small class="text-muted">
+                    <small class="text-muted d-block mb-1">
                         Para soporte técnico contacta a: 
                         <a href="mailto:soporte@delafiber.com">soporte@delafiber.com</a>
+                    </small>
+                    <small class="text-muted">
+                        <i class="ti-lock"></i> Conexión segura SSL
                     </small>
                 </div>
             </div>
         </div>
     </div>
     
-    <!-- Demo credentials (remover en producción) -->
-    <div class="position-fixed" style="bottom: 20px; left: 20px;">
-        <div class="card border-info" style="max-width: 250px;">
-            <div class="card-header bg-info text-white py-2">
-                <small><i class="ti-info"></i> Credenciales de prueba</small>
-            </div>
-            <div class="card-body py-2">
-                <small>
-                    <strong>Admin:</strong><br>
-                    admin@delafiber.com<br>
-                    Password: password<br><br>
-                    <strong>Vendedor:</strong><br>
-                    carlos@delafiber.com<br>
-                    Password: password
-                </small>
-            </div>
-        </div>
-    </div>
-
     <!-- JavaScript -->
     <script src="<?= base_url('assets/js/vendor.bundle.base.js') ?>"></script>
     <script src="<?= base_url('js/auth/login.js') ?>"></script>
