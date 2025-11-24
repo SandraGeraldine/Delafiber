@@ -18,17 +18,26 @@ class WhatsAppCuentas extends BaseController
         
         // Verificar permisos
         $usuario = session()->get('usuario');
+        if (empty($usuario)) {
+            $usuario = [
+                'tipo_usuario' => session()->get('tipo_usuario'),
+                'rol' => session()->get('rol'),
+                'id_rol' => session()->get('idrol'),
+                'nombreRol' => session()->get('nombreRol')
+            ];
+        }
+        
+        log_message('debug', 'Permisos WhatsApp admin: ' . json_encode($usuario));
         
         // Verificar si el usuario es administrador
         $esAdmin = false;
-        
-        // Verificar si el usuario tiene permisos de administrador
         if (isset($usuario['tipo_usuario']) && $usuario['tipo_usuario'] === 'administrador') {
             $esAdmin = true;
         } elseif (isset($usuario['rol']) && $usuario['rol'] === 'administrador') {
             $esAdmin = true;
+        } elseif (!empty($usuario['nombreRol']) && str_contains(strtolower($usuario['nombreRol']), 'admin')) {
+            $esAdmin = true;
         } elseif (isset($usuario['id_rol'])) {
-            // Si hay un ID de rol, verificar si es admin (asumiendo que el ID 1 es para administradores)
             $esAdmin = ($usuario['id_rol'] == 1);
         }
         
