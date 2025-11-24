@@ -81,11 +81,15 @@ body {
 
 .login-header {
     background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 70%, var(--accent-pink) 100%);
-    padding: 2.5rem 4rem 2.5rem 2rem;
+    padding: 2.5rem 2rem; /* Ajuste de padding para mejor centrado */
     text-align: center;
     color: white;
     position: relative;
-    overflow: visible;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 /* Efecto de onda en el header */
@@ -114,27 +118,33 @@ body {
 }
 
 .login-header h3 {
-    margin: 0.5rem 0;
+    margin: 0.5rem 0 0.25rem;
     font-weight: 600;
     font-size: 1.75rem;
     letter-spacing: 0.5px;
+    width: 100%;
+    text-align: center;
 }
 
 .login-header p {
     margin: 0;
     opacity: 0.95;
-    font-size: 0.95rem;
+    font-size: 1rem;
     font-weight: 300;
+    width: 100%;
+    text-align: center;
+    line-height: 1.5;
 }
 
 .login-header .tagline {
     display: block;
-    margin-top: 0.5rem;
-    font-size: 0.85rem;
+    margin: 0.5rem auto 0;
+    font-size: 0.95rem;
     opacity: 0.95;
     font-style: italic;
     color: rgba(255, 182, 213, 0.95);
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    max-width: 90%;
 }
 
 .login-body {
