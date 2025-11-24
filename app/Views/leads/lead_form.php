@@ -199,7 +199,7 @@
                         <button type="button" class="btn btn-outline-secondary w-100" id="btn-foto">
                             <i class="ti-camera"></i> FOTO
                         </button>
-                        <input type="file" name="foto" id="foto" class="d-none" accept="image/*">
+                        <input type="file" name="foto" id="foto" class="d-none" accept="image/*" capture="environment">
                         <div id="foto-preview" class="mt-2"></div>
                     </div>
 
