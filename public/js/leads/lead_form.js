@@ -209,12 +209,22 @@ document.addEventListener('DOMContentLoaded', function () {
     const inputFoto = document.getElementById('foto');
     const fotoPreview = document.getElementById('foto-preview');
 
-    if (btnFoto) {
-        btnFoto.addEventListener('click', function () {
-            if (inputFoto) inputFoto.click();
+    const btnTomarFoto = document.getElementById('btn-tomar-foto');
+    const btnElegirFoto = document.getElementById('btn-elegir-foto');
+
+    if (btnTomarFoto && inputFoto) {
+        btnTomarFoto.addEventListener('click', function () {
+            inputFoto.setAttribute('capture', 'environment');
+            inputFoto.click();
         });
     }
 
+    if (btnElegirFoto && inputFoto) {
+        btnElegirFoto.addEventListener('click', function () {
+            inputFoto.removeAttribute('capture');
+            inputFoto.click();
+        });
+    }
     if (inputFoto) {
         inputFoto.addEventListener('change', function () {
             const file = this.files[0];

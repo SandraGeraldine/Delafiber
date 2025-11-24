@@ -196,9 +196,15 @@
 
                     <!-- FOTO -->
                     <div class="mb-3">
-                        <button type="button" class="btn btn-outline-secondary w-100" id="btn-foto">
-                            <i class="ti-camera"></i> FOTO
-                        </button>
+                        <p class="text-muted mb-2"><small>Selecciona si deseas tomar la foto o subir una existente</small></p>
+                        <div class="d-flex gap-2 mb-2">
+                            <button type="button" class="btn btn-outline-secondary flex-fill" id="btn-tomar-foto">
+                                <i class="ti-camera"></i> Tomar foto
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary flex-fill" id="btn-elegir-foto">
+                                <i class="ti-gallery"></i> Subir desde galería
+                            </button>
+                        </div>
                         <input type="file" name="foto" id="foto" class="d-none" accept="image/*" capture="environment">
                         <div id="foto-preview" class="mt-2"></div>
                     </div>
