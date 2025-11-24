@@ -18,111 +18,167 @@
     </nav>
 </div>
 
-<div class="row">
-    <div class="col-12">
-        <div class="card">
-            <div class="card-body">
-                <div class="row">
-                    <!-- Lista de Conversaciones -->
-                    <div class="col-md-4 border-end">
-                        <div class="d-flex justify-content-between align-items-center mb-3">
-                            <h4 class="card-title mb-0">
-                                <i class="ti-comments"></i> Conversaciones
-                            </h4>
-                            <div>
-                                <button type="button" class="btn btn-primary btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalEnviarMensaje">
-                                    <i class="fas fa-paper-plane"></i> Nuevo Mensaje
-                                </button>
-                                <span class="badge badge-success"><?= count($conversaciones) ?></span>
-                            </div>
-                        </div>
+<?php $primerConversacion = !empty($conversaciones) ? reset($conversaciones) : null; ?>
+<div class="row whatsapp-layout gy-4">
+    <div class="col-lg-4">
+        <div class="card whatsapp-card shadow-sm h-100">
+            <div class="card-body d-flex flex-column h-100">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div>
+                        <h5 class="mb-0">
+                            <i class="ti-comments text-primary"></i> Conversaciones
+                        </h5>
+                        <small class="text-muted"><?= count($conversaciones) ?> chats activos</small>
+                    </div>
+                    <button type="button" class="btn btn-sm btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modalEnviarMensaje">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
 
-                        <!-- Búsqueda -->
-                        <div class="mb-3">
-                            <div class="input-group">
-                                <span class="input-group-text"><i class="ti-search"></i></span>
-                                <input type="text" class="form-control" id="buscar-conversacion" placeholder="Buscar conversación...">
-                            </div>
-                        </div>
+                <div class="connection-status mb-3">
+                    <?php if (!empty($cuentas)): ?>
+                        <span class="status-pill status-pill-success">Conectado</span>
+                        <p class="mb-0 text-muted small">Cuenta activa: <?= esc($cuentas[0]['nombre']) ?> • <?= esc($cuentas[0]['whatsapp_number'] ?? 'Sin número') ?></p>
+                    <?php else: ?>
+                        <span class="status-pill status-pill-warning">Pendiente</span>
+                        <p class="mb-0 text-muted small">No hay cuentas configuradas. Ve a Administración → WhatsApp</p>
+                    <?php endif; ?>
+                </div>
 
-                        <!-- Lista -->
-                        <div class="conversaciones-lista" style="max-height: 600px; overflow-y: auto;">
-                            <?php if (empty($conversaciones)): ?>
-                                <div class="text-center py-5">
-                                    <i class="fab fa-whatsapp" style="font-size: 4rem; color: #ccc;"></i>
-                                    <p class="text-muted mt-3">No hay conversaciones aún</p>
-                                    <small class="text-muted">Las conversaciones aparecerán aquí cuando los clientes te escriban</small>
-                                </div>
-                            <?php else: ?>
-                                <?php foreach ($conversaciones as $conv): ?>
-                                    <div class="conversacion-item <?= $conv['no_leidos'] > 0 ? 'no-leido' : '' ?>" 
-                                         data-id="<?= $conv['id_conversacion'] ?>"
-                                         onclick="window.location.href='<?= base_url('whatsapp/conversacion/' . $conv['id_conversacion']) ?>'">
-                                        <div class="d-flex align-items-start">
-                                            <div class="avatar-circle me-3">
-                                                <i class="ti-user"></i>
-                                            </div>
-                                            <div class="flex-grow-1">
-                                                <div class="d-flex justify-content-between">
-                                                    <h6 class="mb-0"><?= esc($conv['nombre_contacto'] ?? $conv['numero_whatsapp']) ?></h6>
-                                                    <small class="text-muted">
-                                                        <?php
-                                                        $fecha = new DateTime($conv['fecha_ultimo_mensaje']);
-                                                        $ahora = new DateTime();
-                                                        $diff = $ahora->diff($fecha);
-                                                        
-                                                        if ($diff->days == 0) {
-                                                            echo $fecha->format('H:i');
-                                                        } elseif ($diff->days == 1) {
-                                                            echo 'Ayer';
-                                                        } else {
-                                                            echo $fecha->format('d/m/Y');
-                                                        }
-                                                        ?>
-                                                    </small>
-                                                </div>
-                                                <p class="mb-0 text-muted small text-truncate">
-                                                    <?= esc(substr($conv['ultimo_mensaje'], 0, 50)) ?>...
-                                                </p>
-                                                <div class="d-flex justify-content-between align-items-center mt-1">
-                                                    <small class="text-muted">
-                                                        <i class="ti-mobile"></i> <?= esc($conv['numero_whatsapp']) ?>
-                                                    </small>
-                                                    <?php if ($conv['no_leidos'] > 0): ?>
-                                                        <span class="badge badge-success badge-pill"><?= $conv['no_leidos'] ?></span>
-                                                    <?php endif; ?>
-                                                </div>
-                                            </div>
+                <div class="conversation-filters mb-3">
+                    <button class="btn btn-sm btn-outline-secondary me-2 active">Todos</button>
+                    <button class="btn btn-sm btn-outline-secondary me-2">Asignados</button>
+                    <button class="btn btn-sm btn-outline-secondary">Importantes</button>
+                </div>
+
+                <div class="mb-3">
+                    <div class="input-group">
+                        <span class="input-group-text"><i class="ti-search"></i></span>
+                        <input type="text" class="form-control" id="buscar-conversacion" placeholder="Buscar conversación...">
+                    </div>
+                </div>
+
+                <div class="conversaciones-lista flex-grow-1">
+                    <?php if (empty($conversaciones)): ?>
+                        <div class="text-center py-5">
+                            <i class="fab fa-whatsapp" style="font-size: 4rem; color: #ccc;"></i>
+                            <p class="text-muted mt-3">Sin conversaciones</p>
+                            <small class="text-muted">Las conversaciones aparecerán cuando un cliente escriba</small>
+                        </div>
+                    <?php else: ?>
+                        <?php foreach ($conversaciones as $conv): ?>
+                            <div class="conversacion-item <?= $conv['no_leidos'] > 0 ? 'no-leido' : '' ?>" 
+                                 onclick="window.location.href='<?= base_url('whatsapp/conversacion/' . $conv['id_conversacion']) ?>'">
+                                <div class="d-flex align-items-start">
+                                    <div class="avatar-circle me-3">
+                                        <i class="ti-user"></i>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <div class="d-flex justify-content-between">
+                                            <h6 class="mb-0 text-truncate"><?= esc($conv['nombre_contacto'] ?? $conv['numero_whatsapp']) ?></h6>
+                                            <small class="text-muted">
+                                                <?php
+                                                $fecha = new DateTime($conv['fecha_ultimo_mensaje']);
+                                                $ahora = new DateTime();
+                                                $diff = $ahora->diff($fecha);
+                                                if ($diff->days == 0) {
+                                                    echo $fecha->format('H:i');
+                                                } elseif ($diff->days == 1) {
+                                                    echo 'Ayer';
+                                                } else {
+                                                    echo $fecha->format('d/m/Y');
+                                                }
+                                                ?>
+                                            </small>
+                                        </div>
+                                        <p class="mb-0 text-muted small text-truncate">
+                                            <?= esc(substr($conv['ultimo_mensaje'], 0, 60)) ?>...
+                                        </p>
+                                        <div class="d-flex justify-content-between align-items-center mt-1">
+                                            <small class="text-muted">
+                                                <i class="ti-mobile"></i> <?= esc($conv['numero_whatsapp']) ?>
+                                            </small>
+                                            <?php if ($conv['no_leidos'] > 0): ?>
+                                                <span class="badge badge-success badge-pill"><?= $conv['no_leidos'] ?></span>
+                                            <?php endif; ?>
                                         </div>
                                     </div>
-                                <?php endforeach; ?>
-                            <?php endif; ?>
-                        </div>
-                    </div>
-
-                    <!-- Área de Mensaje -->
-                    <div class="col-md-8">
-                        <div class="text-center py-5" style="margin-top: 150px;">
-                            <i class="fab fa-whatsapp" style="font-size: 6rem; color: #25D366;"></i>
-                            <h4 class="mt-4">WhatsApp Business</h4>
-                            <p class="text-muted">Selecciona una conversación para comenzar a chatear</p>
-                            
-                            <div class="mt-4">
-                                <a href="<?= base_url('whatsapp/test') ?>" class="btn btn-outline-success">
-                                    <i class="ti-settings"></i> Página de Pruebas
-                                </a>
-                                <a href="<?= base_url('whatsapp/plantillas') ?>" class="btn btn-outline-primary">
-                                    <i class="ti-layout"></i> Plantillas
-                                </a>
+                                </div>
                             </div>
+                        <?php endforeach; ?>
+                    <?php endif; ?>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                            <div class="alert alert-info mt-4 mx-5">
-                                <i class="ti-info-alt"></i>
-                                <strong>Número configurado:</strong> +51 994 276 946<br>
-                                <small>Los mensajes que te envíen aparecerán aquí automáticamente</small>
-                            </div>
+    <div class="col-lg-5">
+        <div class="card whatsapp-card shadow-sm h-100">
+            <div class="card-body d-flex flex-column h-100">
+                <div class="chat-preview-header mb-3">
+                    <div class="d-flex align-items-center justify-content-between">
+                        <div>
+                            <h5 class="mb-0">Panel de conversación</h5>
+                            <small class="text-muted">Conexión activa <?= !empty($cuentas) ? 'por Twilio' : 'pendiente' ?></small>
                         </div>
+                        <span class="status-pill status-pill-success px-3">En vivo</span>
                     </div>
+                </div>
+                <div class="chat-preview flex-grow-1 d-flex flex-column justify-content-center text-center px-3 py-4">
+                    <i class="fab fa-whatsapp" style="font-size: 4rem; color: #25D366;"></i>
+                    <h4 class="mt-3">WhatsApp Business listo</h4>
+                    <p class="text-muted">Selecciona una conversación para acceder a las burbujas de chat y el historial.</p>
+                    <div class="mt-4">
+                        <a href="<?= base_url('whatsapp/test') ?>" class="btn btn-outline-success me-2">
+                            <i class="ti-settings"></i> Pruebas
+                        </a>
+                        <a href="<?= base_url('whatsapp/plantillas') ?>" class="btn btn-outline-primary">
+                            <i class="ti-layout"></i> Plantillas
+                        </a>
+                    </div>
+                </div>
+                <div class="alert alert-info mt-4 mb-0">
+                    <strong>Estado del API:</strong>
+                    <?= !empty($cuentas) ? 'Twilio enlazado correctamente' : 'Requiere configuración de Twilio' ?>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-3">
+        <div class="card whatsapp-card shadow-sm h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5 class="mb-0">Atributos del lead</h5>
+                    <button class="btn btn-sm btn-outline-secondary">Editar</button>
+                </div>
+                <?php if ($primerConversacion): ?>
+                    <p class="lead mb-1"><?= esc($primerConversacion['nombre_contacto'] ?? 'Sin nombre') ?></p>
+                    <p class="text-muted mb-3"><i class="ti-mobile"></i> <?= esc($primerConversacion['numero_whatsapp']) ?></p>
+                    <div class="lead-attribute">
+                        <span>Estado</span>
+                        <strong><?= esc($primerConversacion['estado'] ?? 'activa') ?></strong>
+                    </div>
+                    <div class="lead-attribute">
+                        <span>Asignado</span>
+                        <strong><?= esc($primerConversacion['usuario_nombre'] ?? 'Sin asignar') ?></strong>
+                    </div>
+                    <div class="lead-attribute">
+                        <span>Último mensaje</span>
+                        <small class="text-muted"><?= esc(substr($primerConversacion['ultimo_mensaje'] ?? '', 0, 80)) ?>...</small>
+                    </div>
+                <?php else: ?>
+                    <p class="text-muted">Selecciona una conversación para ver todos los atributos.</p>
+                <?php endif; ?>
+
+                <div class="mt-4">
+                    <h6>Notas</h6>
+                    <textarea class="form-control" rows="5" placeholder="Notas del lead" disabled></textarea>
+                </div>
+
+                <div class="mt-3">
+                    <h6>Mensajes programados</h6>
+                    <p class="text-muted small">Aquí verás recordatorios, programas o tareas pendientes.</p>
                 </div>
             </div>
         </div>

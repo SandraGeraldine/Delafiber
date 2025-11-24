@@ -254,6 +254,62 @@
     border-color: var(--whatsapp-green);
 }
 
+.whatsapp-layout {
+    display: flex;
+}
+
+.whatsapp-card {
+    border-radius: 12px;
+}
+
+.connection-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.status-pill {
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.status-pill-success {
+    background: #e6f7f0;
+    color: #0f9f5f;
+}
+
+.status-pill-warning {
+    background: #fff4e5;
+    color: #d97706;
+}
+
+.conversation-filters .btn.active {
+    background: #f0f8ff;
+    border-color: #cfe2ff;
+}
+
+.conversation-filters .btn {
+    border-radius: 999px;
+}
+
+.chat-preview {
+    background: linear-gradient(180deg, #ffffff, #f8fbff);
+    border-radius: 16px;
+}
+
+.lead-attribute {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 1px solid #f1f1f1;
+}
+
+.lead-attribute:last-child {
+    border-bottom: none;
+}
+
 .plantilla-item h6 {
     margin: 0;
     font-size: 14px;
