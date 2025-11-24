@@ -80,11 +80,11 @@ body {
 
 .login-header {
     background: linear-gradient(135deg, var(--primary-purple) 0%, var(--secondary-purple) 70%, var(--accent-pink) 100%);
-    padding: 2.5rem 2rem;
+    padding: 2.5rem 3rem 2.5rem 2rem;
     text-align: center;
     color: white;
     position: relative;
-    overflow: hidden;
+    overflow: visible;
 }
 
 /* Efecto de onda en el header */
@@ -104,6 +104,7 @@ body {
     margin-bottom: 1rem;
     filter: brightness(0) invert(1); /* Logo en blanco */
     transition: transform 0.3s ease;
+    display: inline-block;
 }
 
 .company-logo:hover {
