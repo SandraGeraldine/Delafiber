@@ -15,6 +15,7 @@ use App\Models\DistritoModel;
 use App\Models\CampoDinamicoOrigenModel;
 use App\Models\HistorialLeadModel;
 use App\Models\ComentarioLeadModel;
+use App\Models\NotificacionModel;
 use Config\LeadEstado;
 use Config\TipoSolicitud;
 
@@ -286,11 +287,19 @@ class Leads extends BaseController
         // Orígenes disponibles (el promotor puede elegir uno, ej. CAMPO)
         $origenes = $this->origenModel->getOrigenesActivos();
 
+        $notificacionModel = new NotificacionModel();
+        $zonasNotificadas = [];
+        $usuarioActual = session()->get('idusuario');
+        if ($usuarioActual) {
+            $zonasNotificadas = $notificacionModel->getPorTipo($usuarioActual, 'zona_campo');
+        }
+
         $data = [
             'title' => 'Registro Rápido de Campo - Delafiber CRM',
             'paquetes' => $paquetes,
             'origenes' => $origenes,
             'user_name' => session()->get('user_name'),
+            'zonasNotificadas' => $zonasNotificadas
         ];
 
         return view('leads/lead_form', $data);

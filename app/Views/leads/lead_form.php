@@ -176,6 +176,22 @@
                         <div id="mapa-preview" class="border rounded p-3 text-center bg-light" style="height: 180px; display: flex; align-items: center; justify-content: center;">
                             <span class="text-muted">Mapa de ubicación</span>
                         </div>
+                        <?php if (!empty($zonasNotificadas)): ?>
+                            <div class="mt-3 alert alert-info">
+                                <h6 class="mb-1">Zona asignada</h6>
+                                <?php foreach ($zonasNotificadas as $zonaNotif): ?>
+                                    <div class="border rounded p-2 mb-2 bg-white text-dark">
+                                        <strong><?= esc($zonaNotif['titulo']) ?></strong>
+                                        <p class="mb-1"><small><?= esc($zonaNotif['mensaje']) ?></small></p>
+                                        <?php if (!empty($zonaNotif['url'])): ?>
+                                            <a href="<?= esc($zonaNotif['url']) ?>" target="_blank" class="btn btn-sm btn-outline-primary zona-notificacion-link" data-notificacion-id="<?= esc($zonaNotif['idnotificacion']) ?>">
+                                                Ver mapa de zona
+                                            </a>
+                                        <?php endif; ?>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <!-- FOTO -->

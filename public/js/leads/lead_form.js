@@ -233,4 +233,20 @@ document.addEventListener('DOMContentLoaded', function () {
             }
         });
     }
+
+    // Marcar notificación de zona como leída al abrir el mapa
+    document.querySelectorAll('.zona-notificacion-link').forEach(link => {
+        link.addEventListener('click', function () {
+            const notifId = this.dataset.notificacionId;
+            if (!notifId) return;
+
+            fetch(`${BASE_URL}/notificaciones/marcarLeida/${notifId}`, {
+                method: 'POST',
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Content-Type': 'application/json'
+                }
+            }).catch(err => console.warn('No se pudo marcar la notificación como leída', err));
+        });
+    });
 });

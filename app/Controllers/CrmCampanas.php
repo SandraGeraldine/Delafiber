@@ -7,6 +7,8 @@ use App\Models\ZonaCampanaModel;
 use App\Models\InteraccionModel;
 use App\Models\AsignacionZonaModel;
 use App\Models\PersonaModel;
+use App\Models\UsuarioModel;
+use App\Models\NotificacionModel;
 
 class CrmCampanas extends BaseController
 {
@@ -125,10 +127,41 @@ class CrmCampanas extends BaseController
         ];
 
         if ($this->zonaModel->insert($datos)) {
+            $idZona = $this->zonaModel->getInsertID();
+
+            $campanaNombre = null;
+            if (!empty($datos['id_campana'])) {
+                $campana = $this->campaniaModel->find($datos['id_campana']);
+                $campanaNombre = $campana['nombre'] ?? null;
+            }
+
+            $titulo = 'Zona territorial definida';
+            $mensaje = sprintf(
+                'Se ha creado la zona "%s" para la campaña "%s". Revisa el mapa para conocer los límites a recorrer.',
+                $datos['nombre_zona'] ?? 'Sin nombre',
+                $campanaNombre ?? 'Campaña sin asignar'
+            );
+
+            $url = base_url('crm-campanas/zona-detalle/' . $idZona);
+
+            $usuarioModel = new UsuarioModel();
+            $promotorCampo = $usuarioModel->getUsuariosActivosPorRol('Promotor Campo');
+            $notificacionModel = new NotificacionModel();
+
+            foreach ($promotorCampo as $usuario) {
+                $notificacionModel->crearNotificacion(
+                    $usuario['idusuario'],
+                    'zona_campo',
+                    $titulo,
+                    $mensaje,
+                    $url
+                );
+            }
+
             return $this->response->setJSON([
                 'success' => true,
                 'message' => 'Zona creada exitosamente',
-                'id_zona' => $this->zonaModel->getInsertID()
+                'id_zona' => $idZona
             ]);
         }
 

@@ -93,6 +93,21 @@ class UsuarioModel extends Model
             ->get()
             ->getResultArray();
     }
+
+    /**
+     * Obtener usuarios activos filtrados por nombre de rol
+     */
+    public function getUsuariosActivosPorRol($nombreRol)
+    {
+        return $this->db->table('usuarios u')
+            ->join('roles r', 'u.idrol = r.idrol', 'left')
+            ->select('u.*, r.nombre as nombreRol')
+            ->where('u.estado', 'Activo')
+            ->where('r.nombre', $nombreRol)
+            ->orderBy('u.nombre')
+            ->get()
+            ->getResultArray();
+    }
     
     /**
      * Verificar si el usuario tiene permisos

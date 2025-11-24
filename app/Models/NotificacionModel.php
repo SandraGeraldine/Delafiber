@@ -69,6 +69,23 @@ class NotificacionModel extends Model
         
         return $this->insert($data);
     }
+
+    /**
+     * Obtener notificaciones filtradas por tipo
+     */
+    public function getPorTipo($idusuario, $tipo, $soloNoLeidas = true)
+    {
+        $builder = $this->builder();
+        $builder->where('idusuario', $idusuario)
+                ->where('tipo', $tipo)
+                ->orderBy('created_at', 'DESC');
+
+        if ($soloNoLeidas) {
+            $builder->where('leida', 0);
+        }
+
+        return $builder->get()->getResultArray();
+    }
     
     /**
      * Obtener todas las notificaciones (leídas y no leídas)
