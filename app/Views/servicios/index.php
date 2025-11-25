@@ -19,6 +19,9 @@
                         <a href="<?= base_url('servicios/estadisticas') ?>" class="btn btn-light btn-sm me-2">
                             <i class="ti-bar-chart me-1"></i>Estadísticas
                         </a>
+                        <button type="button" class="btn btn-light btn-sm me-2" data-bs-toggle="modal" data-bs-target="#modalPromociones">
+                            <i class="ti-gift me-1"></i>Promociones
+                        </button>
                         <a href="<?= base_url('servicios/create') ?>" class="btn btn-light btn-sm">
                             <i class="ti-plus me-1"></i>Nuevo Servicio
                         </a>
@@ -272,5 +275,45 @@ function toggleEstado(idservicio, activar) {
     });
 }
 </script>
+
+<!-- Modal Promociones -->
+<div class="modal fade" id="modalPromociones" tabindex="-1" aria-labelledby="modalPromocionesLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header bg-primary text-white">
+        <h5 class="modal-title" id="modalPromocionesLabel"><i class="ti-gift me-2"></i>Promociones disponibles</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+      </div>
+      <div class="modal-body">
+        <?php if (!empty($promociones)): ?>
+          <div class="row g-3">
+            <?php foreach ($promociones as $promo): ?>
+              <div class="col-md-6">
+                <div class="card border border-info h-100">
+                  <div class="card-body">
+                    <h6 class="fw-bold mb-1"><?= esc($promo['nombre']) ?></h6>
+                    <p class="mb-1 text-muted small"><?= !empty($promo['descripcion']) ? esc($promo['descripcion']) : 'Sin descripción.' ?></p>
+                    <div class="d-flex justify-content-between align-items-center">
+                      <span class="fs-5 text-success">S/ <?= number_format($promo['precio'], 2) ?></span>
+                      <span class="badge bg-info text-dark">Precio promocional</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            <?php endforeach; ?>
+          </div>
+        <?php else: ?>
+          <div class="text-center text-muted py-5">
+            <i class="ti-gift" style="font-size: 48px;"></i>
+            <p class="mt-3 mb-0">No hay promociones activas por el momento.</p>
+          </div>
+        <?php endif; ?>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
+      </div>
+    </div>
+  </div>
+</div>
 
 <?= $this->endSection() ?>

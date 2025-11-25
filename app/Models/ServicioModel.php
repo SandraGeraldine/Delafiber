@@ -107,6 +107,15 @@ class ServicioModel extends Model
         return $builder->get()->getResultArray();
     }
 
+    /**  Obtener promociones activas (categoria = 'promocion') */
+    public function getPromocionesActivas()
+    {
+        return $this->where('estado', 'activo')
+            ->where('categoria', 'promocion')
+            ->orderBy('precio', 'ASC')
+            ->findAll();
+    }
+
     /**
      * Obtener servicio con mejor tasa de conversión
      */

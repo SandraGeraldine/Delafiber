@@ -43,7 +43,8 @@ class Servicios extends BaseController
         $data = [
             'title' => 'Catálogo de Servicios',
             'servicios' => $servicios,
-            'tabla_no_existe' => false
+            'tabla_no_existe' => false,
+            'promociones' => $this->servicioModel->getPromocionesActivas()
         ];
 
         return view('servicios/index', $data);

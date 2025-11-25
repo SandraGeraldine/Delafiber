@@ -236,6 +236,46 @@ class CrmCampanas extends BaseController
     }
 
     /**
+     * Registra que una zona fue recorrida por el usuario logueado.
+     * Guarda el id_zona y coordenadas opcionales en la tabla zona_visitas.
+     */
+    public function confirmarZona()
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Solicitud no válida']);
+        }
+
+        $session = session();
+        $idUsuario = $session->get('idusuario');
+
+        if (!$idUsuario) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Usuario no autenticado']);
+        }
+
+        $json = $this->request->getJSON(true);
+        $idZona = $json['id_zona'] ?? null;
+
+        if (!$idZona) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Zona inválida']);
+        }
+
+        $db = \Config\Database::connect();
+        $builder = $db->table('zona_visitas');
+
+        $builder->insert([
+            'id_zona' => $idZona,
+            'idusuario' => $idUsuario,
+            'lat' => $json['lat'] ?? null,
+            'lng' => $json['lng'] ?? null
+        ]);
+
+        return $this->response->setJSON([
+            'success' => true,
+            'message' => 'Visita registrada'
+        ]);
+    }
+
+    /**
      * Asigna un prospecto a una zona de manera automática.
      *
      * @return \CodeIgniter\HTTP\Response JSON
