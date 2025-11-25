@@ -207,6 +207,7 @@ $routes->group('servicios', ['filter' => 'auth'], function($routes) {
     $routes->post('toggleEstado/(:num)', 'Servicios::toggleEstado/$1');
     $routes->match(['get','post'], 'sincronizar-gst', 'Servicios::sincronizarDesdeGST');
     $routes->get('estadisticas', 'Servicios::estadisticas');
+    $routes->post('guardar-promocion', 'Servicios::guardarPromocion');
 });
 
 // === REPORTES ===
