@@ -142,7 +142,8 @@ class CrmCampanas extends BaseController
                 $campanaNombre ?? 'Campaña sin asignar'
             );
 
-            $url = base_url('crm-campanas/zona-detalle/' . $idZona);
+            $mapaUrl = base_url('crm-campanas/mapa-campanas/' . ($datos['id_campana'] ?? ''));
+            $url = $mapaUrl . '#zona-' . $idZona;
 
             $usuarioModel = new UsuarioModel();
             $promotorCampo = $usuarioModel->getUsuariosActivosPorRol('Promotor Campo');

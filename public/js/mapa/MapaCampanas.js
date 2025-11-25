@@ -18,6 +18,124 @@ let prospectosMarkers = [];
 let drawingManager;       // Para dibujar zonas
 let zonaActual = null;
 let infoWindow;
+let zonaObjetivoId = null;
+
+export function establecerZonaObjetivo(id) {
+    zonaObjetivoId = id ? parseInt(id, 10) : null;
+    if (zonaObjetivoId && zonasPoligonos.length > 0) {
+        resaltarZonaAsignada(zonaObjetivoId);
+    }
+}
+
+function resaltarZonaAsignada(idZona) {
+    const registro = zonasPoligonos.find(z => z.id_zona === idZona);
+    if (!registro) return;
+
+    const { polygon, data } = registro;
+    const bounds = new google.maps.LatLngBounds();
+    polygon.getPath().forEach(coord => bounds.extend(coord));
+
+    mapa.fitBounds(bounds);
+    polygon.setOptions({
+        fillOpacity: 0.6,
+        strokeWeight: 4
+    });
+
+    mostrarInfoZona(data, bounds.getCenter());
+    mostrarBannerZonaAsignada(data);
+    window.setTimeout(() => {
+        polygon.setOptions({
+            fillOpacity: 0.3,
+            strokeWeight: 2
+        });
+    }, 3000);
+}
+
+function mostrarBannerZonaAsignada(zona) {
+    const banner = document.getElementById('mapa-zona-banner');
+    if (!banner) return;
+
+    banner.innerHTML = `Zona asignada: <strong>${zona.nombre_zona}</strong> – Sigue este sector <button id="btn-confirmar-zona" class="btn btn-sm btn-outline-secondary ms-3">Confirmar que fui</button>`;
+    banner.classList.remove('d-none');
+    const btn = document.getElementById('btn-confirmar-zona');
+    if (btn) {
+        btn.disabled = false;
+        btn.onclick = () => confirmarZonaRecorrida(zona.id_zona, btn);
+    }
+}
+
+function confirmarZonaRecorrida(idZona, btn) {
+    if (!btn) return;
+    btn.disabled = true;
+    btn.textContent = 'Registrando...';
+
+    obtenerCoordenadasUsuario()
+        .then(coords => guardarConfirmacionZona(idZona, coords))
+        .then(() => {
+            btn.textContent = 'Zona confirmada';
+            btn.classList.remove('btn-outline-secondary');
+            btn.classList.add('btn-success');
+            Swal.fire({
+                icon: 'success',
+                title: 'Confirmado',
+                text: 'Tu visita a esta zona quedó registrada',
+                showConfirmButton: false,
+                timer: 2000
+            });
+        })
+        .catch(error => {
+            console.error('Error confirmando zona:', error);
+            btn.disabled = false;
+            btn.textContent = 'Confirmar que fui';
+            Swal.fire({
+                icon: 'error',
+                title: 'No se pudo confirmar',
+                text: error.message || 'Intenta nuevamente más tarde'
+            });
+        });
+}
+
+function obtenerCoordenadasUsuario() {
+    return new Promise((resolve) => {
+        if (!navigator.geolocation) {
+            resolve({ lat: null, lng: null });
+            return;
+        }
+
+        navigator.geolocation.getCurrentPosition(position => {
+            resolve({
+                lat: position.coords.latitude,
+                lng: position.coords.longitude
+            });
+        }, () => {
+            resolve({ lat: null, lng: null });
+        }, {
+            timeout: 5000
+        });
+    });
+}
+
+async function guardarConfirmacionZona(idZona, coords) {
+    const payload = {
+        id_zona: idZona,
+        lat: coords?.lat || null,
+        lng: coords?.lng || null
+    };
+
+    const response = await fetch(`${baseUrl}/crm-campanas/confirmar-zona`, {
+        method: 'POST',
+        headers: {
+            'X-Requested-With': 'XMLHttpRequest',
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(payload)
+    });
+
+    const data = await response.json();
+    if (!data.success) {
+        throw new Error(data.message || 'No se pudo registrar la visita');
+    }
+}
 
 // ============================================
 // 1. INICIALIZAR MAPA

@@ -104,6 +104,7 @@
                 <div id="mapCampanas" style="height: 60vh; min-height: 360px; width: 100%;"></div>
             </div>
         </div>
+        <div id="mapa-zona-banner" class="alert alert-info mt-3 mx-3 d-none" role="presentation"></div>
 
         <?php if (empty($googleMapsKey)): ?>
             <div class="alert alert-warning mt-3" role="alert">
