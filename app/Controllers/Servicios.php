@@ -103,7 +103,9 @@ class Servicios extends BaseController
     {
         $rules = [
             'nombre_promocion' => 'required|min_length[3]|max_length[150]',
-            'precio_promocion' => 'required|decimal'
+            'precio_promocion' => 'required|decimal',
+            'fecha_inicio_promocion' => 'permit_empty|valid_date[Y-m-d]',
+            'fecha_fin_promocion' => 'permit_empty|valid_date[Y-m-d]'
         ];
 
         if (!$this->validate($rules)) {
@@ -120,6 +122,22 @@ class Servicios extends BaseController
             'estado' => 'activo',
             'activo' => 1
         ];
+
+        $caracteristicas = [];
+        $fechaInicio = $this->request->getPost('fecha_inicio_promocion');
+        $fechaFin = $this->request->getPost('fecha_fin_promocion');
+
+        if ($fechaInicio) {
+            $caracteristicas['fecha_inicio_promocion'] = $fechaInicio;
+        }
+
+        if ($fechaFin) {
+            $caracteristicas['fecha_fin_promocion'] = $fechaFin;
+        }
+
+        if (!empty($caracteristicas)) {
+            $data['caracteristicas'] = $caracteristicas;
+        }
 
         if ($this->servicioModel->insert($data)) {
             return redirect()->back()->with('promo_success', 'Promoción creada correctamente');

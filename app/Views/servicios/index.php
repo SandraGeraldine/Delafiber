@@ -285,6 +285,16 @@ function toggleEstado(idservicio, activar) {
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
+        <div class="alert alert-info mb-4">
+          <h6 class="mb-2">¿Cómo usar esta sección?</h6>
+          <ul class="mb-0 small">
+            <li>Revisa la columna <strong>Promociones vigentes</strong> para ver lo que ya está activo.</li>
+            <li>Agrega un nombre y precio claro; puedes usar la descripción para indicar duración o restricciones.</li>
+            <li>Incluye la fecha de inicio y la fecha de caducidad para que las promotoras sepan hasta cuándo pueden ofrecerla.</li>
+            <li>Una vez guardada, la promoción aparecerá en el catálogo de servicios y podrá asignarse a campañas.</li>
+          </ul>
+          <p class="mb-0 mt-2"><small>Si necesitas desactivarla después, usa el botón de estado dentro del catálogo.</small></p>
+        </div>
         <?php if (session()->getFlashdata('promo_success')): ?>
           <div class="alert alert-success alert-dismissible fade show" role="alert">
             <?= session()->getFlashdata('promo_success') ?>
@@ -304,10 +314,22 @@ function toggleEstado(idservicio, activar) {
             <h6 class="mb-3 text-uppercase small text-secondary">Promociones vigentes</h6>
             <?php if (!empty($promociones)): ?>
               <?php foreach ($promociones as $promo): ?>
+                <?php
+                  $fechaInicio = $promo['caracteristicas']['fecha_inicio_promocion'] ?? null;
+                  $fechaFin = $promo['caracteristicas']['fecha_fin_promocion'] ?? null;
+                ?>
                 <div class="mb-3 p-3 border rounded bg-white shadow-sm">
                   <div class="d-flex justify-content-between align-items-baseline">
-                    <strong><?= esc($promo['nombre']) ?></strong>
-                    <span class="text-success">S/ <?= number_format($promo['precio'], 2) ?></span>
+                    <strong class="fs-6 text-dark"><?= esc($promo['nombre']) ?></strong>
+                    <span class="text-success fw-bold">S/ <?= number_format($promo['precio'], 2) ?></span>
+                  </div>
+                  <div class="d-flex gap-2 flex-wrap mb-2">
+                    <?php if ($fechaInicio): ?>
+                      <span class="badge bg-success text-white">Inicia <?= date('d/m/Y', strtotime($fechaInicio)) ?></span>
+                    <?php endif; ?>
+                    <?php if ($fechaFin): ?>
+                      <span class="badge bg-danger text-white">Caduca <?= date('d/m/Y', strtotime($fechaFin)) ?></span>
+                    <?php endif; ?>
                   </div>
                   <p class="mb-1 text-muted small"><?= !empty($promo['descripcion']) ? esc($promo['descripcion']) : 'Sin descripción.' ?></p>
                 </div>
@@ -331,6 +353,16 @@ function toggleEstado(idservicio, activar) {
               <div class="mb-3">
                 <label class="form-label">Precio</label>
                 <input type="number" name="precio_promocion" class="form-control" step="0.01" value="<?= old('precio_promocion') ?>" required>
+              </div>
+              <div class="row g-3">
+                <div class="col-md-6">
+                  <label class="form-label">Fecha de inicio</label>
+                  <input type="date" name="fecha_inicio_promocion" class="form-control" value="<?= old('fecha_inicio_promocion') ?>">
+                </div>
+                <div class="col-md-6">
+                  <label class="form-label">Fecha de caducidad</label>
+                  <input type="date" name="fecha_fin_promocion" class="form-control" value="<?= old('fecha_fin_promocion') ?>">
+                </div>
               </div>
               <button type="submit" class="btn btn-primary w-100">Guardar promoción</button>
             </form>
