@@ -31,7 +31,7 @@ class ServicioModel extends Model
     protected $validationRules = [
         'nombre' => 'required|min_length[3]|max_length[100]',
         'precio' => 'required|decimal|greater_than[0]',
-        'categoria' => 'required|in_list[hogar,empresarial,combo,adicional]',
+        'categoria' => 'required|in_list[hogar,empresarial,combo,adicional,promocion]',
         'estado' => 'permit_empty|in_list[activo,inactivo]'
     ];
     
