@@ -110,9 +110,7 @@ class ServicioModel extends Model
     /**  Obtener promociones activas (categoria = 'promocion') */
     public function getPromocionesActivas()
     {
-        return $this->where('estado', 'activo')
-            ->where('categoria', 'promocion')
-            ->where('activo', 1)
+        return $this->where('categoria', 'promocion')
             ->orderBy('precio', 'ASC')
             ->findAll();
     }
