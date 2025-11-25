@@ -79,6 +79,16 @@ class WhatsApp extends BaseController
         $conversaciones = $builder->orderBy('whatsapp_conversaciones.fecha_ultimo_mensaje', 'DESC')
                                 ->findAll();
         
+        $primerConversacion = !empty($conversaciones) ? $conversaciones[0] : null;
+        $mensajesActivos = [];
+
+        if ($primerConversacion) {
+            $mensajesActivos = $this->mensajeModel
+                ->where('id_conversacion', $primerConversacion['id_conversacion'])
+                ->orderBy('created_at', 'ASC')
+                ->findAll();
+        }
+
         $data = [
             'title' => 'WhatsApp Business',
             'conversaciones' => $conversaciones,
@@ -87,7 +97,9 @@ class WhatsApp extends BaseController
             'no_leidos_total' => $this->conversacionModel
                 ->selectSum('no_leidos')
                 ->where('whatsapp_conversaciones.estado', 'activa')
-                ->first()['no_leidos'] ?? 0
+                ->first()['no_leidos'] ?? 0,
+            'conversacion_activa' => $primerConversacion,
+            'mensajes_activos' => $mensajesActivos
         ];
 
         return view('whatsapp/index', $data);
@@ -292,6 +304,29 @@ class WhatsApp extends BaseController
             'success' => true,
             'mensajes' => $mensajes,
             'count' => count($mensajes)
+        ]);
+    }
+
+    public function obtenerConversacion($id_conversacion)
+    {
+        $conversacion = $this->conversacionModel->find($id_conversacion);
+
+        if (!$conversacion) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'Conversación no encontrada'
+            ]);
+        }
+
+        $mensajes = $this->mensajeModel
+            ->where('id_conversacion', $id_conversacion)
+            ->orderBy('created_at', 'ASC')
+            ->findAll();
+
+        return $this->response->setJSON([
+            'success' => true,
+            'conversacion' => $conversacion,
+            'mensajes' => $mensajes
         ]);
     }
 

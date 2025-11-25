@@ -27,6 +27,7 @@
                     <div>
                         <h5 class="mb-0">
                             <i class="ti-comments text-primary"></i> Conversaciones
+                            <span id="whatsapp-badge" class="badge badge-whatsapp" style="display:none;">0</span>
                         </h5>
                         <small class="text-muted"><?= count($conversaciones) ?> chats activos</small>
                     </div>
@@ -67,8 +68,9 @@
                         </div>
                     <?php else: ?>
                         <?php foreach ($conversaciones as $conv): ?>
-                            <div class="conversacion-item <?= $conv['no_leidos'] > 0 ? 'no-leido' : '' ?>" 
-                                 onclick="window.location.href='<?= base_url('whatsapp/conversacion/' . $conv['id_conversacion']) ?>'">
+                            <div class="conversacion-item <?= $conv['no_leidos'] > 0 ? 'no-leido' : '' ?> <?= ($conversacion_activa && $conversacion_activa['id_conversacion'] == $conv['id_conversacion']) ? 'selected' : '' ?>"
+                                 data-conversacion="<?= $conv['id_conversacion'] ?>"
+                                 data-numero="<?= esc($conv['numero_whatsapp']) ?>">
                                 <div class="d-flex align-items-start">
                                     <div class="avatar-circle me-3">
                                         <i class="ti-user"></i>
@@ -114,33 +116,58 @@
 
     <div class="col-lg-5">
         <div class="card whatsapp-card shadow-sm h-100">
-            <div class="card-body d-flex flex-column h-100">
-                <div class="chat-preview-header mb-3">
-                    <div class="d-flex align-items-center justify-content-between">
-                        <div>
-                            <h5 class="mb-0">Panel de conversación</h5>
-                            <small class="text-muted">Conexión activa <?= !empty($cuentas) ? 'por Twilio' : 'pendiente' ?></small>
+            <div class="chat-container card-body">
+                <div class="chat-header <?= $conversacion_activa ? '' : 'd-none' ?>" id="chat-header">
+                    <div>
+                        <strong><?= esc($conversacion_activa['nombre_contacto'] ?? 'Sin nombre') ?></strong>
+                        <p class="mb-0 text-white-50 small" id="chat-header-subtitle"><?= esc($conversacion_activa['numero_whatsapp'] ?? '') ?></p>
+                    </div>
+                    <span class="status-pill status-pill-success">En vivo</span>
+                </div>
+                <div class="chat-messages" id="chat-messages">
+                    <?php if ($conversacion_activa): ?>
+                        <?php foreach ($mensajes_activos as $mensaje): ?>
+                            <?php $esEntrante = $mensaje['direccion'] === 'entrante'; ?>
+                            <div class="mensaje <?= $esEntrante ? 'entrante' : 'saliente' ?>" data-id="<?= $mensaje['id_mensaje'] ?>">
+                                <div class="mensaje-bubble">
+                                    <p class="mensaje-texto"><?= esc($mensaje['contenido']) ?></p>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="mensaje-hora"><?= date('H:i', strtotime($mensaje['created_at'])) ?></small>
+                                        <?php if (!$esEntrante): ?>
+                                            <span class="mensaje-estado"><?= esc($mensaje['estado_envio'] ?: 'enviado') ?></span>
+                                        <?php endif; ?>
+                                    </div>
+                                </div>
+                            </div>
+                        <?php endforeach; ?>
+                    <?php else: ?>
+                        <div class="chat-placeholder text-center text-muted py-5" id="chat-placeholder">
+                            <i class="fab fa-whatsapp" style="font-size: 4rem; color: #25D366;"></i>
+                            <h4 class="mt-3">WhatsApp Business listo</h4>
+                            <p class="text-muted">Selecciona una conversación para acceder a las burbujas de chat y el historial.</p>
+                            <div class="mt-4">
+                                <a href="<?= base_url('whatsapp/test') ?>" class="btn btn-outline-success me-2">
+                                    <i class="ti-settings"></i> Pruebas
+                                </a>
+                                <a href="<?= base_url('whatsapp/plantillas') ?>" class="btn btn-outline-primary">
+                                    <i class="ti-layout"></i> Plantillas
+                                </a>
+                            </div>
                         </div>
-                        <span class="status-pill status-pill-success px-3">En vivo</span>
-                    </div>
+                    <?php endif; ?>
                 </div>
-                <div class="chat-preview flex-grow-1 d-flex flex-column justify-content-center text-center px-3 py-4">
-                    <i class="fab fa-whatsapp" style="font-size: 4rem; color: #25D366;"></i>
-                    <h4 class="mt-3">WhatsApp Business listo</h4>
-                    <p class="text-muted">Selecciona una conversación para acceder a las burbujas de chat y el historial.</p>
-                    <div class="mt-4">
-                        <a href="<?= base_url('whatsapp/test') ?>" class="btn btn-outline-success me-2">
-                            <i class="ti-settings"></i> Pruebas
-                        </a>
-                        <a href="<?= base_url('whatsapp/plantillas') ?>" class="btn btn-outline-primary">
-                            <i class="ti-layout"></i> Plantillas
-                        </a>
-                    </div>
+                <div class="chat-input mt-3 <?= $conversacion_activa ? '' : 'd-none' ?>" id="chat-input">
+                    <button class="btn btn-light btn-sm" type="button"><i class="fas fa-paperclip"></i></button>
+                    <button class="btn btn-light btn-sm" type="button"><i class="fas fa-smile"></i></button>
+                    <textarea id="mensaje-chat" class="form-control" placeholder="Escribe un mensaje..." rows="1"></textarea>
+                    <button class="btn btn-whatsapp" id="btn-enviar-chat" data-conversacion="<?= $conversacion_activa['id_conversacion'] ?? '' ?>" data-numero="<?= esc($conversacion_activa['numero_whatsapp'] ?? '') ?>">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
                 </div>
-                <div class="alert alert-info mt-4 mb-0">
-                    <strong>Estado del API:</strong>
-                    <?= !empty($cuentas) ? 'Twilio enlazado correctamente' : 'Requiere configuración de Twilio' ?>
-                </div>
+            </div>
+            <div class="alert alert-info mt-2 mx-3 mb-3">
+                <strong>Estado del API:</strong>
+                <?= !empty($cuentas) ? 'Twilio enlazado correctamente' : 'Requiere configuración de Twilio' ?>
             </div>
         </div>
     </div>
@@ -322,18 +349,109 @@ document.getElementById('buscar-conversacion')?.addEventListener('input', functi
 });
 
 // Polling para nuevas conversaciones cada 10 segundos
-setInterval(function() {
-    fetch('<?= base_url('whatsapp/obtenerNoLeidos') ?>')
-        .then(response => response.json())
-        .then(data => {
-            if (data.success && data.no_leidos > 0) {
-                const badge = document.getElementById('whatsapp-badge');
-                if (badge) {
-                    badge.textContent = data.no_leidos;
-                    badge.style.display = 'inline-block';
-                }
-            }
-        });
-}, 10000);
+function actualizarBadge(newCount) {
+    const badge = document.getElementById('whatsapp-badge');
+    if (!badge) return;
+    badge.textContent = newCount;
+    badge.style.display = newCount > 0 ? 'inline-block' : 'none';
+}
+
+async function pollNoLeidos() {
+    try {
+        const response = await fetch('<?= base_url('whatsapp/obtenerNoLeidos') ?>');
+        const data = await response.json();
+        if (data.success) {
+            actualizarBadge(data.no_leidos);
+        }
+    } catch (error) {
+        console.error('Error al actualizar badge WhatsApp:', error);
+    }
+}
+
+setInterval(pollNoLeidos, 10000);
+
+function agregarMensaje(mensaje, esEntrante) {
+    const mensajesContainer = document.getElementById('chat-messages');
+    if (!mensajesContainer) return;
+    const div = document.createElement('div');
+    div.className = `mensaje ${esEntrante ? 'entrante' : 'saliente'}`;
+    const bubble = document.createElement('div');
+    bubble.className = 'mensaje-bubble';
+    bubble.innerHTML = `
+        <p class="mensaje-texto">${mensaje.contenido}</p>
+        <div class="d-flex justify-content-between align-items-center">
+            <small class="mensaje-hora">${mensaje.created_at.slice(11,16)}</small>
+            ${!esEntrante ? `<span class="mensaje-estado">${mensaje.estado_envio || 'enviado'}</span>` : ''}
+        </div>
+    `;
+    div.appendChild(bubble);
+    mensajesContainer.appendChild(div);
+    mensajesContainer.scrollTop = mensajesContainer.scrollHeight;
+}
+
+document.querySelectorAll('.conversacion-item').forEach(item => {
+    item.addEventListener('click', async () => {
+        const idConversacion = item.dataset.conversacion;
+        const numero = item.dataset.numero;
+        try {
+            const response = await fetch(`<?= base_url('whatsapp/obtenerConversacion') ?>/${idConversacion}`);
+            const data = await response.json();
+            if (!data.success) throw new Error(data.message);
+            const mensajes = data.mensajes;
+            const mensajesContainer = document.getElementById('chat-messages');
+            mensajesContainer.innerHTML = '';
+            mensajes.forEach(m => {
+                agregarMensaje(m, m.direccion === 'entrante');
+            });
+            const header = document.getElementById('chat-header');
+            const placeholder = document.getElementById('chat-placeholder');
+            const input = document.getElementById('chat-input');
+            header.classList.remove('d-none');
+            input.classList.remove('d-none');
+            if (placeholder) placeholder.classList.add('d-none');
+            document.getElementById('chat-header-subtitle').textContent = numero;
+            document.getElementById('btn-enviar-chat').dataset.conversacion = idConversacion;
+            document.getElementById('btn-enviar-chat').dataset.numero = numero;
+        } catch (error) {
+            console.error(error);
+        }
+    });
+});
+
+const btnEnviarChat = document.getElementById('btn-enviar-chat');
+if (btnEnviarChat) {
+    btnEnviarChat.addEventListener('click', async () => {
+        const mensajeInput = document.getElementById('mensaje-chat');
+        const mensaje = mensajeInput.value.trim();
+        const idConversacion = btnEnviarChat.dataset.conversacion;
+        const numero = btnEnviarChat.dataset.numero;
+        if (!mensaje || !idConversacion || !numero) return;
+
+        btnEnviarChat.disabled = true;
+        try {
+            const response = await fetch('<?= base_url('whatsapp/enviarMensaje') ?>', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: new URLSearchParams({
+                    id_conversacion: idConversacion,
+                    mensaje: mensaje,
+                    numero_destino: numero
+                })
+            });
+            const data = await response.json();
+            if (!data.success) throw new Error(data.message);
+            agregarMensaje({ contenido: mensaje, created_at: new Date().toISOString(), direccion: 'saliente', estado_envio: 'enviado' }, false);
+            mensajeInput.value = '';
+        } catch (error) {
+            console.error('Error al enviar mensaje:', error);
+            Swal.fire({ icon: 'error', title: 'Error', text: error.message || 'No se pudo enviar el mensaje.' });
+        } finally {
+            btnEnviarChat.disabled = false;
+        }
+    });
+}
 </script>
 <?= $this->endSection() ?>

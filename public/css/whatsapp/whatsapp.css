@@ -36,6 +36,11 @@
     border-left: 4px solid var(--whatsapp-green);
 }
 
+.conversacion-item.selected {
+    background-color: #eefbf4;
+    border-left: 4px solid var(--whatsapp-blue);
+}
+
 .conversacion-item.no-leido h6 {
     font-weight: 700;
     color: #000;
@@ -297,6 +302,10 @@
 .chat-preview {
     background: linear-gradient(180deg, #ffffff, #f8fbff);
     border-radius: 16px;
+}
+
+.chat-placeholder {
+    min-height: 300px;
 }
 
 .lead-attribute {
