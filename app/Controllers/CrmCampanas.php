@@ -235,10 +235,7 @@ class CrmCampanas extends BaseController
         return redirect()->back()->with('error', 'Error al eliminar la zona');
     }
 
-    /**
-     * Registra que una zona fue recorrida por el usuario logueado.
-     * Guarda el id_zona y coordenadas opcionales en la tabla zona_visitas.
-     */
+    /** Registra que una zona fue recorrida por el usuario logueado.  Guarda el id_zona y coordenadas opcionales en la tabla zona_visitas.*/
     public function confirmarZona()
     {
         if (!$this->request->isAJAX()) {

@@ -112,6 +112,7 @@ class ServicioModel extends Model
     {
         return $this->where('estado', 'activo')
             ->where('categoria', 'promocion')
+            ->where('activo', 1)
             ->orderBy('precio', 'ASC')
             ->findAll();
     }
