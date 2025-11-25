@@ -290,7 +290,7 @@ function toggleEstado(idservicio, activar) {
           <ul class="mb-0 small">
             <li>Revisa la columna <strong>Promociones vigentes</strong> para ver lo que ya está activo.</li>
             <li>Agrega un nombre y precio claro; puedes usar la descripción para indicar duración o restricciones.</li>
-            <li>Incluye la fecha de inicio y la fecha de caducidad para que las promotoras sepan hasta cuándo pueden ofrecerla.</li>
+            <li>Incluye la fecha de inicio y la fecha de caducidad para que sepan hasta cuándo pueden ofrecerla.</li>
             <li>Una vez guardada, la promoción aparecerá en el catálogo de servicios y podrá asignarse a campañas.</li>
           </ul>
           <p class="mb-0 mt-2"><small>Si necesitas desactivarla después, usa el botón de estado dentro del catálogo.</small></p>

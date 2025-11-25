@@ -119,8 +119,7 @@ class Servicios extends BaseController
             'descripcion' => $this->request->getPost('descripcion_promocion') ?: null,
             'precio' => $this->request->getPost('precio_promocion'),
             'categoria' => 'promocion',
-            'estado' => 'activo',
-            'activo' => 1
+            'estado' => 'activo'
         ];
 
         $caracteristicas = [];
