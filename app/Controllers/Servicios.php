@@ -97,6 +97,40 @@ class Servicios extends BaseController
     }
 
     /**
+     * Guardar una promoción desde el modal
+     */
+    public function guardarPromocion()
+    {
+        $rules = [
+            'nombre_promocion' => 'required|min_length[3]|max_length[150]',
+            'precio_promocion' => 'required|decimal'
+        ];
+
+        if (!$this->validate($rules)) {
+            return redirect()->back()
+                ->withInput()
+                ->with('promo_errors', $this->validator->getErrors());
+        }
+
+        $data = [
+            'nombre' => $this->request->getPost('nombre_promocion'),
+            'descripcion' => $this->request->getPost('descripcion_promocion') ?: null,
+            'precio' => $this->request->getPost('precio_promocion'),
+            'categoria' => 'promocion',
+            'estado' => 'activo',
+            'activo' => 1
+        ];
+
+        if ($this->servicioModel->insert($data)) {
+            return redirect()->back()->with('promo_success', 'Promoción creada correctamente');
+        }
+
+        return redirect()->back()
+            ->withInput()
+            ->with('promo_errors', ['general' => 'No se pudo crear la promoción.']);
+    }
+
+    /**
      * Editar servicio
      */
     public function edit($id)

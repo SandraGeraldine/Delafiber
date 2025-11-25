@@ -285,29 +285,57 @@ function toggleEstado(idservicio, activar) {
         <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
       </div>
       <div class="modal-body">
-        <?php if (!empty($promociones)): ?>
-          <div class="row g-3">
-            <?php foreach ($promociones as $promo): ?>
-              <div class="col-md-6">
-                <div class="card border border-info h-100">
-                  <div class="card-body">
-                    <h6 class="fw-bold mb-1"><?= esc($promo['nombre']) ?></h6>
-                    <p class="mb-1 text-muted small"><?= !empty($promo['descripcion']) ? esc($promo['descripcion']) : 'Sin descripción.' ?></p>
-                    <div class="d-flex justify-content-between align-items-center">
-                      <span class="fs-5 text-success">S/ <?= number_format($promo['precio'], 2) ?></span>
-                      <span class="badge bg-info text-dark">Precio promocional</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            <?php endforeach; ?>
-          </div>
-        <?php else: ?>
-          <div class="text-center text-muted py-5">
-            <i class="ti-gift" style="font-size: 48px;"></i>
-            <p class="mt-3 mb-0">No hay promociones activas por el momento.</p>
+        <?php if (session()->getFlashdata('promo_success')): ?>
+          <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <?= session()->getFlashdata('promo_success') ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
           </div>
         <?php endif; ?>
+        <?php $promoErrors = session()->getFlashdata('promo_errors') ?? [] ?>
+        <?php if (!empty($promoErrors)): ?>
+          <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <?= esc(implode(' ', array_values($promoErrors))) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+          </div>
+        <?php endif; ?>
+
+        <div class="row g-3">
+          <div class="col-md-6">
+            <h6 class="mb-3 text-uppercase small text-secondary">Promociones vigentes</h6>
+            <?php if (!empty($promociones)): ?>
+              <?php foreach ($promociones as $promo): ?>
+                <div class="mb-3 p-3 border rounded bg-white shadow-sm">
+                  <div class="d-flex justify-content-between align-items-baseline">
+                    <strong><?= esc($promo['nombre']) ?></strong>
+                    <span class="text-success">S/ <?= number_format($promo['precio'], 2) ?></span>
+                  </div>
+                  <p class="mb-1 text-muted small"><?= !empty($promo['descripcion']) ? esc($promo['descripcion']) : 'Sin descripción.' ?></p>
+                </div>
+              <?php endforeach; ?>
+            <?php else: ?>
+              <div class="text-muted small">No hay promociones activas.</div>
+            <?php endif; ?>
+          </div>
+          <div class="col-md-6">
+            <h6 class="mb-3 text-uppercase small text-secondary">Crear nueva promoción</h6>
+            <form action="<?= base_url('servicios/guardar-promocion') ?>" method="post">
+              <?= csrf_field() ?>
+              <div class="mb-3">
+                <label class="form-label">Nombre</label>
+                <input type="text" name="nombre_promocion" class="form-control" value="<?= old('nombre_promocion') ?>" required>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Descripción</label>
+                <textarea name="descripcion_promocion" class="form-control" rows="3"><?= old('descripcion_promocion') ?></textarea>
+              </div>
+              <div class="mb-3">
+                <label class="form-label">Precio</label>
+                <input type="number" name="precio_promocion" class="form-control" step="0.01" value="<?= old('precio_promocion') ?>" required>
+              </div>
+              <button type="submit" class="btn btn-primary w-100">Guardar promoción</button>
+            </form>
+          </div>
+        </div>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cerrar</button>
