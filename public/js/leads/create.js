@@ -635,6 +635,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let cargandoPlanes = false;
 
+    function extraerPlanesDesdeRespuesta(payload) {
+        if (!payload) {
+            return [];
+        }
+        if (Array.isArray(payload)) {
+            return payload;
+        }
+        const candidatos = ['data', 'planes', 'results', 'items'];
+        for (const key of candidatos) {
+            if (Array.isArray(payload[key])) {
+                return payload[key];
+            }
+        }
+        return [];
+    }
+
     async function cargarPlanes() {
         if (cargandoPlanes || !selPlan) return;
 
@@ -667,7 +683,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (!res.ok) throw new Error(`Error HTTP: ${res.status}`);
 
-            const planes = await res.json();
+            const planesResponse = await res.json();
+            const planes = extraerPlanesDesdeRespuesta(planesResponse);
 
             selPlan.innerHTML = '<option value="">Seleccione un plan</option>';
 
