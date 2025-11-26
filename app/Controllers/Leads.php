@@ -765,6 +765,10 @@ class Leads extends BaseController
                     $this->personaModel->update($personaId, ['tipo_documento' => $tipoDocumentoPost]);
                     $persona['tipo_documento'] = $tipoDocumentoPost;
                 }
+                $this->personaModel->update($personaId, [
+                    'representante_nombre' => $this->request->getPost('representante_nombre') ?: null,
+                    'representante_cargo' => $this->request->getPost('representante_cargo') ?: null
+                ]);
 
                 $nombreCompleto = ($persona['nombres'] ?? '') . ' ' . ($persona['apellidos'] ?? '');
             } else {
@@ -782,6 +786,9 @@ class Leads extends BaseController
                     'direccion' => $this->request->getPost('direccion') ?: null,
                     'referencias' => $this->request->getPost('referencias') ?: null,
                     'iddistrito' => (!empty($iddistrito) && $iddistrito !== '') ? $iddistrito : null
+                    ,
+                    'representante_nombre' => $this->request->getPost('representante_nombre') ?: null,
+                    'representante_cargo' => $this->request->getPost('representante_cargo') ?: null
                 ];
                 
                 // Geocodificar dirección si existe

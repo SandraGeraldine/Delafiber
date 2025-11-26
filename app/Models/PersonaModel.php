@@ -23,7 +23,9 @@ class PersonaModel extends Model
         'referencias',
         'iddistrito',
         'coordenadas',
-        'id_zona'
+        'id_zona',
+        'representante_nombre',
+        'representante_cargo'
     ];
     
     protected $useTimestamps = true;

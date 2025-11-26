@@ -83,6 +83,18 @@ if (!function_exists('reglas_persona')) {
                     'numeric' => 'Distrito inválido',
                     'is_not_unique' => 'El distrito seleccionado no existe'
                 ]
+            ],
+            'representante_nombre' => [
+                'rules' => 'permit_empty|max_length[150]',
+                'errors' => [
+                    'max_length' => 'El nombre del representante no puede exceder 150 caracteres'
+                ]
+            ],
+            'representante_cargo' => [
+                'rules' => 'permit_empty|max_length[150]',
+                'errors' => [
+                    'max_length' => 'El cargo del representante no puede exceder 150 caracteres'
+                ]
             ]
         ];
     }

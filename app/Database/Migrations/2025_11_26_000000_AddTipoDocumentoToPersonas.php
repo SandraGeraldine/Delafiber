@@ -26,6 +26,18 @@ class AddTipoDocumentoToPersonas extends Migration
                 'default'    => 'dni',
                 'after'      => 'dni',
             ],
+            'representante_nombre' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 150,
+                'null'       => true,
+                'after'      => 'tipo_documento'
+            ],
+            'representante_cargo' => [
+                'type'       => 'VARCHAR',
+                'constraint' => 150,
+                'null'       => true,
+                'after'      => 'representante_nombre'
+            ]
         ];
 
         $this->forge->addColumn('personas', $fields);

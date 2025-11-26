@@ -94,39 +94,41 @@
                                     </div>
                                 </div>
 
-                                <div id="datos-empresa" class="alert alert-light border mt-3" style="display:none;">
-                                    <div class="row">
-                                        <div class="col-md-6 mb-2">
-                                            <label for="representante_nombre">Nombre del representante</label>
-                                            <input type="text" class="form-control" id="representante_nombre" name="representante_nombre" placeholder="Ej. Juan Pérez" autocomplete="off">
-                                        </div>
-                                        <div class="col-md-6 mb-2">
-                                            <label for="representante_cargo">Cargo del representante</label>
-                                            <input type="text" class="form-control" id="representante_cargo" name="representante_cargo" placeholder="Ej. Gerente General" autocomplete="off">
-                                        </div>
-                                    </div>
-                                    <small class="text-muted">Registra estos datos cuando la persona jurídica o empresa tenga otro tipo de documento.</small>
-                                </div>
-
                                 <!-- Resultado de búsqueda -->
                                 <div id="resultado-busqueda" style="display:none;"></div>
 
                                 <hr>
 
-                                <!-- Formulario de datos -->
                                 <input type="hidden" id="idpersona" name="idpersona" value="">
 
-                                <div class="row">
-                                    <div class="col-md-6">
+                                <div class="row" id="empresa-row">
+                                    <div class="col-md-12">
                                         <div class="form-group">
-                                            <label for="nombres">Nombres *</label>
-                                            <input type="text" class="form-control" id="nombres" name="nombres" required>
+                                            <label for="nombres" id="nombres-label">Nombres *</label>
+                                            <input type="text" class="form-control" id="nombres" name="nombres" required value="<?= old('nombres') ?>">
                                         </div>
                                     </div>
+                                </div>
+
+                                <div id="datos-empresa" class="alert alert-light border mb-3" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label for="representante_nombre">Nombre del representante</label>
+                                            <input type="text" class="form-control" id="representante_nombre" name="representante_nombre" placeholder="Ej. Juan Pérez" value="<?= old('representante_nombre') ?>" autocomplete="off">
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label for="representante_cargo">Cargo del representante</label>
+                                            <input type="text" class="form-control" id="representante_cargo" name="representante_cargo" placeholder="Ej. Gerente General" value="<?= old('representante_cargo') ?>" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Registra estos datos cuando la persona jurídica o empresa tenga otro tipo de documento.</small>
+                                </div>
+
+                                <div class="row mb-3" id="row-apellidos">
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="apellidos">Apellidos *</label>
-                                            <input type="text" class="form-control" id="apellidos" name="apellidos" required>
+                                            <input type="text" class="form-control" id="apellidos" name="apellidos" required value="<?= old('apellidos') ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -136,13 +138,13 @@
                                         <div class="form-group">
                                             <label for="telefono">Teléfono *</label>
                                             <input type="text" class="form-control" id="telefono" name="telefono" 
-                                                   maxlength="9" placeholder="9XXXXXXXX" required inputmode="numeric" pattern="\d{9}" title="Ingrese 9 dígitos">
+                                                   maxlength="9" placeholder="9XXXXXXXX" required inputmode="numeric" pattern="\d{9}" title="Ingrese 9 dígitos" value="<?= old('telefono') ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="correo">Correo Electrónico</label>
-                                            <input type="email" class="form-control" id="correo" name="correo">
+                                            <input type="email" class="form-control" id="correo" name="correo" value="<?= old('correo') ?>">
                                         </div>
                                     </div>
                                 </div>
