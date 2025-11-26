@@ -105,7 +105,11 @@ class PersonaManager {
 
     buscarDocumento(tipo, numero) {
         const url = `${this.baseUrl}/leads/campoBuscarDni?tipo_documento=${tipo}&numero=${encodeURIComponent(numero)}`;
-        fetch(url)
+        fetch(url, {
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
             .then(async response => {
                 // Mejor manejo de errores HTTP y de contenido no JSON
                 const contentType = response.headers.get('content-type') || '';
