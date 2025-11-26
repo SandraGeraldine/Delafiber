@@ -170,12 +170,12 @@ class PersonaManager {
             Swal.fire({
                 icon: tipo,
                 title: mensaje,
-                toast: true,
-                position: 'top-end',
-                showConfirmButton: false,
-                timer: 2500,
-                timerProgressBar: true
+                showConfirmButton: true,
+                confirmButtonText: 'OK',
+                allowOutsideClick: false
             });
+        } else {
+            alert(mensaje);
         }
     }
 
