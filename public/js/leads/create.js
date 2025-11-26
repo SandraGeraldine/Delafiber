@@ -106,7 +106,24 @@ class PersonaManager {
     buscarDocumento(tipo, numero) {
         const url = `${this.baseUrl}/leads/campoBuscarDni?tipo_documento=${tipo}&numero=${encodeURIComponent(numero)}`;
         fetch(url)
-            .then(response => response.json())
+            .then(async response => {
+                // Mejor manejo de errores HTTP y de contenido no JSON
+                const contentType = response.headers.get('content-type') || '';
+                if (!response.ok) {
+                    const text = await response.text().catch(() => '');
+                    throw new Error(`HTTP ${response.status} - ${text}`);
+                }
+                if (contentType.indexOf('application/json') !== -1) {
+                    return response.json();
+                }
+                // Intentar leer como texto y parsear por si el servidor devolvió JSON con otro header
+                const txt = await response.text();
+                try {
+                    return JSON.parse(txt);
+                } catch (e) {
+                    throw new Error('Respuesta inválida del servidor (no es JSON)');
+                }
+            })
             .then(data => {
                 this.toggleLoading(false);
                 if (!data || data.success === false) {
@@ -125,8 +142,10 @@ class PersonaManager {
             })
             .catch(error => {
                 this.toggleLoading(false);
-                console.error('❌ Error al buscar documento:', error);
-                this.mostrarError('Ocurrió un error al buscar el documento');
+                console.error('Error al buscar documento:', error);
+                // mostrar el mensaje del error si lo hay (útil para debugging), evitar filtrar información sensible
+                const msg = (error && error.message) ? error.message : 'Ocurrió un error al buscar el documento';
+                this.mostrarError(msg);
             });
     }
 
