@@ -101,11 +101,17 @@
 
                                 <input type="hidden" id="idpersona" name="idpersona" value="">
 
-                                <div class="row" id="empresa-row">
-                                    <div class="col-md-12">
+                                <div class="row" id="nombres-apellidos-row">
+                                    <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="nombres" id="nombres-label">Nombres *</label>
                                             <input type="text" class="form-control" id="nombres" name="nombres" required value="<?= old('nombres') ?>">
+                                        </div>
+                                    </div>
+                                    <div class="col-md-6" id="col-apellidos">
+                                        <div class="form-group">
+                                            <label for="apellidos">Apellidos *</label>
+                                            <input type="text" class="form-control" id="apellidos" name="apellidos" required value="<?= old('apellidos') ?>">
                                         </div>
                                     </div>
                                 </div>
@@ -122,15 +128,6 @@
                                         </div>
                                     </div>
                                     <small class="text-muted">Registra estos datos cuando la persona jurídica o empresa tenga otro tipo de documento.</small>
-                                </div>
-
-                                <div class="row mb-3" id="row-apellidos">
-                                    <div class="col-md-6">
-                                        <div class="form-group">
-                                            <label for="apellidos">Apellidos *</label>
-                                            <input type="text" class="form-control" id="apellidos" name="apellidos" required value="<?= old('apellidos') ?>">
-                                        </div>
-                                    </div>
                                 </div>
 
                                 <div class="row">
