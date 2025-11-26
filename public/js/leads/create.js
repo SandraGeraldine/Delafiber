@@ -23,6 +23,7 @@ class PersonaManager {
         this.tipoDocumentoSelect = document.getElementById('tipo_documento');
         this.btnBuscarDocumento = document.getElementById('btnBuscarDocumento');
         this.dniLoading = document.getElementById('dni-loading');
+        this.representanteContainer = document.getElementById('datos-empresa');
         this.initEvents();
     }
 
@@ -37,6 +38,7 @@ class PersonaManager {
                 this.docInput.placeholder = tipo === 'ruc' ? '11 dígitos' : tipo === 'pasaporte' ? 'Ej: F1234567' : '8 dígitos';
                 this.docInput.maxLength = tipo === 'pasaporte' || tipo === 'otro' ? 20 : (tipo === 'ruc' ? 11 : 8);
             }
+            this.toggleRepresentativeFields(tipo);
         });
 
         this.btnBuscarDocumento.addEventListener('click', () => {
@@ -177,6 +179,12 @@ class PersonaManager {
         } else {
             alert(mensaje);
         }
+    }
+
+    toggleRepresentativeFields(tipo) {
+        if (!this.representanteContainer) return;
+        const mostrar = tipo !== 'dni';
+        this.representanteContainer.style.display = mostrar ? 'block' : 'none';
     }
 
     // =========================================
