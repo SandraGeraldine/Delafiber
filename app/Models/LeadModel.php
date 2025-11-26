@@ -151,7 +151,7 @@ class LeadModel extends Model
         return $this->db->table('leads l')
             ->join('personas p', 'l.idpersona = p.idpersona')
             ->join('etapas e', 'l.idetapa = e.idetapa')
-            ->select('l.idlead, p.nombres, p.apellidos, p.telefono,
+            ->select('l.idlead, p.nombres, p.apellidos, p.telefono, p.dni, p.tipo_documento,
                      e.nombre as etapa_nombre, l.created_at')
             ->where('p.telefono', $telefono)
             ->orderBy('l.created_at', 'DESC')

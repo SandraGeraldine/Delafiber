@@ -18,122 +18,50 @@ function escapeHtml(text) {
 class PersonaManager {
     constructor(baseUrl) {
         this.baseUrl = baseUrl;
-        this.coberturaInicializada = false; // Flag para evitar doble inicialización
+        this.coberturaInicializada = false;
+        this.docInput = document.getElementById('dni');
+        this.tipoDocumentoSelect = document.getElementById('tipo_documento');
+        this.btnBuscarDocumento = document.getElementById('btnBuscarDocumento');
+        this.dniLoading = document.getElementById('dni-loading');
         this.initEvents();
     }
 
     initEvents() {
-        const btnBuscarDni = document.getElementById('btnBuscarDni');
-        const dniInput = document.getElementById('dni');
-        const dniLoading = document.getElementById('dni-loading');
-        
-        if (!btnBuscarDni || !dniInput) {
-            // Botones de búsqueda no encontrados
+        if (!this.btnBuscarDocumento || !this.docInput) {
             return;
         }
-        
-        // NO inicializar verificación de cobertura aquí
-        // Se inicializará cuando el usuario llegue al Paso 2
 
-        // =========================================
-        // BÚSQUEDA POR DNI
-        // =========================================
-        btnBuscarDni.addEventListener('click', () => {
-            const dni = dniInput.value.trim();
-            
-            if (dni.length !== 8) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'DNI Inválido',
-                    text: 'El DNI debe tener exactamente 8 dígitos',
-                    confirmButtonColor: '#3085d6'
-                });
-                dniInput.focus();
+        this.tipoDocumentoSelect?.addEventListener('change', () => {
+            const tipo = (this.tipoDocumentoSelect.value || 'dni').toLowerCase();
+            if (this.docInput) {
+                this.docInput.placeholder = tipo === 'ruc' ? '11 dígitos' : tipo === 'pasaporte' ? 'Ej: F1234567' : '8 dígitos';
+                this.docInput.maxLength = tipo === 'pasaporte' || tipo === 'otro' ? 20 : (tipo === 'ruc' ? 11 : 8);
+            }
+        });
+
+        this.btnBuscarDocumento.addEventListener('click', () => {
+            const numero = this.docInput.value.trim();
+            const tipo = (this.tipoDocumentoSelect?.value || 'dni').toLowerCase();
+            const validacion = this.validarDocumento(tipo, numero);
+            if (!validacion.valido) {
+                this.mostrarError(validacion.mensaje);
+                this.docInput.focus();
                 return;
             }
-
-            dniLoading.style.display = 'block';
-            btnBuscarDni.disabled = true;
-
-            // Primero verificar si ya existe en la BD
-            fetch(`${this.baseUrl}/personas/verificarDni?dni=${dni}`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data.existe) {
-                        dniLoading.style.display = 'none';
-                        btnBuscarDni.disabled = false;
-                        
-                        const personaNombreSafe = escapeHtml(data.persona.nombres || '');
-                        const personaApellidosSafe = escapeHtml(data.persona.apellidos || '');
-                        const personaTelefonoSafe = escapeHtml(data.persona.telefono || 'No registrado');
-                        const personaCorreoSafe = escapeHtml(data.persona.correo || 'No registrado');
-
-                        Swal.fire({
-                            icon: 'warning',
-                            title: '⚠️ Persona Ya Registrada',
-                            html: `
-                                <div class="text-start">
-                                    <p><strong>Esta persona ya está en el sistema:</strong></p>
-                                    <ul class="list-unstyled">
-                                        <li>👤 <strong>Nombre:</strong> ${personaNombreSafe} ${personaApellidosSafe}</li>
-                                        <li>📞 <strong>Teléfono:</strong> ${personaTelefonoSafe}</li>
-                                        <li>📧 <strong>Correo:</strong> ${personaCorreoSafe}</li>
-                                    </ul>
-                                    <hr>
-                                    <p class="text-muted small">
-                                        <i class="icon-info"></i> Puedes crear una nueva solicitud de servicio para este cliente
-                                    </p>
-                                </div>
-                            `,
-                            showCancelButton: true,
-                            confirmButtonText: 'Usar estos datos',
-                            cancelButtonText: 'Cancelar',
-                            confirmButtonColor: '#28a745',
-                            cancelButtonColor: '#6c757d'
-                        }).then((result) => {
-                            if (result.isConfirmed) {
-                                this.autocompletarDatos(data.persona);
-                            }
-                        });
-                        return;
-                    }
-
-                    // Si no existe, buscar en RENIEC
-                    this.buscarEnReniec(dni, dniLoading, btnBuscarDni);
-                })
-                .catch(error => {
-                    dniLoading.style.display = 'none';
-                    btnBuscarDni.disabled = false;
-                    console.error('❌ Error al verificar DNI:', error);
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error de Conexión',
-                        text: 'No se pudo conectar al servidor. Intenta de nuevo.',
-                        confirmButtonColor: '#d33'
-                    });
-                });
+            this.toggleLoading(true);
+            this.buscarDocumento(tipo, numero);
         });
 
-        // =========================================
-        // ENTER SOLO EN DNI (no en otros campos)
-        // =========================================
-        dniInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') {
-                e.preventDefault();
-                btnBuscarDni.click();
-            }
+        this.docInput.addEventListener('input', (e) => {
+            const tipo = (this.tipoDocumentoSelect?.value || 'dni').toLowerCase();
+            const pattern = tipo === 'pasaporte' || tipo === 'otro' ? /[^A-Za-z0-9]/g : /[^0-9]/g;
+            e.target.value = e.target.value.replace(pattern, '');
         });
 
-        // =========================================
-        // VALIDACIÓN EN TIEMPO REAL - TELÉFONO
-        // =========================================
         const telefonoInput = document.getElementById('telefono');
         if (telefonoInput) {
             telefonoInput.addEventListener('input', (e) => {
-                // Solo permitir números
                 e.target.value = e.target.value.replace(/[^0-9]/g, '');
-                
-                // Validar formato mientras escribe
                 const valor = e.target.value;
                 if (valor.length === 9) {
                     if (valor.startsWith('9')) {
@@ -148,65 +76,84 @@ class PersonaManager {
                 }
             });
         }
-
-        // =========================================
-        // VALIDACIÓN EN TIEMPO REAL - DNI
-        // =========================================
-        dniInput.addEventListener('input', (e) => {
-            // Solo permitir números
-            e.target.value = e.target.value.replace(/[^0-9]/g, '');
-        });
     }
 
-    // =========================================
-    // BUSCAR EN RENIEC
-    // =========================================
-    buscarEnReniec(dni, dniLoading, btnBuscarDni) {
-        fetch(`${this.baseUrl}/api/personas/buscar?dni=${dni}`)
+    toggleLoading(activo) {
+        if (!this.dniLoading) return;
+        this.dniLoading.style.display = activo ? 'block' : 'none';
+        if (this.btnBuscarDocumento) {
+            this.btnBuscarDocumento.disabled = activo;
+        }
+    }
+
+    validarDocumento(tipo, numero) {
+        if (!numero) {
+            return { valido: false, mensaje: 'Ingresa el número de documento' };
+        }
+        const reglas = {
+            dni: { longitud: 8, mensaje: 'El DNI debe tener 8 dígitos' },
+            ruc: { longitud: 11, mensaje: 'El RUC debe tener 11 dígitos' },
+            pasaporte: { longitud: 5, mensaje: 'El pasaporte debe tener al menos 5 caracteres' },
+            otro: { longitud: 3, mensaje: 'El documento debe tener al menos 3 caracteres' }
+        };
+        const regla = reglas[tipo] || reglas.dni;
+        if (numero.length < regla.longitud) {
+            return { valido: false, mensaje: regla.mensaje };
+        }
+        return { valido: true, mensaje: '' };
+    }
+
+    buscarDocumento(tipo, numero) {
+        const url = `${this.baseUrl}/leads/campoBuscarDni?tipo_documento=${tipo}&numero=${encodeURIComponent(numero)}`;
+        fetch(url)
             .then(response => response.json())
             .then(data => {
-                dniLoading.style.display = 'none';
-                btnBuscarDni.disabled = false;
-                
-                if (data.success && data.persona) {
-                    document.getElementById('nombres').value = data.persona.nombres || '';
-                    document.getElementById('apellidos').value = data.persona.apellidos || '';
-                    
-                    Swal.fire({
-                        icon: 'success',
-                        title: '✅ Datos encontrados en RENIEC',
-                        text: 'Ahora completa teléfono y demás información',
-                        timer: 2500,
-                        showConfirmButton: false,
-                        timerProgressBar: true
-                    });
-                    
-                    // Focus en teléfono después del toast
-                    setTimeout(() => {
-                        document.getElementById('telefono')?.focus();
-                    }, 2600);
-                } else {
-                    Swal.fire({
-                        icon: 'info',
-                        title: 'DNI no encontrado en RENIEC',
-                        text: 'Puedes registrar los datos manualmente',
-                        confirmButtonText: 'Entendido',
-                        confirmButtonColor: '#3085d6'
-                    });
-                    document.getElementById('nombres')?.focus();
+                this.toggleLoading(false);
+                if (!data || data.success === false) {
+                    this.mostrarError(data?.message || 'No se pudo buscar el documento');
+                    return;
                 }
+                if (data.encontrado && data.persona) {
+                    this.autocompletarDatos(data.persona);
+                    const mensaje = data.registrado
+                        ? (data.message || 'Se cargaron los datos del cliente existente')
+                        : (data.message || 'Datos obtenidos. Completa los campos restantes');
+                    this.mostrarNotificacion('success', mensaje);
+                    return;
+                }
+                this.mostrarNotificacion('info', data.message || 'No se encontró información para el documento');
             })
             .catch(error => {
-                dniLoading.style.display = 'none';
-                btnBuscarDni.disabled = false;
-                console.error('❌ Error al consultar RENIEC:', error);
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error al consultar RENIEC',
-                    text: 'Puedes registrar los datos manualmente',
-                    confirmButtonColor: '#d33'
-                });
+                this.toggleLoading(false);
+                console.error('❌ Error al buscar documento:', error);
+                this.mostrarError('Ocurrió un error al buscar el documento');
             });
+    }
+
+    mostrarError(mensaje) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: 'error',
+                title: 'Oops',
+                text: mensaje
+            });
+        } else {
+            alert(mensaje);
+        }
+    }
+
+    mostrarNotificacion(tipo, mensaje) {
+        if (typeof Swal !== 'undefined') {
+            Swal.fire({
+                icon: tipo,
+                title: mensaje,
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 2500,
+                timerProgressBar: true
+            });
+        }
     }
 
     // =========================================

@@ -6,7 +6,7 @@ use CodeIgniter\Model;
 
 class ComentarioLeadModel extends Model
 {
-    protected $table = 'comentari_lead';
+    protected $table = 'comentarios_lead';
     protected $primaryKey = 'idcomentario';
     protected $allowedFields = ['idlead', 'idusuario', 'comentario', 'tipo', 'created_at', 'updated_at'];
     protected $useTimestamps = true;

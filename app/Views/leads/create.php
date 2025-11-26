@@ -65,18 +65,31 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="dni">O buscar por DNI</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="dni" name="dni" 
-                                                   placeholder="8 dígitos" maxlength="8" inputmode="numeric" pattern="\d{8}" title="Ingrese 8 dígitos">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary" type="button" id="btnBuscarDni">
-                                                    <i class="icon-magnifier"></i> Buscar
-                                                </button>
+                                        <div class="row g-2">
+                                            <div class="col-4">
+                                                <label for="tipo_documento">Tipo de documento</label>
+                                                <select class="form-select" id="tipo_documento" name="tipo_documento" required>
+                                                    <?php $tipoSeleccionado = old('tipo_documento', 'dni'); ?>
+                                                    <option value="dni" <?= $tipoSeleccionado === 'dni' ? 'selected' : '' ?>>DNI (Perú)</option>
+                                                    <option value="ruc" <?= $tipoSeleccionado === 'ruc' ? 'selected' : '' ?>>RUC (Empresa)</option>
+                                                    <option value="pasaporte" <?= $tipoSeleccionado === 'pasaporte' ? 'selected' : '' ?>>Pasaporte</option>
+                                                    <option value="otro" <?= $tipoSeleccionado === 'otro' ? 'selected' : '' ?>>Otro documento</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-8">
+                                                <label for="dni">Documento</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="dni" name="dni"
+                                                           placeholder="Ingresa el documento" maxlength="20" inputmode="numeric" value="<?= old('dni') ?>">
+                                                    <button class="btn btn-primary" type="button" id="btnBuscarDocumento">
+                                                        <i class="icon-magnifier"></i> Buscar documento
+                                                    </button>
+                                                </div>
+                                                <small id="docHelpText" class="text-muted">Selecciona el tipo de documento para ajustar la búsqueda.</small>
                                             </div>
                                         </div>
                                         <div id="dni-loading" class="text-primary mt-2" style="display:none;">
-                                            <i class="icon-refresh rotating"></i> Consultando RENIEC...
+                                            <i class="icon-refresh rotating"></i> Consultando datos oficiales...
                                         </div>
                                     </div>
                                 </div>

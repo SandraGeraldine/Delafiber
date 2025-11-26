@@ -16,6 +16,7 @@ class PersonaModel extends Model
         'nombres',
         'apellidos', 
         'dni',
+        'tipo_documento',
         'correo',
         'telefono',
         'direccion',
@@ -32,7 +33,22 @@ class PersonaModel extends Model
     protected $validationRules = [
         'nombres' => 'required|min_length[2]|max_length[100]',
         'apellidos' => 'required|min_length[2]|max_length[100]',
-        'dni' => 'permit_empty|exact_length[8]|numeric|is_unique[personas.dni,idpersona,{idpersona}]',
+        'dni' => [
+            'rules' => 'required|alpha_numeric|max_length[20]|is_unique[personas.dni,idpersona,{idpersona}]',
+            'errors' => [
+                'required' => 'El documento es obligatorio',
+                'alpha_numeric' => 'El documento solo puede contener letras y números',
+                'max_length' => 'El documento no puede exceder 20 caracteres',
+                'is_unique' => 'Este documento ya está registrado'
+            ]
+        ],
+        'tipo_documento' => [
+            'rules' => 'required|in_list[dni,ruc,pasaporte,otro]',
+            'errors' => [
+                'required' => 'Debes seleccionar un tipo de documento',
+                'in_list' => 'El tipo de documento no es válido'
+            ]
+        ],
         'correo' => 'permit_empty|valid_email|max_length[150]',
         'telefono' => 'permit_empty|exact_length[9]|regex_match[/^9[0-9]{8}$/]',
         'iddistrito' => 'permit_empty|numeric',

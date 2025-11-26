@@ -35,12 +35,19 @@ if (!function_exists('reglas_persona')) {
                 ]
             ],
             'dni' => [
-                'rules' => ($dniRequerido ? 'required|' : 'permit_empty|') . 'exact_length[8]|numeric|is_unique[personas.dni,idpersona,{idpersona}]',
+                'rules' => ($dniRequerido ? 'required|' : 'permit_empty|') . 'alpha_numeric|max_length[20]|is_unique[personas.dni,idpersona,{idpersona}]',
                 'errors' => [
-                    'required' => 'El DNI es obligatorio',
-                    'exact_length' => 'El DNI debe tener exactamente 8 dígitos',
-                    'numeric' => 'El DNI solo puede contener números',
-                    'is_unique' => 'Este DNI ya está registrado en el sistema'
+                    'required' => 'El documento es obligatorio',
+                    'alpha_numeric' => 'El documento solo puede contener letras y números',
+                    'max_length' => 'El documento no puede exceder 20 caracteres',
+                    'is_unique' => 'Este documento ya está registrado en el sistema'
+                ]
+            ],
+            'tipo_documento' => [
+                'rules' => 'required|in_list[dni,ruc,pasaporte,otro]',
+                'errors' => [
+                    'required' => 'Debes seleccionar un tipo de documento',
+                    'in_list' => 'El tipo de documento no es válido'
                 ]
             ],
             'telefono' => [
