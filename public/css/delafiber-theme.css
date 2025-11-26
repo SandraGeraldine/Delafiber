@@ -79,6 +79,12 @@
     width: calc(100% - 64px) !important;
 }
 
+body.sidebar-icon-only .container-scroller .page-body-wrapper .main-panel,
+body.sidebar-icon-only .container-scroller .page-body-wrapper .content-wrapper {
+    margin-left: 64px !important;
+    width: calc(100% - 64px) !important;
+}
+
 /* Ocultar texto cuando está colapsado */
 .sidebar-icon-only .sidebar .nav-item .nav-link .menu-title {
     display: none;
