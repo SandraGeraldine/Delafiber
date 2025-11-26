@@ -216,7 +216,7 @@
                                 Datos de Persona                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" data-bs-toggle="tab" href="#tabDatosUsuario">
+                            <a class="nav-link" id="tab-datos-usuario-tab" data-bs-toggle="tab" href="#tabDatosUsuario">
                                  Datos de Usuario
                             </a>
                         </li>

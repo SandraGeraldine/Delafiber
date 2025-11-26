@@ -75,7 +75,14 @@ $(document).ready(function() {
     // Crear/Editar usuario
     $('#formUsuario').submit(function(e) {
         e.preventDefault();
-        
+
+        const datosPersonaActiva = $('#tabDatosPersona').hasClass('show active');
+        if (datosPersonaActiva) {
+            $('#tab-datos-usuario-tab').tab('show');
+            $('#tabDatosUsuario').find('input:visible, select:visible').first().focus();
+            return;
+        }
+
         const formData = new FormData(this);
         const usuarioId = $('#idusuario').val();
         const url = usuarioId ? `${base_url}/usuarios/editar/${usuarioId}` : `${base_url}/usuarios/crear`;
