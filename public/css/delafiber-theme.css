@@ -85,6 +85,14 @@ body.sidebar-icon-only .container-scroller .page-body-wrapper .content-wrapper {
     width: calc(100% - 64px) !important;
 }
 
+body.sidebar-icon-only .main-panel .content-wrapper {
+    width: calc(100% - 64px) !important;
+    max-width: none;
+    margin: 0 auto;
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+}
+
 /* Ocultar texto cuando está colapsado */
 .sidebar-icon-only .sidebar .nav-item .nav-link .menu-title {
     display: none;
