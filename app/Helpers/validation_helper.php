@@ -170,9 +170,8 @@ if (!function_exists('reglas_lead')) {
                 ]
             ],
             'idusuario_asignado' => [
-                'rules' => 'required|numeric|is_not_unique[usuarios.idusuario]',
+                'rules' => 'permit_empty|numeric|is_not_unique[usuarios.idusuario]',
                 'errors' => [
-                    'required' => 'Debe asignar el lead a un usuario',
                     'numeric' => 'Usuario inválido',
                     'is_not_unique' => 'El usuario seleccionado no existe'
                 ]
