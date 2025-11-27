@@ -6,6 +6,11 @@
 $(document).ready(function() {
     // Inicializar colapsos de Bootstrap para los menús
     $('.nav-link[data-bs-toggle="collapse"]').on('click', function(e) {
+        if ($('body').hasClass('sidebar-icon-only')) {
+            e.preventDefault();
+            showMiniPanel($(this));
+            return;
+        }
         e.preventDefault();
         const target = $(this).data('bs-target');
         $(target).collapse('toggle');
@@ -113,7 +118,10 @@ $(document).ready(function() {
         const target = $link.data('bs-target');
         if (!target) return;
         const $collapse = $(target);
-        if (!$collapse.length) return;
+        if (!$collapse.length || $collapse.hasClass('show')) {
+            miniPanel.hide();
+            return;
+        }
         const items = [];
         $collapse.find('.sub-menu .nav-link').each(function() {
             const $item = $(this);
@@ -126,10 +134,15 @@ $(document).ready(function() {
 
         const $list = miniPanel.find('ul').empty();
         items.forEach(item => {
-            const $li = $('<li>').append(
-                $('<a>').attr('href', item.href).text(item.text)
-            );
+            const $link = $('<a>').attr('href', item.href).text(item.text);
+            const $li = $('<li>').append($link);
             $list.append($li);
+        });
+
+        miniPanel.find('a').on('click', function() {
+            localStorage.setItem('sidebar-collapsed', 'true');
+            $('body').addClass('sidebar-icon-only');
+            miniPanel.hide();
         });
 
         const offset = $link.offset();
