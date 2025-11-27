@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', function() {
     const btnAtrasPaso3 = document.getElementById('btnAtrasPaso3');
     const progressBar = document.getElementById('progressBar');
     const stepIndicator = document.getElementById('stepIndicator');
-    const formLead = document.getElementById('formLead');
+    const form = document.getElementById('formLead');
 
     // Verificar que los elementos base existan
     if (!paso1 || !paso2 || !paso3 || !btnSiguiente || !btnAtras || !btnSiguientePaso3 || !btnAtrasPaso3) {
