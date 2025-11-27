@@ -100,4 +100,61 @@ $(document).ready(function() {
             $('#searchInput').focus();
         }
     });
+
+    // Mini panel que muestra submódulos cuando el sidebar está colapsado
+    const miniPanel = $('<div class="sidebar-mini-panel"><ul></ul></div>').appendTo('body');
+    let miniPanelTimeout;
+
+    function showMiniPanel($link) {
+        if (!$('body').hasClass('sidebar-icon-only')) {
+            miniPanel.hide();
+            return;
+        }
+        const target = $link.data('bs-target');
+        if (!target) return;
+        const $collapse = $(target);
+        if (!$collapse.length) return;
+        const items = [];
+        $collapse.find('.sub-menu .nav-link').each(function() {
+            const $item = $(this);
+            items.push({
+                text: $item.text().trim(),
+                href: $item.attr('href')
+            });
+        });
+        if (!items.length) return;
+
+        const $list = miniPanel.find('ul').empty();
+        items.forEach(item => {
+            const $li = $('<li>').append(
+                $('<a>').attr('href', item.href).text(item.text)
+            );
+            $list.append($li);
+        });
+
+        const offset = $link.offset();
+        miniPanel.css({
+            top: offset.top,
+            left: offset.left + $link.outerWidth() + 10
+        }).show();
+    }
+
+    function hideMiniPanel() {
+        miniPanelTimeout = setTimeout(() => {
+            miniPanel.hide();
+        }, 200);
+    }
+
+    miniPanel.on('mouseenter', function() {
+        if (miniPanelTimeout) {
+            clearTimeout(miniPanelTimeout);
+        }
+    }).on('mouseleave', hideMiniPanel);
+
+    $('.sidebar-icon-only .sidebar .nav-item .nav-link[data-bs-toggle="collapse"]').on('mouseenter', function() {
+        if (miniPanelTimeout) {
+            clearTimeout(miniPanelTimeout);
+        }
+        showMiniPanel($(this));
+    }).on('mouseleave', hideMiniPanel);
 });

@@ -55,6 +55,7 @@
 .sidebar-icon-only .sidebar .nav .nav-item .nav-link { 
     padding: 12px;
     text-align: center;
+    justify-content: center;
 }
 
 .sidebar-icon-only .sidebar .nav .nav-item .nav-link .menu-title { 
@@ -63,6 +64,48 @@
 
 .sidebar-icon-only .sidebar .nav .nav-item .nav-link .menu-arrow { 
     display: none; 
+}
+
+/* Mini panel que muestra sub-módulos cuando el sidebar está colapsado */
+.sidebar-mini-panel {
+    position: absolute;
+    min-width: 200px;
+    background: white;
+    color: #2A0045;
+    border-radius: 10px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    padding: 0.75rem;
+    z-index: 1200;
+    display: none;
+    border: 1px solid rgba(0,0,0,0.08);
+}
+
+.sidebar-mini-panel ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+}
+
+.sidebar-mini-panel ul li {
+    margin-bottom: 0.4rem;
+    font-size: 0.9rem;
+}
+
+.sidebar-mini-panel ul li:last-child {
+    margin-bottom: 0;
+}
+
+.sidebar-mini-panel ul li a {
+    color: inherit;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 2px 0;
+}
+
+.sidebar-mini-panel ul li a:hover {
+    color: var(--delafiber-accent);
 }
 
 /* main-panel y navbar-menu-wrapper se ajustan en delafiber-theme.css para respetar los 64px */
