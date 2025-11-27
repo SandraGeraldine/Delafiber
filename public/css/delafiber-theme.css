@@ -298,11 +298,28 @@ body.sidebar-icon-only .main-panel .content-wrapper {
     .page-body-wrapper {
         padding-top: 95px; /* más espacio en móvil para asegurar que no se oculte el título */
     }
+
+    .main-panel .content-wrapper {
+        width: 100% !important;
+        max-width: none !important;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    .dashboard-summary,
+    .dashboard-actions {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+
+    .dashboard-summary .card,
+    .dashboard-actions .card {
+        width: 100% !important;
+        max-width: none !important;
+    }
 }
 
-/* ============================================
-   NAVBAR (Header Superior)
-   ============================================ */
 .navbar {
     background: white !important;
     border-bottom: 2px solid var(--delafiber-pink-light);
