@@ -1178,70 +1178,120 @@ a:hover {
     margin: 0;
 }
 
-/* Ajustes del header solo para CELULAR */
 @media (max-width: 575.98px) {
-    /* Navbar más compacto y de altura fija en móvil */
+    /* Navbar de altura fija y bien centrado */
     .navbar {
-        height: 60px;
-        padding-top: 0;
-        padding-bottom: 0;
-        align-items: center;
+        height: 60px !important;
+        padding: 0 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: space-between !important;
     }
 
-    /* El bloque del logo no debe ocupar tanto ancho fijo */
+    /* Contenedor del logo - ajuste fino */
     .navbar .navbar-brand-wrapper {
-        width: auto;
-        padding-left: 0.75rem;
-        padding-right: 0.5rem;
-        display: flex;
-        align-items: center;
-        height: 60px;
+        width: auto !important;
+        height: 60px !important;
+        padding: 0 0.75rem !important;
+        display: flex !important;
+        align-items: center !important;
+        flex: 0 0 auto !important;
     }
 
-    /* El contenedor derecho usa todo el espacio restante */
+    /* Logo visible y centrado verticalmente */
+    .navbar .navbar-brand.brand-logo {
+        display: flex !important;
+        align-items: center !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+
+    .navbar .navbar-brand.brand-logo img {
+        height: 38px !important;
+        width: auto !important;
+        margin: 0 !important;
+    }
+
+    /* Ocultar logo mini en móvil */
+    .navbar .navbar-brand.brand-logo-mini {
+        display: none !important;
+    }
+
+    /* Contenedor derecho - íconos de navegación */
     .navbar .navbar-menu-wrapper {
-        flex: 1;
-        width: auto;
-        justify-content: flex-end;
-        display: flex;
-        align-items: center;
-        padding-right: 0.75rem;
-        height: 60px;
+        width: auto !important;
+        height: 60px !important;
+        flex: 1 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: flex-end !important;
+        padding: 0 0.75rem !important;
+        gap: 0.5rem !important;
     }
 
-    /* Alinear íconos campana + perfil + botón menú */
+    /* Alinear perfectamente los íconos */
     .navbar .navbar-nav.navbar-nav-right {
-        display: flex;
-        align-items: center;
+        display: flex !important;
+        align-items: center !important;
+        height: 60px !important;
+        margin: 0 !important;
+        gap: 0.5rem !important;
     }
 
     .navbar .navbar-nav.navbar-nav-right > li {
-        margin-left: 0.25rem;
-        margin-right: 0.25rem;
+        display: flex !important;
+        align-items: center !important;
+        margin: 0 !important;
     }
 
-    /* Levantar un poco más los iconos en móvil para que queden al mismo margen que el logo */
-    .navbar .navbar-nav.navbar-nav-right > li,
+    .navbar .navbar-nav.navbar-nav-right .nav-link {
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 0.5rem !important;
+    }
+
+    /* Botón del menú hamburguesa */
+    .navbar .navbar-toggler,
     .navbar #mobileMenuToggle {
-        margin-top: -8px;
+        margin: 0 !important;
+        padding: 0.5rem !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
     }
 
-    /* Opcional: ocultar la barra de búsqueda en celular
-       para que haya más espacio horizontal */
+    /* Ocultar búsqueda en móvil */
     .navbar .nav-search {
         display: none !important;
     }
 
-    /* En móvil: mostrar logo grande y ocultar logo mini */
-    .navbar .navbar-brand.brand-logo {
-        display: inline-block !important;
+    /* Asegurar que el contenido principal tenga espacio adecuado */
+    .page-body-wrapper {
+        padding-top: 70px !important;
     }
 
+    /* Ajustar contenido para evitar que se oculte detrás del navbar */
+    .main-panel .content-wrapper {
+        padding-top: 1rem !important;
+    }
+}
+
+/* Ajuste adicional para pantallas muy pequeñas */
+@media (max-width: 400px) {
     .navbar .navbar-brand.brand-logo img {
-        height: 32px;
+        height: 32px !important;
     }
 
-    .navbar .navbar-brand.brand-logo-mini {
-        display: none !important;
+    .navbar .navbar-nav.navbar-nav-right {
+        gap: 0.25rem !important;
+    }
+
+    .navbar .navbar-brand-wrapper {
+        padding: 0 0.5rem !important;
+    }
+
+    .navbar .navbar-menu-wrapper {
+        padding: 0 0.5rem !important;
     }
 }
