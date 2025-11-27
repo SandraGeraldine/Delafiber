@@ -358,6 +358,32 @@ body.sidebar-icon-only .main-panel .content-wrapper {
     }
 }
 
+@media (max-width: 991px) {
+    .navbar {
+        padding: 0 0.5rem;
+        justify-content: space-between;
+    }
+
+    .navbar .navbar-brand-wrapper {
+        width: auto;
+        flex: 0 0 auto;
+        justify-content: flex-start;
+        padding-left: 0;
+    }
+
+    .navbar .navbar-brand,
+    .navbar .navbar-brand-mini {
+        margin: 0;
+    }
+
+    .navbar .navbar-menu-wrapper {
+        width: auto !important;
+        flex: 0 0 auto;
+        justify-content: flex-end;
+        gap: 0.5rem;
+    }
+}
+
 /* Botón hamburguesa mejorado */
 .navbar-toggler,
 .navbar .navbar-menu-wrapper .navbar-toggler {
