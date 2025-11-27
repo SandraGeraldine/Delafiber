@@ -210,6 +210,19 @@ body.sidebar-icon-only .main-panel .content-wrapper {
         flex: 1 1 220px;
         max-width: 320px;
     }
+
+    body.sidebar-icon-only .container-scroller .page-body-wrapper .main-panel,
+    body.sidebar-icon-only .container-scroller .page-body-wrapper .content-wrapper {
+        margin-left: 64px !important;
+        width: calc(100% - 64px) !important;
+    }
+
+    body.sidebar-icon-only .main-panel .content-wrapper {
+        max-width: none !important;
+        margin: 0;
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+    }
 }
 
 /* Asegurar que el sidebar siempre sea visible */
