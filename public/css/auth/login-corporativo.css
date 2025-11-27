@@ -102,6 +102,7 @@ body {
     height: 40px;
     background: white;
     border-radius: 50% 50% 0 0 / 100% 100% 0 0;
+    z-index: -1;
 }
 
 .company-logo {
