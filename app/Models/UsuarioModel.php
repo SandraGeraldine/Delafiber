@@ -8,7 +8,7 @@ class UsuarioModel extends Model
 {
     protected $table = 'usuarios';
     protected $primaryKey = 'idusuario';
-    protected $allowedFields = ['nombre', 'email', 'password', 'idrol', 'turno', 'zona_asignada', 'telefono', 'avatar', 'estado', 'ultimo_login'];
+    protected $allowedFields = ['usuario', 'nombre', 'email', 'password', 'idrol', 'turno', 'zona_asignada', 'telefono', 'avatar', 'estado', 'ultimo_login'];
     protected $useTimestamps = true;
     protected $createdField = 'created_at';
     protected $updatedField = 'updated_at';
@@ -19,12 +19,13 @@ class UsuarioModel extends Model
     {
         $builder = $this->db->table('usuarios u')
             ->join('roles r', 'u.idrol = r.idrol', 'left')
-            ->select('u.idusuario, u.nombre, u.email, u.password, u.estado, u.idrol,
+            ->select('u.idusuario, u.usuario, u.nombre, u.email, u.password, u.estado, u.idrol,
                      u.nombre as nombre_completo,
                      u.email as correo, 
                      COALESCE(r.nombre, "Usuario") as rol')
             ->groupStart()
                 ->where('u.email', $usuario)
+                ->orWhere('u.usuario', $usuario)
                 ->orWhere('u.nombre', $usuario)
             ->groupEnd();
         

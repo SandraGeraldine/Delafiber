@@ -199,7 +199,7 @@
 
 <!-- Modal para crear/editar usuario -->
 <div class="modal fade" id="modalUsuario" tabindex="-1">
-    <div class="modal-dialog modal-xl">
+    <div class="modal-dialog modal-lg modal-dialog-centered">
         <div class="modal-content">
             <form id="formUsuario">
                 <div class="modal-header bg-primary text-white">
@@ -347,7 +347,8 @@
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Guardar Usuario</button>
+                    <button type="button" class="btn btn-primary" id="btnSiguientePaso">Siguiente</button>
+                    <button type="submit" class="btn btn-primary d-none" id="btnGuardarUsuario">Guardar Usuario</button>
                 </div>
             </form>
         </div>

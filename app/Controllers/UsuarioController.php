@@ -135,7 +135,8 @@ class UsuarioController extends BaseController
                     'correo' => $this->request->getPost('correo'),
                     'direccion' => $this->request->getPost('direccion'),
                     'referencias' => $this->request->getPost('referencias'),
-                    'iddistrito' => $this->request->getPost('iddistrito') ?: null
+                    'iddistrito' => $this->request->getPost('iddistrito') ?: null,
+                    'tipo_documento' => 'dni'
                 ];
                 
                 $this->personaModel->update($personaExistente['idpersona'], $personaData);
@@ -150,7 +151,8 @@ class UsuarioController extends BaseController
                     'correo' => $this->request->getPost('correo'),
                     'direccion' => $this->request->getPost('direccion'),
                     'referencias' => $this->request->getPost('referencias'),
-                    'iddistrito' => $this->request->getPost('iddistrito') ?: null
+                    'iddistrito' => $this->request->getPost('iddistrito') ?: null,
+                    'tipo_documento' => 'dni'
                 ];
                 
                 $idpersona = $this->personaModel->insert($personaData);
@@ -162,6 +164,7 @@ class UsuarioController extends BaseController
 
             // 4. Crear usuario (independiente de personas)
             $usuarioData = [
+                'usuario' => $this->request->getPost('usuario'),
                 'nombre' => $this->request->getPost('nombres') . ' ' . $this->request->getPost('apellidos'),
                 'email' => $this->request->getPost('correo') ?: $this->request->getPost('usuario') . '@delafiber.com',
                 'password' => password_hash($this->request->getPost('clave'), PASSWORD_DEFAULT),

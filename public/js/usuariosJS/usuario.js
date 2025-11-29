@@ -72,18 +72,63 @@ $(document).ready(function() {
         });
     });
 
+    function actualizarBotonesPaso() {
+        const datosPersonaActiva = $('#tabDatosPersona').hasClass('show active');
+        if (datosPersonaActiva) {
+            $('#btnSiguientePaso').removeClass('d-none');
+            $('#btnGuardarUsuario').addClass('d-none');
+        } else {
+            $('#btnSiguientePaso').addClass('d-none');
+            $('#btnGuardarUsuario').removeClass('d-none');
+        }
+    }
+
+    actualizarBotonesPaso();
+
+    $('a[href="#tabDatosPersona"], #tab-datos-usuario-tab').on('shown.bs.tab', function() {
+        actualizarBotonesPaso();
+    });
+
+    $('#btnSiguientePaso').on('click', function() {
+        const dni = $('#dni').val().trim();
+        const telefono = $('#telefono').val().trim();
+        const nombres = $('#nombres').val().trim();
+        const apellidos = $('#apellidos').val().trim();
+
+        if (!dni || dni.length !== 8) {
+            Swal.fire('DNI inválido', 'El DNI debe tener 8 dígitos numéricos.', 'warning');
+            $('#dni').focus();
+            return;
+        }
+
+        if (!telefono || telefono.length !== 9) {
+            Swal.fire('Teléfono inválido', 'El teléfono debe tener 9 dígitos.', 'warning');
+            $('#telefono').focus();
+            return;
+        }
+
+        if (!nombres) {
+            Swal.fire('Campo requerido', 'Ingresa los nombres de la persona.', 'warning');
+            $('#nombres').focus();
+            return;
+        }
+
+        if (!apellidos) {
+            Swal.fire('Campo requerido', 'Ingresa los apellidos de la persona.', 'warning');
+            $('#apellidos').focus();
+            return;
+        }
+
+        $('#tab-datos-usuario-tab').tab('show');
+        $('#tabDatosUsuario').find('input:visible, select:visible').first().focus();
+    });
+
     // Crear/Editar usuario
     $('#formUsuario').submit(function(e) {
         e.preventDefault();
 
-        const datosPersonaActiva = $('#tabDatosPersona').hasClass('show active');
-        if (datosPersonaActiva) {
-            $('#tab-datos-usuario-tab').tab('show');
-            $('#tabDatosUsuario').find('input:visible, select:visible').first().focus();
-            return;
-        }
-
         const formData = new FormData(this);
+
         const usuarioId = $('#idusuario').val();
         const url = usuarioId ? `${base_url}/usuarios/editar/${usuarioId}` : `${base_url}/usuarios/crear`;
         
