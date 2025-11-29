@@ -65,18 +65,31 @@
                                         </div>
                                     </div>
                                     <div class="col-md-6">
-                                        <label for="dni">O buscar por DNI</label>
-                                        <div class="input-group">
-                                            <input type="text" class="form-control" id="dni" name="dni" 
-                                                   placeholder="8 dígitos" maxlength="8" inputmode="numeric" pattern="\d{8}" title="Ingrese 8 dígitos">
-                                            <div class="input-group-append">
-                                                <button class="btn btn-primary" type="button" id="btnBuscarDni">
-                                                    <i class="icon-magnifier"></i> Buscar
-                                                </button>
+                                        <div class="row g-2">
+                                            <div class="col-4">
+                                                <label for="tipo_documento">Tipo de documento</label>
+                                                <select class="form-select" id="tipo_documento" name="tipo_documento" required>
+                                                    <?php $tipoSeleccionado = old('tipo_documento', 'dni'); ?>
+                                                    <option value="dni" <?= $tipoSeleccionado === 'dni' ? 'selected' : '' ?>>DNI (Perú)</option>
+                                                    <option value="ruc" <?= $tipoSeleccionado === 'ruc' ? 'selected' : '' ?>>RUC (Empresa)</option>
+                                                    <option value="pasaporte" <?= $tipoSeleccionado === 'pasaporte' ? 'selected' : '' ?>>Pasaporte</option>
+                                                    <option value="otro" <?= $tipoSeleccionado === 'otro' ? 'selected' : '' ?>>Otro documento</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-8">
+                                                <label for="dni">Documento</label>
+                                                <div class="input-group">
+                                                    <input type="text" class="form-control" id="dni" name="dni"
+                                                           placeholder="Ingresa el documento" maxlength="20" inputmode="numeric" value="<?= old('dni') ?>">
+                                                    <button class="btn btn-primary" type="button" id="btnBuscarDocumento">
+                                                        <i class="icon-magnifier"></i> Buscar documento
+                                                    </button>
+                                                </div>
+                                                <small id="docHelpText" class="text-muted">Selecciona el tipo de documento para ajustar la búsqueda.</small>
                                             </div>
                                         </div>
                                         <div id="dni-loading" class="text-primary mt-2" style="display:none;">
-                                            <i class="icon-refresh rotating"></i> Consultando RENIEC...
+                                            <i class="icon-refresh rotating"></i> Consultando datos oficiales...
                                         </div>
                                     </div>
                                 </div>
@@ -86,22 +99,35 @@
 
                                 <hr>
 
-                                <!-- Formulario de datos -->
                                 <input type="hidden" id="idpersona" name="idpersona" value="">
 
-                                <div class="row">
+                                <div class="row" id="nombres-apellidos-row">
                                     <div class="col-md-6">
                                         <div class="form-group">
-                                            <label for="nombres">Nombres *</label>
-                                            <input type="text" class="form-control" id="nombres" name="nombres" required>
+                                            <label for="nombres" id="nombres-label">Nombres *</label>
+                                            <input type="text" class="form-control" id="nombres" name="nombres" required value="<?= old('nombres') ?>">
                                         </div>
                                     </div>
-                                    <div class="col-md-6">
+                                    <div class="col-md-6" id="col-apellidos">
                                         <div class="form-group">
                                             <label for="apellidos">Apellidos *</label>
-                                            <input type="text" class="form-control" id="apellidos" name="apellidos" required>
+                                            <input type="text" class="form-control" id="apellidos" name="apellidos" required value="<?= old('apellidos') ?>">
                                         </div>
                                     </div>
+                                </div>
+
+                                <div id="datos-empresa" class="alert alert-light border mb-3" style="display:none;">
+                                    <div class="row">
+                                        <div class="col-md-6 mb-2">
+                                            <label for="representante_nombre">Nombre del representante</label>
+                                            <input type="text" class="form-control" id="representante_nombre" name="representante_nombre" placeholder="Ej. Juan Pérez" value="<?= old('representante_nombre') ?>" autocomplete="off">
+                                        </div>
+                                        <div class="col-md-6 mb-2">
+                                            <label for="representante_cargo">Cargo del representante</label>
+                                            <input type="text" class="form-control" id="representante_cargo" name="representante_cargo" placeholder="Ej. Gerente General" value="<?= old('representante_cargo') ?>" autocomplete="off">
+                                        </div>
+                                    </div>
+                                    <small class="text-muted">Registra estos datos cuando la persona jurídica o empresa tenga otro tipo de documento.</small>
                                 </div>
 
                                 <div class="row">
@@ -109,13 +135,13 @@
                                         <div class="form-group">
                                             <label for="telefono">Teléfono *</label>
                                             <input type="text" class="form-control" id="telefono" name="telefono" 
-                                                   maxlength="9" placeholder="9XXXXXXXX" required inputmode="numeric" pattern="\d{9}" title="Ingrese 9 dígitos">
+                                                   maxlength="9" placeholder="9XXXXXXXX" required inputmode="numeric" pattern="\d{9}" title="Ingrese 9 dígitos" value="<?= old('telefono') ?>">
                                         </div>
                                     </div>
                                     <div class="col-md-6">
                                         <div class="form-group">
                                             <label for="correo">Correo Electrónico</label>
-                                            <input type="email" class="form-control" id="correo" name="correo">
+                                            <input type="email" class="form-control" id="correo" name="correo" value="<?= old('correo') ?>">
                                         </div>
                                     </div>
                                 </div>

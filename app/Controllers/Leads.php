@@ -530,18 +530,46 @@ class Leads extends BaseController
             return $this->response->setStatusCode(404);
         }
 
-        $dni = $this->request->getGet('dni');
-        if (!$dni || strlen($dni) < 8) {
+        $tipo = strtolower($this->request->getGet('tipo_documento') ?? 'dni');
+        $numero = $this->request->getGet('numero') ?? $this->request->getGet('dni');
+        $numero = trim((string) $numero);
+
+        if ($numero === '') {
             return $this->response->setJSON([
                 'success' => false,
-                'message' => 'DNI inválido'
+                'message' => 'Documento inválido'
             ]);
         }
 
-        $persona = $this->personaModel->where('dni', $dni)->first();
+        switch ($tipo) {
+            case 'dni':
+                if (!ctype_digit($numero) || strlen($numero) !== 8) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'DNI inválido'
+                    ]);
+                }
+                break;
+            case 'ruc':
+                if (!ctype_digit($numero) || strlen($numero) !== 11) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'RUC inválido'
+                    ]);
+                }
+                break;
+            default:
+                if (strlen($numero) < 3) {
+                    return $this->response->setJSON([
+                        'success' => false,
+                        'message' => 'El documento es demasiado corto'
+                    ]);
+                }
+        }
+
+        $persona = $this->personaModel->where('dni', $numero)->first();
 
         if ($persona) {
-            // Normalizar a array
             if (is_object($persona)) {
                 if (method_exists($persona, 'toArray')) {
                     $persona = $persona->toArray();
@@ -555,89 +583,137 @@ class Leads extends BaseController
                 'encontrado' => true,
                 'registrado' => true,
                 'persona'    => [
-                    'nombres'     => $persona['nombres']     ?? '',
-                    'apellidos'   => $persona['apellidos']   ?? '',
-                    'telefono'    => $persona['telefono']    ?? '',
-                    'correo'      => $persona['correo']      ?? '',
-                    'direccion'   => $persona['direccion']   ?? '',
-                    'referencias' => $persona['referencias'] ?? '',
+                    'nombres'       => $persona['nombres']     ?? '',
+                    'apellidos'     => $persona['apellidos']   ?? '',
+                    'telefono'      => $persona['telefono']    ?? '',
+                    'correo'        => $persona['correo']      ?? '',
+                    'direccion'     => $persona['direccion']   ?? '',
+                    'referencias'   => $persona['referencias'] ?? '',
+                    'tipo_documento'=> $persona['tipo_documento'] ?? 'dni'
                 ],
-                'message'    => 'Persona encontrada por DNI'
+                'message'    => 'Persona encontrada'
             ]);
         }
 
-        // Si no se encontró en BD local, intentar obtener datos desde RENIEC (API Decolecta)
-        try {
-            $api_token = env('API_DECOLECTA_TOKEN');
-
-            if ($api_token) {
-                $api_endpoint = "https://api.decolecta.com/v1/reniec/dni?numero=" . $dni;
-
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, $api_endpoint);
-                curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-                curl_setopt($ch, CURLOPT_TIMEOUT, 10);
-                curl_setopt($ch, CURLOPT_HTTPHEADER, [
-                    'Content-Type: application/json',
-                    'Authorization: Bearer ' . $api_token,
-                ]);
-
-                $api_response = curl_exec($ch);
-                $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-                curl_close($ch);
-
-                if ($api_response !== false && $http_code === 200) {
-                    $decoded_response = json_decode($api_response, true);
-
-                    if (isset($decoded_response['first_name'])) {
-                        $apellidos = trim(($decoded_response['first_last_name'] ?? '') . ' ' . ($decoded_response['second_last_name'] ?? ''));
-
-                        // Guardar automáticamente la persona en BD usando los datos obtenidos
-                        try {
-                            $personaData = [
-                                'dni'         => $dni,
-                                'nombres'     => $decoded_response['first_name'] ?? '',
-                                'apellidos'   => $apellidos,
-                                'telefono'    => null,
-                                'correo'      => null,
-                                'direccion'   => null,
-                                'referencias' => null,
-                                'iddistrito'  => null,
-                                'coordenadas' => null,
-                            ];
-
-                            $this->personaModel->insert($personaData);
-                        } catch (\Throwable $e) {
-                            log_message('error', 'Error al guardar persona desde Decolecta en campoBuscarDni: ' . $e->getMessage());
-                        }
-
-                        return $this->response->setJSON([
-                            'success'    => true,
-                            'encontrado' => true,
-                            'registrado' => false,
-                            'persona'    => [
-                                'nombres'     => $decoded_response['first_name'] ?? '',
-                                'apellidos'   => $apellidos,
-                                'telefono'    => '',
-                                'correo'      => '',
-                                'direccion'   => '',
-                                'referencias' => '',
-                            ],
-                            'message'    => 'Datos obtenidos de RENIEC (Decolecta)'
-                        ]);
-                    }
-                }
-            }
-        } catch (\Exception $e) {
-            log_message('error', 'Error en campoBuscarDni (Decolecta): ' . $e->getMessage());
+        if ($tipo === 'dni') {
+            return $this->buscarEnReniec($numero);
         }
 
-        // Si tampoco se pudo obtener desde RENIEC, mantener respuesta actual
+        if ($tipo === 'ruc') {
+            return $this->buscarPorRuc($numero);
+        }
+
         return $this->response->setJSON([
             'success'    => true,
             'encontrado' => false,
-            'message'    => 'No se encontró persona con ese DNI'
+            'registrado' => false,
+            'message'    => 'No se realiza búsqueda automática para este tipo de documento'
         ]);
+    }
+
+    /**
+     * Consultar datos de RENIEC vía Decolecta
+     */
+    private function buscarEnReniec(string $dni)
+    {
+        $resultado = $this->consultarDecolecta('reniec/dni', $dni);
+        if (!$resultado['success']) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => $resultado['message'] ?? 'No se pudo consultar RENIEC'
+            ]);
+        }
+
+        $datos = $resultado['data'];
+        $nombre = trim(($datos['first_name'] ?? '') . ' ' . ($datos['first_last_name'] ?? '') . ' ' . ($datos['second_last_name'] ?? ''));
+        $apellidos = trim(($datos['first_last_name'] ?? '') . ' ' . ($datos['second_last_name'] ?? ''));
+
+        return $this->response->setJSON([
+            'success'    => true,
+            'encontrado' => true,
+            'registrado' => false,
+            'persona'    => [
+                'nombres'       => $datos['first_name'] ?? '',
+                'apellidos'     => $apellidos,
+                'telefono'      => '',
+                'correo'        => '',
+                'direccion'     => '',
+                'referencias'   => '',
+                'tipo_documento'=> 'dni'
+            ],
+            'message'    => 'Datos obtenidos de RENIEC (Decolecta)'
+        ]);
+    }
+
+    /**
+     * Consultar datos de SUNAT vía Decolecta usando RUC
+     */
+    private function buscarPorRuc(string $ruc)
+    {
+        $resultado = $this->consultarDecolecta('sunat/ruc', $ruc);
+        if (!$resultado['success']) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => $resultado['message'] ?? 'No se pudo consultar SUNAT'
+            ]);
+        }
+
+        $datos = $resultado['data'];
+        $nombreRazon = $datos['nombre_o_razon_social'] ?? $datos['razon_social'] ?? $datos['razon_social_comercial'] ?? '';
+        $direccion = $datos['direccion'] ?? $datos['direccion_fiscal'] ?? '';
+
+        return $this->response->setJSON([
+            'success'    => true,
+            'encontrado' => true,
+            'registrado' => false,
+            'persona'    => [
+                'nombres'       => $nombreRazon,
+                'apellidos'     => '',
+                'telefono'      => $datos['telefono'] ?? '',
+                'correo'        => $datos['email'] ?? '',
+                'direccion'     => $direccion,
+                'referencias'   => '',
+                'tipo_documento'=> 'ruc'
+            ],
+            'message'    => 'Datos obtenidos de SUNAT (Decolecta)'
+        ]);
+    }
+
+    private function consultarDecolecta(string $ruta, string $numero): array
+    {
+        $token = env('API_DECOLECTA_TOKEN');
+        if (empty($token)) {
+            return ['success' => false, 'message' => 'Token de Decolecta no configurado'];
+        }
+
+        $endpoint = "https://api.decolecta.com/v1/{$ruta}?numero=" . urlencode($numero);
+
+        $ch = curl_init();
+        curl_setopt($ch, CURLOPT_URL, $endpoint);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 12);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'Authorization: Bearer ' . $token,
+        ]);
+
+        $response = curl_exec($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $curlError = curl_error($ch);
+        curl_close($ch);
+
+        if ($curlError) {
+            log_message('error', 'Decolecta error: ' . $curlError);
+            return ['success' => false, 'message' => 'Error de conexión con Decolecta'];
+        }
+
+        $decoded = json_decode($response, true);
+        if ($decoded && $httpCode === 200) {
+            return ['success' => true, 'data' => $decoded];
+        }
+
+        log_message('warning', 'Decolecta responded HTTP ' . $httpCode . ' for ' . $ruta);
+        return ['success' => false, 'message' => $decoded['message'] ?? 'Respuesta inesperada de Decolecta'];
     }
 
     /**
@@ -648,6 +724,24 @@ class Leads extends BaseController
         // Verificar permiso
         // requiere_permiso('leads.create', 'No tienes permisos para crear leads');
         
+        $post = $this->request->getPost();
+        $personaId = $post['idpersona'] ?? null;
+        $tipoDocumento = strtolower(trim($post['tipo_documento'] ?? 'dni'));
+        $tipoDocumento = in_array($tipoDocumento, ['dni', 'ruc', 'pasaporte', 'otro'], true) ? $tipoDocumento : 'dni';
+        $documento = isset($post['dni']) ? preg_replace('/\s+/', '', (string)$post['dni']) : '';
+
+        $documentoObligatorio = empty($personaId);
+        $validacionDoc = $this->validarDocumentoPorTipo($tipoDocumento, $documento, $documentoObligatorio);
+        if (!$validacionDoc['success']) {
+            return redirect()->back()
+                ->withInput()
+                ->with('errors', ['dni' => $validacionDoc['message']]);
+        }
+
+        $post['tipo_documento'] = $tipoDocumento;
+        $post['dni'] = $documento !== '' ? $documento : null;
+        $this->request->setGlobal('post', $post);
+
         // Combinar reglas de persona y lead
         $rules = array_merge(reglas_persona(), reglas_lead());
         
@@ -666,6 +760,7 @@ class Leads extends BaseController
             $personaId = $this->request->getPost('idpersona');
             
             if ($personaId) {
+                $tipoDocumentoPost = $this->request->getPost('tipo_documento') ?? 'dni';
                 // Usar persona existente
                 $persona = $this->personaModel->find($personaId);
                 if (!$persona) throw new \Exception('Persona no encontrada');
@@ -684,21 +779,34 @@ class Leads extends BaseController
                     $this->personaModel->update($personaId, ['dni' => $dniPost]);
                     $persona['dni'] = $dniPost;
                 }
+                if (($persona['tipo_documento'] ?? 'dni') !== $tipoDocumentoPost) {
+                    $this->personaModel->update($personaId, ['tipo_documento' => $tipoDocumentoPost]);
+                    $persona['tipo_documento'] = $tipoDocumentoPost;
+                }
+                $this->personaModel->update($personaId, [
+                    'representante_nombre' => $this->request->getPost('representante_nombre') ?: null,
+                    'representante_cargo' => $this->request->getPost('representante_cargo') ?: null
+                ]);
 
                 $nombreCompleto = ($persona['nombres'] ?? '') . ' ' . ($persona['apellidos'] ?? '');
             } else {
                 // Crear nueva persona
                 $iddistrito = $this->request->getPost('iddistrito');
+                $tipoDocumento = $this->request->getPost('tipo_documento') ?? 'dni';
                 
                 $personaData = [
                     'nombres' => $this->request->getPost('nombres'),
                     'apellidos' => $this->request->getPost('apellidos'),
                     'dni' => $this->request->getPost('dni') ?: null,
+                    'tipo_documento' => $tipoDocumento,
                     'correo' => $this->request->getPost('correo') ?: null,
                     'telefono' => $this->request->getPost('telefono'),
                     'direccion' => $this->request->getPost('direccion') ?: null,
                     'referencias' => $this->request->getPost('referencias') ?: null,
                     'iddistrito' => (!empty($iddistrito) && $iddistrito !== '') ? $iddistrito : null
+                    ,
+                    'representante_nombre' => $this->request->getPost('representante_nombre') ?: null,
+                    'representante_cargo' => $this->request->getPost('representante_cargo') ?: null
                 ];
                 
                 // Geocodificar dirección si existe
@@ -2588,5 +2696,46 @@ public function completarTarea()
         return redirect()->to('/leads/view/' . $idlead)
             ->with('success', 'Lead marcado como convertido exitosamente')
             ->with('swal_success', true);
+    }
+
+    private function validarDocumentoPorTipo(string $tipo, ?string $documento, bool $requerido): array
+    {
+        $documento = trim($documento ?? '');
+
+        if ($documento === '') {
+            return $requerido
+                ? ['success' => false, 'message' => 'Debes ingresar el documento']
+                : ['success' => true];
+        }
+
+        if (!preg_match('/^[A-Za-z0-9]+$/', $documento)) {
+            return ['success' => false, 'message' => 'El documento solo puede contener letras y números'];
+        }
+
+        $longitud = strlen($documento);
+        switch ($tipo) {
+            case 'dni':
+                if (!ctype_digit($documento) || $longitud !== 8) {
+                    return ['success' => false, 'message' => 'El DNI debe tener exactamente 8 dígitos'];
+                }
+                break;
+            case 'ruc':
+                if (!ctype_digit($documento) || $longitud !== 11) {
+                    return ['success' => false, 'message' => 'El RUC debe tener exactamente 11 dígitos'];
+                }
+                break;
+            case 'pasaporte':
+                if ($longitud < 5 || $longitud > 20) {
+                    return ['success' => false, 'message' => 'El pasaporte debe tener entre 5 y 20 caracteres'];
+                }
+                break;
+            default:
+                if ($longitud < 3 || $longitud > 20) {
+                    return ['success' => false, 'message' => 'El documento debe tener entre 3 y 20 caracteres'];
+                }
+                break;
+        }
+
+        return ['success' => true];
     }
 }

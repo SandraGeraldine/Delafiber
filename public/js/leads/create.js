@@ -23,6 +23,11 @@ class PersonaManager {
         this.tipoDocumentoSelect = document.getElementById('tipo_documento');
         this.btnBuscarDocumento = document.getElementById('btnBuscarDocumento');
         this.dniLoading = document.getElementById('dni-loading');
+        this.representanteContainer = document.getElementById('datos-empresa');
+        this.apellidosRow = document.getElementById('row-apellidos');
+        this.apellidosInput = document.getElementById('apellidos');
+        this.nombresLabel = document.getElementById('nombres-label');
+        this.nombresInput = document.getElementById('nombres');
         this.initEvents();
     }
 
@@ -37,7 +42,12 @@ class PersonaManager {
                 this.docInput.placeholder = tipo === 'ruc' ? '11 dígitos' : tipo === 'pasaporte' ? 'Ej: F1234567' : '8 dígitos';
                 this.docInput.maxLength = tipo === 'pasaporte' || tipo === 'otro' ? 20 : (tipo === 'ruc' ? 11 : 8);
             }
+            this.toggleRepresentativeFields(tipo);
         });
+
+        // Inicializar estado según el tipo seleccionado al cargar
+        const tipoInicial = (this.tipoDocumentoSelect?.value || 'dni').toLowerCase();
+        this.toggleRepresentativeFields(tipoInicial);
 
         this.btnBuscarDocumento.addEventListener('click', () => {
             const numero = this.docInput.value.trim();
@@ -176,6 +186,30 @@ class PersonaManager {
             });
         } else {
             alert(mensaje);
+        }
+    }
+
+    toggleRepresentativeFields(tipo) {
+        if (!this.representanteContainer || !this.nombresInput) return;
+        const mostrar = tipo !== 'dni';
+        this.representanteContainer.style.display = mostrar ? 'block' : 'none';
+        if (this.apellidosRow) {
+            this.apellidosRow.style.display = mostrar ? 'none' : 'flex';
+        }
+        if (this.apellidosInput) {
+            if (mostrar) {
+                this.apellidosInput.removeAttribute('required');
+            } else {
+                this.apellidosInput.setAttribute('required', 'required');
+            }
+        }
+        if (this.nombresLabel) {
+            this.nombresLabel.textContent = mostrar ? 'Nombre de la empresa *' : 'Nombres *';
+        }
+        if (mostrar) {
+            this.nombresInput.placeholder = 'Razón social o nombre de la empresa';
+        } else {
+            this.nombresInput.placeholder = '';
         }
     }
 
