@@ -172,11 +172,11 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
                                 <label class="text-muted">Vendedor Asignado</label>
                                 <h6><?= esc($lead['vendedor_asignado'] ?? 'Sin asignar') ?></h6>
                             </div>
-                            <div class="col-md-6 mb-3">
+                            <div class="col-md-12 mb-3">
                                 <label class="text-muted">Plan de Interés </label>
-                                <h6>
+                                <h6 class="mb-0">
                                     <?php if (!empty($lead['plan_interes'])): ?>
-                                        <span class="badge badge-primary" style="font-size: 14px;">
+                                        <span class="badge badge-primary badge-plan-block" style="font-size: 14px;">
                                             <?= esc($lead['plan_interes']) ?>
                                         </span>
                                     <?php else: ?>

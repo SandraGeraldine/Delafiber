@@ -741,8 +741,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 alert('No se pudieron cargar los planes. Por favor, intenta de nuevo.');
             }
-        } finally {
-            cargandoPlanes = false;
         }
     }
 
@@ -771,16 +769,32 @@ document.addEventListener('DOMContentLoaded', () => {
                 cargarPlanes();
             });
         }
+    } else {
+        selServicio.addEventListener('change', function () {
+            if (!this.value && selPlan) {
+                selPlan.innerHTML = '<option value="">Primero seleccione un servicio</option>';
+                if (planInfo) {
+                    planInfo.textContent = '';
+                }
+                return;
+            }
+            cargarPlanes();
+        });
     }
 
     // Antes de enviar el formulario, guardar el NOMBRE del plan en lugar del ID
-    const formLead = document.getElementById('formLead');
-    if (formLead && selPlan) {
-        formLead.addEventListener('submit', () => {
+    const formLeadInner = document.getElementById('formLead');
+    const inputPlanTextoInner = document.getElementById('plan_interes_text');
+
+    if (formLeadInner && selPlan) {
+        formLeadInner.addEventListener('submit', () => {
             const opt = selPlan.selectedOptions && selPlan.selectedOptions[0];
-            if (opt && opt.textContent) {
-                // Enviar al backend el texto completo del plan (nombre + velocidad + precio)
-                selPlan.value = opt.textContent.trim();
+            const textoPlan = opt && opt.textContent ? opt.textContent.trim() : '';
+            if (textoPlan) {
+                selPlan.value = textoPlan;
+            }
+            if (inputPlanTextoInner) {
+                inputPlanTextoInner.value = textoPlan;
             }
         });
     }

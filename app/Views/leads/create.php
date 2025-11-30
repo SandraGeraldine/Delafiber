@@ -27,6 +27,19 @@
                     </div>
                     <?php endif; ?>
 
+                    <?php $errors = session('errors'); ?>
+                    <?php if (!empty($errors) && is_array($errors)): ?>
+                    <div class="alert alert-danger">
+                        <strong>Por favor corrige los siguientes errores:</strong>
+                        <ul class="mb-0 mt-2">
+                            <?php foreach ($errors as $fieldError): ?>
+                                <li><?= esc(is_array($fieldError) ? implode(' ', $fieldError) : $fieldError) ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                    <?php endif; ?>
+
+
                     <div class="mb-4">
                         <div class="progress" style="height: 8px;">
                             <div class="progress-bar bg-primary" id="progressBar" role="progressbar" style="width: 33%"></div>
@@ -303,6 +316,7 @@
                                             <select class="form-control" id="plan_interes" name="plan_interes" disabled>
                                                 <option value="">Primero seleccione un servicio</option>
                                             </select>
+                                            <input type="hidden" id="plan_interes_text" name="plan_interes_text">
                                             <small class="text-muted" id="plan_info">Seleccione un tipo de servicio primero</small>
                                         </div>
                                     </div>

@@ -396,6 +396,9 @@ class Leads extends BaseController
             // Usuario que registra es el promotor de campo
             $usuarioRegistro = session()->get('idusuario');
 
+            $postPlan = $this->request->getPost('plan_interes') ?: $this->request->getPost('plan_interes_text');
+            log_message('info', 'Leads::store plan_interes recibida: ' . ($postPlan ?? 'NULL'));
+
             $leadData = [
                 'idpersona' => $personaId,
                 'idetapa' => 1, // CAPTACION por defecto
@@ -728,6 +731,12 @@ class Leads extends BaseController
         
         $post = $this->request->getPost();
         $personaId = $post['idpersona'] ?? null;
+
+        // Normalizar idpersona: si viene como 'undefined', vacío o no numérico, tratarlo como null
+        if (!empty($personaId) && !ctype_digit((string) $personaId)) {
+            $personaId = null;
+            unset($post['idpersona']);
+        }
         $tipoDocumento = strtolower(trim($post['tipo_documento'] ?? 'dni'));
         $tipoDocumento = in_array($tipoDocumento, ['dni', 'ruc', 'pasaporte', 'otro'], true) ? $tipoDocumento : 'dni';
         $documento = isset($post['dni']) ? preg_replace('/\s+/', '', (string)$post['dni']) : '';
@@ -735,19 +744,69 @@ class Leads extends BaseController
         $documentoObligatorio = empty($personaId);
         $validacionDoc = $this->validarDocumentoPorTipo($tipoDocumento, $documento, $documentoObligatorio);
         if (!$validacionDoc['success']) {
+            log_message('error', 'VALIDACION store - documento FALLÓ: ' . json_encode($validacionDoc));
             return redirect()->back()
                 ->withInput()
                 ->with('errors', ['dni' => $validacionDoc['message']]);
         }
 
+        // Si no se envió idpersona pero el DNI ya existe, reutilizar esa persona
+        if (empty($personaId) && $tipoDocumento === 'dni' && $documento !== '') {
+            $personaExistente = $this->personaModel->where('dni', $documento)->first();
+            if ($personaExistente) {
+                if (is_object($personaExistente)) {
+                    if (method_exists($personaExistente, 'toArray')) {
+                        $personaExistente = $personaExistente->toArray();
+                    } else {
+                        $personaExistente = (array)$personaExistente;
+                    }
+                }
+
+                if (!empty($personaExistente['idpersona'])) {
+                    $personaId = (int) $personaExistente['idpersona'];
+                    $post['idpersona'] = $personaId;
+                    // Evitar error de is_unique sobre DNI al reutilizar persona existente
+                    $post['dni'] = null;
+                }
+            }
+        }
+
+        // Si viene un idpersona pero ya no existe en la tabla personas, tratarlo como vacío
+        if (!empty($post['idpersona'])) {
+            $personaTmp = $this->personaModel->find($post['idpersona']);
+            if (!$personaTmp) {
+                $personaId = null;
+                unset($post['idpersona']);
+            }
+        }
+
         $post['tipo_documento'] = $tipoDocumento;
-        $post['dni'] = $documento !== '' ? $documento : null;
+        // Si no se reutilizó persona, mantener DNI; de lo contrario ya se estableció en null
+        if (!array_key_exists('dni', $post)) {
+            $post['dni'] = $documento !== '' ? $documento : null;
+        }
         $this->request->setGlobal('post', $post);
 
-        // Combinar reglas de persona y lead
-        $rules = array_merge(reglas_persona(), reglas_lead());
-        
+        // Combinar reglas según si hay persona existente o no
+        if (!empty($post['idpersona'])) {
+            // Persona ya existe: solo validamos los campos propios del lead
+            $rules = reglas_lead();
+        } else {
+            // Persona nueva: validamos datos de persona + lead
+            $rules = array_merge(reglas_persona(), reglas_lead());
+        }
+
+        // No validar estrictamente idpersona en este flujo; la persona se controla manualmente.
+        // Sin embargo, debemos definir alguna regla porque se usa como placeholder en otras reglas (dni).
+        $rules['idpersona'] = [
+            'rules' => 'permit_empty',
+        ];
+
+        // Debug: registrar el contenido completo del POST antes de validar
+        log_message('error', 'DEBUG store POST: ' . json_encode($this->request->getPost()));
+
         if (!$this->validate($rules)) {
+            log_message('error', 'VALIDACION store FALLÓ: ' . json_encode($this->validator->getErrors()));
             return redirect()->back()
                 ->withInput()
                 ->with('errors', $this->validator->getErrors());
@@ -848,6 +907,9 @@ class Leads extends BaseController
                 $usuarioAsignado = session()->get('idusuario'); // Por defecto, quien crea
             }
             
+            $postPlan = $this->request->getPost('plan_interes') ?: $this->request->getPost('plan_interes_text');
+            log_message('info', 'Leads::store plan_interes recibida: ' . ($postPlan ?? 'NULL'));
+
             $leadData = [
                 'idpersona' => $personaId,
                 'idetapa' => $this->request->getPost('idetapa') ?: 1, // CAPTACION por defecto
@@ -858,7 +920,7 @@ class Leads extends BaseController
                 'nota_inicial' => $this->request->getPost('nota_inicial') ?: null,
                 // Campos de la solicitud de servicio
                 'tipo_solicitud' => $this->request->getPost('tipo_solicitud') ?: null,
-                'plan_interes' => $this->request->getPost('plan_interes') ?: null,
+                'plan_interes' => $postPlan ?: null,
                 'direccion_servicio' => $this->request->getPost('direccion') ?: null,
                 'distrito_servicio' => $this->request->getPost('iddistrito') ?: null,
                 'estado' => 'activo'
