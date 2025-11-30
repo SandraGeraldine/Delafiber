@@ -18,10 +18,10 @@ class ComentarioLeadModel extends Model
      */
     public function getComentariosByLead($idlead)
     {
-        return $this->select('comentari_lead.*, usuarios.nombre as usuario_nombre')
-            ->join('usuarios', 'usuarios.idusuario = comentari_lead.idusuario')
-            ->where('comentari_lead.idlead', $idlead)
-            ->orderBy('comentari_lead.created_at', 'DESC')
+        return $this->select('comentarios_lead.*, usuarios.nombre as usuario_nombre')
+            ->join('usuarios', 'usuarios.idusuario = comentarios_lead.idusuario')
+            ->where('comentarios_lead.idlead', $idlead)
+            ->orderBy('comentarios_lead.created_at', 'DESC')
             ->findAll();
     }
     

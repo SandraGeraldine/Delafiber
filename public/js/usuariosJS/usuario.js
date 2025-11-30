@@ -227,52 +227,98 @@ $(document).ready(function() {
             }
         });
     });
-});
 
-// Filtrar usuarios (función global para onclick)
-window.filtrarUsuarios = function(filtro) {
-    // Actualizar botones activos
-    $('.btn-group button').removeClass('active');
-    event.target.classList.add('active');
-    
-    $('tbody tr').show();
-    
-    switch(filtro) {
-        case 'todos':
-            // Mostrar todos
-            break;
-        case 'activos':
-            // Ocultar los que no son activos
-            $('tbody tr').each(function() {
-                const select = $(this).find('.estado-select');
-                if (select.val() !== 'activo') {
-                    $(this).hide();
+    // Editar usuario (redirige a la vista de edición)
+    $(document).on('click', '.btn-editar', function() {
+        const usuarioId = $(this).data('id');
+        if (!usuarioId) return;
+        window.location.href = `${base_url}/usuarios/editar/${usuarioId}`;
+    });
+
+    // Ver perfil de usuario (usa modalPerfilUsuario)
+    $(document).on('click', '.btn-ver-perfil', function() {
+        const usuarioId = $(this).data('id');
+        if (!usuarioId) return;
+
+        $.getJSON(`${base_url}/usuarios/verPerfil/${usuarioId}`)
+            .done(function(response) {
+                if (!response.success || !response.usuario) {
+                    Swal.fire('Error', response.message || 'No se pudo obtener el perfil del usuario', 'error');
+                    return;
                 }
+
+                const u = response.usuario;
+                const stats = response.estadisticas || {};
+
+                let html = '';
+                html += `<div class="text-center mb-3">`;
+                html += `<div class="mb-2" style="width:70px;height:70px;border-radius:50%;background:#6f42c1;color:#fff;display:flex;align-items:center;justify-content:center;font-size:28px;font-weight:bold;margin:0 auto;">${(u.nombre || 'U').substring(0,1).toUpperCase()}</div>`;
+                html += `<h5 class="mb-0">${u.nombre || ''}</h5>`;
+                html += `<small class="text-muted">${u.correo || u.email || ''}</small>`;
+                html += `</div>`;
+
+                html += `<dl class="row mb-3">`;
+                html += `<dt class="col-sm-4">Usuario</dt><dd class="col-sm-8">${u.usuario || 'N/A'}</dd>`;
+                html += `<dt class="col-sm-4">Rol</dt><dd class="col-sm-8">${u.nombreRol || 'Sin rol'}</dd>`;
+                html += `<dt class="col-sm-4">Teléfono</dt><dd class="col-sm-8">${u.telefono || 'N/A'}</dd>`;
+                html += `</dl>`;
+
+                html += `<div class="border-top pt-2">`;
+                html += `<p class="mb-1"><strong>Leads mes actual:</strong> ${stats.leads_mes_actual ?? 0}</p>`;
+                html += `<p class="mb-1"><strong>Tareas pendientes:</strong> ${stats.tareas_pendientes ?? 0}</p>`;
+                const ultima = stats.ultima_actividad && stats.ultima_actividad.created_at ? stats.ultima_actividad.created_at : 'Sin actividad reciente';
+                html += `<p class="mb-0"><strong>Última actividad:</strong> ${ultima}</p>`;
+                html += `</div>`;
+
+                $('#contenidoPerfilUsuario').html(html);
+                $('#modalPerfilUsuario').modal('show');
+            })
+            .fail(function() {
+                Swal.fire('Error', 'No se pudo cargar el perfil del usuario', 'error');
             });
-            break;
-        case 'inactivos':
-            // Ocultar los que no son inactivos
-            $('tbody tr').each(function() {
-                const select = $(this).find('.estado-select');
-                if (select.val() !== 'inactivo') {
-                    $(this).hide();
-                }
-            });
-            break;
-        case 'suspendidos':
-            // Ocultar los que no son suspendidos
-            $('tbody tr').each(function() {
-                const select = $(this).find('.estado-select');
-                if (select.val() !== 'suspendido') {
-                    $(this).hide();
-                }
-            });
-            break;
-        case 'vendedores':
-            $('tbody tr:not([data-rol="vendedor"])').hide();
-            break;
-        case 'admins':
-            $('tbody tr:not([data-rol="admin"])').hide();
-            break;
-    }
-}
+    });
+
+    // Filtrar usuarios (función global para onclick)
+    window.filtrarUsuarios = function(filtro) {
+        $('tbody tr').show();
+        
+        switch(filtro) {
+            case 'todos':
+                // Mostrar todos
+                break;
+            case 'activos':
+                // Ocultar los que no son activos
+                $('tbody tr').each(function() {
+                    const select = $(this).find('.estado-select');
+                    if (select.val() !== 'activo') {
+                        $(this).hide();
+                    }
+                });
+                break;
+            case 'inactivos':
+                // Ocultar los que no son inactivos
+                $('tbody tr').each(function() {
+                    const select = $(this).find('.estado-select');
+                    if (select.val() !== 'inactivo') {
+                        $(this).hide();
+                    }
+                });
+                break;
+            case 'suspendidos':
+                // Ocultar los que no son suspendidos
+                $('tbody tr').each(function() {
+                    const select = $(this).find('.estado-select');
+                    if (select.val() !== 'suspendido') {
+                        $(this).hide();
+                    }
+                });
+                break;
+            case 'vendedores':
+                $('tbody tr:not([data-rol="vendedor"])').hide();
+                break;
+            case 'admins':
+                $('tbody tr:not([data-rol="admin"])').hide();
+                break;
+        }
+    };
+});

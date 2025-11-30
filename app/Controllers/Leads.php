@@ -334,6 +334,8 @@ class Leads extends BaseController
             'idorigen'    => 'required|numeric',
         ];
 
+        
+
         if (!$this->validate($rules)) {
             return redirect()->back()
                 ->withInput()
