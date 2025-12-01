@@ -2,10 +2,9 @@
 
 <?= $this->section('content') ?>
 
-<div class="lead-campo-page">
-    <div class="row justify-content-center">
-        <div class="col-12 col-md-8 col-lg-6">
-            <div class="card lead-campo-card">
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
             <div class="card-header header-corporativo">
                 <h4 class="card-title mb-0">
                     <i class="ti-clipboard"></i> Registro de Lead
@@ -218,7 +217,6 @@
                     </div>
                 </form>
 
-            </div>
             </div>
         </div>
     </div>
