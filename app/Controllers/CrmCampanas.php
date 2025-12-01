@@ -115,6 +115,16 @@ class CrmCampanas extends BaseController
         // Obtener datos JSON del body
         $json = $this->request->getJSON(true);
 
+        $fechaInicio = $json['fecha_inicio'] ?? date('Y-m-d');
+        $fechaFin = !empty($json['fecha_fin']) ? $json['fecha_fin'] : null;
+
+        if ($fechaFin && $fechaFin < $fechaInicio) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio'
+            ]);
+        }
+
         $datos = [
             'id_campana' => $json['id_campana'] ?? null,
             'nombre_zona' => $json['nombre_zona'] ?? null,
@@ -123,6 +133,8 @@ class CrmCampanas extends BaseController
             'color' => $json['color'] ?? '#3498db',
             'prioridad' => $json['prioridad'] ?? 'Media',
             'area_m2' => $json['area_m2'] ?? null,
+            'fecha_inicio' => $fechaInicio,
+            'fecha_fin' => $fechaFin,
             'iduser_create' => $idUsuario
         ];
 

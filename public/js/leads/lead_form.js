@@ -204,6 +204,30 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    function inicializarZonaTrabajo() {
+        const zonaItems = document.querySelectorAll('.zona-trabajo-item');
+        zonaItems.forEach(item => {
+            const iframe = item.querySelector('.zona-trabajo-map-iframe');
+            const url = item.dataset.zonaUrl;
+            if (iframe && url && !iframe.src) {
+                iframe.src = url;
+            }
+        });
+
+        const botones = document.querySelectorAll('.zona-trabajo-open');
+        botones.forEach(boton => {
+            boton.addEventListener('click', () => {
+                const url = boton.dataset.url;
+                if (url) {
+                    window.open(url, '_blank');
+                }
+            });
+        });
+    }
+
+    // Inicializar el módulo de Zona de Trabajo si existe
+    inicializarZonaTrabajo();
+
     // Botón para capturar foto
     const btnFoto = document.getElementById('btn-foto');
     const inputFoto = document.getElementById('foto');

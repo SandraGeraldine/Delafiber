@@ -16,6 +16,8 @@ class ZonaCampanaModel extends Model
         'color',
         'prioridad',
         'estado',
+        'fecha_inicio',
+        'fecha_fin',
         'area_m2',
         'iduser_create',
         'iduser_update'
@@ -106,8 +108,19 @@ class ZonaCampanaModel extends Model
     public function getZonasParaMapa($idCampana = null)
     {
         $builder = $this->db->table($this->table);
-        $builder->select('id_zona, id_campana, nombre_zona, poligono, color, prioridad, area_m2');
+        $builder->select('id_zona, id_campana, nombre_zona, poligono, color, prioridad, area_m2, fecha_inicio, fecha_fin');
         $builder->where('estado', 'Activa');
+        $hoy = date('Y-m-d');
+
+        $builder->groupStart()
+            ->where('fecha_inicio IS NULL')
+            ->orWhere('fecha_inicio <=', $hoy)
+        ->groupEnd();
+
+        $builder->groupStart()
+            ->where('fecha_fin IS NULL')
+            ->orWhere('fecha_fin >=', $hoy)
+        ->groupEnd();
         
         if ($idCampana !== null) {
             $builder->where('id_campana', $idCampana);

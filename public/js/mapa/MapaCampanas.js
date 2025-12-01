@@ -640,6 +640,7 @@ export async function guardarZonaCampana(datos) {
 function mostrarModalNuevaZona(datos) {
     // Desactivar modo de dibujo
     drawingManager.setDrawingMode(null);
+    const hoy = new Date().toISOString().split('T')[0];
     
     // Crear modal dinámicamente
     const modalHTML = `
@@ -674,6 +675,16 @@ function mostrarModalNuevaZona(datos) {
                                 <div class="form-group col-md-6">
                                     <label>Color</label>
                                     <input type="color" class="form-control" id="color" value="#3498db">
+                                </div>
+                            </div>
+                            <div class="form-row">
+                                <div class="form-group col-md-6">
+                                    <label>Fecha de Inicio</label>
+                                    <input type="date" class="form-control" id="fecha_inicio" value="${hoy}">
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label>Fecha de Fin</label>
+                                    <input type="date" class="form-control" id="fecha_fin">
                                 </div>
                             </div>
                             <div class="alert alert-info">
@@ -754,6 +765,21 @@ function mostrarModalNuevaZona(datos) {
             prioridad: $('#prioridad').val(),
             area_m2: datos.area_m2
         };
+        const fechaInicio = $('#fecha_inicio').val() || hoy;
+        const fechaFinVal = $('#fecha_fin').val();
+        const fechaFin = fechaFinVal ? fechaFinVal : null;
+
+        if (fechaFin && fechaFin < fechaInicio) {
+            Swal.fire({
+                icon: 'warning',
+                title: 'Fechas inválidas',
+                text: 'La fecha de fin debe ser igual o posterior a la fecha de inicio.'
+            });
+            return;
+        }
+
+        datosZona.fecha_inicio = fechaInicio;
+        datosZona.fecha_fin = fechaFin;
         
         try {
             const result = await guardarZonaCampana(datosZona);

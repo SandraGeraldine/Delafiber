@@ -184,6 +184,12 @@
                 <span class="menu-title">Registro de Campo</span>
               </a>
             </li>
+            <li class="nav-item <?= (strpos(uri_string(), 'crm-campanas') !== false || uri_string() === 'crm-campanas/mapa-campanas') ? 'active' : '' ?>">
+              <a class="nav-link" href="<?= base_url('crm-campanas/mapa-campanas') ?>">
+                <i class="ti-location-pin menu-icon"></i>
+                <span class="menu-title">Zona de Trabajo</span>
+              </a>
+            </li>
           </ul>
         <?php else: ?>
           <ul class="nav">

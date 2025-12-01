@@ -199,6 +199,8 @@ CREATE TABLE `tb_zonas_campana` (
   `color` CHAR(7) DEFAULT '#3498db',
   `prioridad` VARCHAR(20) DEFAULT 'media',
   `estado` VARCHAR(20) DEFAULT 'activa',
+  `fecha_inicio` DATE DEFAULT NULL,
+  `fecha_fin` DATE DEFAULT NULL,
   `area_m2` DECIMAL(15,2) COMMENT 'Área en metros cuadrados',
   `iduser_create` INT UNSIGNED,
   `iduser_update` INT UNSIGNED,
