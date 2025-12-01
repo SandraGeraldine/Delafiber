@@ -1,0 +1,128 @@
+/* Estilos específicos para el listado de leads */
+#tableLeads {
+    width: 100%;
+    min-width: 720px;
+    border-collapse: separate;
+    border-spacing: 0;
+    background: #fff;
+    border-radius: 0.85rem;
+    overflow: hidden;
+    box-shadow: 0 18px 30px rgba(15, 23, 42, 0.08);
+}
+
+#tableLeads thead th {
+    background: linear-gradient(135deg, #f6f4ff, #efe5ff);
+    color: #5b3ec4;
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    border: none;
+}
+
+#tableLeads tbody tr {
+    border-bottom: 1px solid #edf1f7;
+    background: #fff;
+    transition: all 0.2s ease-in-out;
+}
+
+#tableLeads tbody tr:last-child {
+    border-bottom: none;
+}
+
+#tableLeads tbody tr:hover {
+    background: #f9f8ff;
+    box-shadow: inset 0 0 0 1px rgba(90, 66, 234, 0.08);
+}
+
+#tableLeads th,
+#tableLeads td {
+    padding: 0.95rem 1rem;
+    vertical-align: middle;
+    white-space: nowrap;
+}
+
+#tableLeads th:nth-child(6),
+#tableLeads td:nth-child(6) {
+    width: 150px;
+}
+
+#tableLeads th:nth-child(7),
+#tableLeads td:nth-child(7) {
+    width: 130px;
+}
+
+#tableLeads th:nth-child(9),
+#tableLeads td:nth-child(9) {
+    width: 220px;
+}
+
+.badge-campania {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.95rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #2f7ef7, #58a4ff);
+    color: #fff;
+    font-weight: 600;
+    font-size: 0.8rem;
+    letter-spacing: 0.02em;
+    text-transform: none;
+}
+
+.badge-etapa {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.3rem 0.9rem;
+    border-radius: 999px;
+    background: linear-gradient(135deg, #3b0f62, #7d2cc8);
+    color: #fff;
+    font-size: 0.78rem;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+#tableLeads td small {
+    color: #6c757d;
+    font-size: 0.8rem;
+}
+
+#tableLeads .btn-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    justify-content: flex-end;
+}
+
+#tableLeads .btn-group .btn {
+    padding: 0.3rem 0.55rem;
+    font-size: 0.75rem;
+    min-width: 36px;
+    border-radius: 0.45rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.table-responsive {
+    overflow-x: auto;
+    border-radius: 0.9rem;
+}
+
+@media (max-width: 992px) {
+    #tableLeads {
+        min-width: 100%;
+    }
+
+    #tableLeads th,
+    #tableLeads td {
+        white-space: normal;
+    }
+
+    #tableLeads .btn-group {
+        justify-content: flex-start;
+    }
+}

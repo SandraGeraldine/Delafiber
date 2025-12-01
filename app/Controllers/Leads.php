@@ -260,25 +260,25 @@ class Leads extends BaseController
         $paquetes = [
             [
                 'id'      => 'PROMO_50',
-                'nombre'  => 'Plan 50 Mbps – S/ 50 (Promo Campo)',
+                'nombre'  => 'Plan 180 Mbps – S/ 50 (Promo Campo)',
                 'precio'  => 50.00,
                 'servicio'=> 'Internet Fibra 50 Mbps',
             ],
             [
                 'id'      => 'PROMO_60',
-                'nombre'  => 'Plan 100 Mbps – S/ 60 (Promo Campo)',
+                'nombre'  => 'Plan 280 Mbps – S/ 60 (Promo Campo)',
                 'precio'  => 60.00,
                 'servicio'=> 'Internet Fibra 100 Mbps',
             ],
             [
                 'id'      => 'PROMO_70',
-                'nombre'  => 'Plan 200 Mbps – S/ 70 (Promo Campo)',
+                'nombre'  => 'Plan 400 Mbps – S/ 70 (Promo Campo)',
                 'precio'  => 70.00,
                 'servicio'=> 'Internet Fibra 200 Mbps',
             ],
             [
                 'id'      => 'PROMO_88',
-                'nombre'  => 'Plan 300 Mbps – S/ 88 (Promo Campo)',
+                'nombre'  => 'Plan 600 Mbps – S/ 88 (Promo Campo)',
                 'precio'  => 88.00,
                 'servicio'=> 'Internet Fibra 300 Mbps',
             ],

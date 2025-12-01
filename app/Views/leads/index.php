@@ -93,7 +93,7 @@
 
                 <!-- Tabla de Leads -->
                 <div class="table-responsive">
-                    <table id="tableLeads" class="table table-striped table-hover">
+                    <table id="tableLeads" class="table align-middle mb-0">
                         <thead class="thead-light">
                             <tr>
                                 <th>#</th>
@@ -125,13 +125,13 @@
                                     <td><?= esc($lead['distrito'] ?? '-') ?></td>
                                     <td>
                                         <?php if (!empty($lead['campania'])): ?>
-                                            <span class="badge badge-info"><?= esc($lead['campania']) ?></span>
+                                            <span class="badge-campania"><?= esc($lead['campania']) ?></span>
                                         <?php else: ?>
                                             <span class="text-muted">-</span>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <span class="badge badge-primary"><?= esc($lead['etapa']) ?></span>
+                                        <span class="badge-etapa"><?= esc($lead['etapa']) ?></span>
                                     </td>
                                     <td><small><?= esc($lead['origen']) ?></small></td>
                                     <td>
