@@ -195,18 +195,27 @@
                     </div>
 
                     <!-- FOTO -->
+                    <!-- DOCUMENTOS Y FOTOS ADICIONALES -->
                     <div class="mb-3">
-                        <p class="text-muted mb-2"><small>Selecciona si deseas tomar la foto o subir una existente</small></p>
-                        <div class="d-flex gap-2 mb-2">
-                            <button type="button" class="btn btn-outline-secondary flex-fill" id="btn-tomar-foto">
-                                <i class="ti-camera"></i> Tomar foto
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary flex-fill" id="btn-elegir-foto">
-                                <i class="ti-gallery"></i> Subir desde galería
-                            </button>
+                        <label class="form-label fw-bold">Documentos y fotos adicionales</label>
+                        <p class="text-muted small mb-3">
+                            Sube solo el DNI frontal, DNI reverso y una foto de fachada. No se requieren más fotos.
+                        </p>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="foto_dni_frontal" class="form-label">DNI - Frontal</label>
+                                <input type="file" class="form-control form-control-sm" id="foto_dni_frontal" name="foto_dni_frontal" accept="image/*,.pdf">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="foto_dni_reverso" class="form-label">DNI - Reverso</label>
+                                <input type="file" class="form-control form-control-sm" id="foto_dni_reverso" name="foto_dni_reverso" accept="image/*,.pdf">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="foto_fachada" class="form-label">Fachada / Acceso</label>
+                                <input type="file" class="form-control form-control-sm" id="foto_fachada" name="foto_fachada" accept="image/*,.pdf">
+                            </div>
                         </div>
-                        <input type="file" name="foto" id="foto" class="d-none" accept="image/*" capture="environment">
-                        <div id="foto-preview" class="mt-2"></div>
+                        <small class="text-muted">Aceptamos JPG, PNG o PDF menores a 5MB. Cada archivo se comprimirá automáticamente.</small>
                     </div>
 
                     <!-- BOTÓN ENVIAR -->

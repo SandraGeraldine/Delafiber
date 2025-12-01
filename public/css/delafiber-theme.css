@@ -1087,6 +1087,7 @@ a:hover {
         display: flex;
         align-items: center;
         height: 60px;
+        flex: 0 0 auto;
     }
 
     /* El contenedor derecho usa todo el espacio restante */
@@ -1098,17 +1099,21 @@ a:hover {
         align-items: center;
         padding-right: 0.75rem;
         height: 60px;
+        flex-wrap: wrap;
+        gap: 0.35rem;
     }
 
     /* Alinear íconos campana + perfil + botón menú */
     .navbar .navbar-nav.navbar-nav-right {
         display: flex;
         align-items: center;
+        gap: 0.35rem;
     }
 
     .navbar .navbar-nav.navbar-nav-right > li {
         margin-left: 0.25rem;
         margin-right: 0.25rem;
+        min-width: 36px;
     }
 
     /* Levantar un poco más los iconos en móvil para que queden al mismo margen que el logo */
@@ -1130,6 +1135,7 @@ a:hover {
 
     .navbar .navbar-brand.brand-logo img {
         height: 32px;
+        max-width: 120px;
     }
 
     .navbar .navbar-brand.brand-logo-mini {

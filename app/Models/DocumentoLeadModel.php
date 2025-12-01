@@ -34,7 +34,7 @@ class DocumentoLeadModel extends Model
     protected $validationRules = [
         'idlead' => 'required|numeric',
         'idpersona' => 'required|numeric',
-        'tipo_documento' => 'required|in_list[dni_frontal,dni_reverso,recibo_luz,recibo_agua,foto_domicilio,otro]',
+        'tipo_documento' => 'required|in_list[dni_frontal,dni_reverso,recibo_luz,recibo_agua,foto_domicilio,foto_fachada,otro]',
         'nombre_archivo' => 'required|max_length[255]',
         'ruta_archivo' => 'required|max_length[500]',
         'extension' => 'required|max_length[10]',
