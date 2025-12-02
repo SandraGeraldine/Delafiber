@@ -17,6 +17,40 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    // Función para limpiar campos cuando se cambia / borra el DNI
+    function limpiarCamposPersonaPorDni() {
+        const campos = [
+            'nombres',
+            'apellidos',
+            'telefono1',
+            'telefono2',
+            'telefono3',
+            'direccion',
+            'detalles',
+            'coordenadas_servicio',
+            'coordenadas_mostrar'
+        ];
+
+        campos.forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.value = '';
+            }
+        });
+    }
+
+    // Limpiar automáticamente cuando se borre o modifique el DNI
+    const dniInputGlobal = document.getElementById('dni');
+    if (dniInputGlobal) {
+        dniInputGlobal.addEventListener('input', function () {
+            const valor = this.value.trim();
+            // Si el DNI queda vacío o con menos de 8 dígitos, limpiamos los demás campos
+            if (valor.length < 8) {
+                limpiarCamposPersonaPorDni();
+            }
+        });
+    }
+
     // Botón para buscar DNI (búsqueda rápida en BD interna)
     const btnBuscarDni = document.getElementById('btn-buscar-dni');
     if (btnBuscarDni) {
@@ -75,10 +109,12 @@ document.addEventListener('DOMContentLoaded', function () {
                     const tel1Input = document.getElementById('telefono1');
                     const direccionInput = document.getElementById('direccion');
 
-                    if (nombresInput && !nombresInput.value) nombresInput.value = p.nombres || '';
-                    if (apellidosInput && !apellidosInput.value) apellidosInput.value = p.apellidos || '';
-                    if (tel1Input && !tel1Input.value) tel1Input.value = p.telefono || '';
-                    if (direccionInput && !direccionInput.value) direccionInput.value = p.direccion || '';
+                    // Siempre sobreescribir los datos al buscar un DNI,
+                    // para que al ingresar un nuevo DNI se reemplacen los valores anteriores
+                    if (nombresInput) nombresInput.value = p.nombres || '';
+                    if (apellidosInput) apellidosInput.value = p.apellidos || '';
+                    if (tel1Input) tel1Input.value = p.telefono || '';
+                    if (direccionInput) direccionInput.value = p.direccion || '';
 
                     if (typeof Swal !== 'undefined') {
                         const mensaje = data.registrado === false
@@ -164,43 +200,106 @@ document.addEventListener('DOMContentLoaded', function () {
     initMapaCampo();
 
     if (btnCoord) {
-        btnCoord.addEventListener('click', function () {
-            if (!navigator.geolocation) {
-                alert('La geolocalización no está soportada en este dispositivo');
-                return;
-            }
-
+        btnCoord.addEventListener('click', async function () {
             btnCoord.disabled = true;
             btnCoord.innerText = 'Obteniendo...';
 
-            navigator.geolocation.getCurrentPosition(async function (position) {
-                const lat = position.coords.latitude.toFixed(6);
-                const lng = position.coords.longitude.toFixed(6);
-                const value = lat + ',' + lng;
+            const valorManual = (inputCoord && inputCoord.value) ? inputCoord.value.trim() : '';
 
-                if (inputCoord) inputCoord.value = value;
-                if (inputCoordMostrar) inputCoordMostrar.value = value;
+            try {
+                // Siempre intentamos primero geolocalización en cada clic
+                if (!navigator.geolocation) {
+                    console.warn('Geolocalización no soportada, usando valor manual si existe');
+                } else {
+                    navigator.geolocation.getCurrentPosition(async function (position) {
+                        const lat = position.coords.latitude.toFixed(6);
+                        const lng = position.coords.longitude.toFixed(6);
+                        const value = lat + ',' + lng;
 
-                try {
-                    if (!mapaModulo) {
-                        mapaModulo = await import(`${BASE_URL}js/api/Mapa.js`);
-                        await mapaModulo.iniciarMapa('Cajas', 'mapa-preview', 'inline');
-                        await mapaModulo.eventoMapa(true);
+                        if (inputCoord) inputCoord.value = value;
+                        if (inputCoordMostrar) inputCoordMostrar.value = value;
+
+                        try {
+                            if (!mapaModulo) {
+                                mapaModulo = await import(`${BASE_URL}js/api/Mapa.js`);
+                                await mapaModulo.iniciarMapa('Cajas', 'mapa-preview', 'inline');
+                                await mapaModulo.eventoMapa(true);
+                            }
+
+                            await mapaModulo.buscarCoordenadassinMapa(parseFloat(lat), parseFloat(lng));
+                        } catch (err) {
+                            console.error('Error al actualizar mapa con coordenadas de campo:', err);
+                        }
+
+                        btnCoord.disabled = false;
+                        btnCoord.innerText = 'BUSCAR';
+                    }, async function (error) {
+                        console.error('Error geolocalización, usando valor manual si hay:', error);
+
+                        // Si geolocalización falla, usamos como respaldo el valor manual
+                        if (valorManual) {
+                            const partes = valorManual.split(',');
+                            if (partes.length === 2) {
+                                const lat = parseFloat(partes[0]);
+                                const lng = parseFloat(partes[1]);
+
+                                if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+                                    if (inputCoordMostrar) inputCoordMostrar.value = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+
+                                    try {
+                                        if (!mapaModulo) {
+                                            mapaModulo = await import(`${BASE_URL}js/api/Mapa.js`);
+                                            await mapaModulo.iniciarMapa('Cajas', 'mapa-preview', 'inline');
+                                            await mapaModulo.eventoMapa(true);
+                                        }
+
+                                        await mapaModulo.buscarCoordenadassinMapa(lat, lng);
+                                    } catch (err) {
+                                        console.error('Error al actualizar mapa con coordenadas manuales:', err);
+                                    }
+                                }
+                            }
+                        } else {
+                            alert('No se pudo obtener la ubicación y no hay coordenadas configuradas.');
+                        }
+
+                        btnCoord.disabled = false;
+                        btnCoord.innerText = 'BUSCAR';
+                    });
+
+                    return; // Salimos aquí, el resto es solo para caso sin geolocalización
+                }
+
+                // Si llegamos aquí es porque no hay geolocalización disponible
+                if (valorManual) {
+                    const partes = valorManual.split(',');
+                    if (partes.length === 2) {
+                        const lat = parseFloat(partes[0]);
+                        const lng = parseFloat(partes[1]);
+
+                        if (!Number.isNaN(lat) && !Number.isNaN(lng)) {
+                            if (inputCoordMostrar) inputCoordMostrar.value = `${lat.toFixed(6)},${lng.toFixed(6)}`;
+
+                            if (!mapaModulo) {
+                                mapaModulo = await import(`${BASE_URL}js/api/Mapa.js`);
+                                await mapaModulo.iniciarMapa('Cajas', 'mapa-preview', 'inline');
+                                await mapaModulo.eventoMapa(true);
+                            }
+
+                            await mapaModulo.buscarCoordenadassinMapa(lat, lng);
+                        }
                     }
-
-                    await mapaModulo.buscarCoordenadessinMapa(parseFloat(lat), parseFloat(lng));
-                } catch (err) {
-                    console.error('Error al actualizar mapa con coordenadas de campo:', err);
+                } else {
+                    alert('No se pudo obtener la ubicación y no hay coordenadas configuradas.');
                 }
 
                 btnCoord.disabled = false;
                 btnCoord.innerText = 'BUSCAR';
-            }, function (error) {
-                console.error(error);
-                alert('No se pudo obtener la ubicación. Asegúrate de otorgar los permisos necesarios.');
+            } catch (e) {
+                console.error('Error general al manejar coordenadas en campo:', e);
                 btnCoord.disabled = false;
                 btnCoord.innerText = 'BUSCAR';
-            });
+            }
         });
     }
 

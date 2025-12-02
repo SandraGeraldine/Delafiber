@@ -509,10 +509,12 @@ class Leads extends BaseController
                 throw new \Exception('Error al crear el lead desde campo: ' . $errorMsg);
             }
 
-            // Guardar foto de domicilio enviada desde el formulario de campo (si existe)
+            // Guardar documentos/fotos enviados desde el formulario de campo (si existen)
+            $documentoModel = new \App\Models\DocumentoLeadModel();
+
+            // Compatibilidad con posible campo antiguo "foto" (foto de domicilio única)
             $fotoCampo = $this->request->getFile('foto');
-            if ($fotoCampo && $fotoCampo->isValid()) {
-                $documentoModel = new \App\Models\DocumentoLeadModel();
+            if ($fotoCampo && $fotoCampo->isValid() && !$fotoCampo->hasMoved()) {
                 $documentoModel->guardarDocumento(
                     $fotoCampo,
                     $leadId,
@@ -521,6 +523,26 @@ class Leads extends BaseController
                     $usuarioRegistro,
                     'formulario_campo'
                 );
+            }
+
+            // Nuevos campos desde lead_form.php: DNI frontal, DNI reverso y foto de fachada
+            $archivosCampo = [
+                'dni_frontal'   => $this->request->getFile('foto_dni_frontal'),
+                'dni_reverso'   => $this->request->getFile('foto_dni_reverso'),
+                'foto_fachada'  => $this->request->getFile('foto_fachada'),
+            ];
+
+            foreach ($archivosCampo as $tipoDocumento => $archivo) {
+                if ($archivo && $archivo->isValid() && !$archivo->hasMoved()) {
+                    $documentoModel->guardarDocumento(
+                        $archivo,
+                        $leadId,
+                        $personaId,
+                        $tipoDocumento,
+                        $usuarioRegistro,
+                        'formulario_campo'
+                    );
+                }
             }
 
             // Registrar en historial de leads

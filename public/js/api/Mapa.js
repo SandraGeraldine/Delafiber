@@ -421,12 +421,29 @@ export async function eventoMapa(valor) {
   if (valor) {
     mapa.addListener('click', async (e) => {
       marcadorCoordenada = { lat: e.latLng.lat(), lng: e.latLng.lng() };
+
+      // Mover/crear marcador principal en el mapa
       if (marcador) marcador.setMap(null);
       marcador = new AdvancedMarkerElement({
         position: e.latLng,
         map: mapa,
         title: "Marcador"
       });
+
+      // Si existen inputs de coordenadas en el DOM, actualizarlos
+      try {
+        const lat = marcadorCoordenada.lat.toFixed(6);
+        const lng = marcadorCoordenada.lng.toFixed(6);
+        const value = `${lat},${lng}`;
+
+        const inputCoord = document.getElementById('coordenadas_servicio');
+        const inputCoordMostrar = document.getElementById('coordenadas_mostrar');
+
+        if (inputCoord) inputCoord.value = value;
+        if (inputCoordMostrar) inputCoordMostrar.value = value;
+      } catch (err) {
+        console.warn('No se pudieron actualizar los inputs de coordenadas desde eventoMapa:', err);
+      }
     });
   }
   return marcadorCoordenada;
