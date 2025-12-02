@@ -306,6 +306,32 @@ class Leads extends BaseController
     }
 
     /**
+     * Vista simplificada del mapa para promotores de campo
+     */
+    public function campoMapa()
+    {
+        $rolNombre = session()->get('nombreRol');
+        $rolNivel  = (int)(session()->get('rol_nivel') ?? 0);
+
+        $esPromotorCampo = ($rolNombre === 'Promotor Campo');
+        $esAdminOSupervisor = in_array($rolNivel, [1, 2], true);
+
+        if (!$esPromotorCampo && !$esAdminOSupervisor) {
+            return redirect()->to('/leads')
+                ->with('error', 'No tienes permiso para ver el mapa de campo');
+        }
+
+        $campanias = $this->campaniaModel->getCampaniasActivas();
+
+        $data = [
+            'title' => 'Mapa de Campo - Delafiber CRM',
+            'campanas' => $campanias,
+        ];
+
+        return view('leads/campo_mapa', $data);
+    }
+
+    /**
      * Guardar lead creado desde la vista simplificada de campo
      */
     public function campoStore()

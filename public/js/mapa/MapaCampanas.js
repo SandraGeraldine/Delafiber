@@ -495,6 +495,8 @@ async function cargarZonasCampana(idCampana = null) {
         }
         
         zonasData = result.data;
+
+        document.dispatchEvent(new CustomEvent('zonasCargadas', { detail: zonasData }));
         
         // Limpiar polígonos anteriores
         zonasPoligonos.forEach(item => item.polygon.setMap(null));

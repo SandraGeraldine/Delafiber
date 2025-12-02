@@ -66,6 +66,7 @@ $routes->group('leads', ['filter' => 'auth'], function($routes) {
     $routes->post('store', 'Leads::store');
     // Registro simplificado para promotores de campo
     $routes->get('campo', 'Leads::campo');
+    $routes->get('campo/mapa', 'Leads::campoMapa');
     $routes->post('campoStore', 'Leads::campoStore');
     $routes->get('campoBuscarDni', 'Leads::campoBuscarDni');
     $routes->get('view/(:num)', 'Leads::view/$1');
@@ -171,6 +172,8 @@ $routes->group('crm-campanas', ['filter' => 'auth'], function($routes) {
     $routes->post('asignar-zona-agente', 'CrmCampanas::asignarZonaAgente');
     $routes->post('desasignar-zona-agente/(:num)', 'CrmCampanas::desasignarZonaAgente/$1');
     $routes->get('mis-zonas', 'CrmCampanas::misZonas');
+
+    $routes->post('confirmarZona', 'CrmCampanas::confirmarZona');
     
     // API para JavaScript
     $routes->get('api-zonas-mapa/(:num)', 'CrmCampanas::apiZonasMapa/$1');
