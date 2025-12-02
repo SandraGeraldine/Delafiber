@@ -80,6 +80,28 @@
                         <?php endif; ?>
                     </div>
 
+                    <!-- DISTRITO / ZONA -->
+                    <div class="mb-3">
+                        <label for="iddistrito" class="form-label fw-bold">DISTRITO</label>
+                        <select name="iddistrito" id="iddistrito" class="form-select">
+                            <option value="">Selecciona un distrito</option>
+                            <?php if (!empty($distritos_campo)): ?>
+                                <?php foreach ($distritos_campo as $distrito): ?>
+                                    <option value="<?= esc($distrito['iddistrito']) ?>" 
+                                            <?= old('iddistrito') == $distrito['iddistrito'] ? 'selected' : '' ?>>
+                                        <?= esc($distrito['nombre']) ?>
+                                    </option>
+                                <?php endforeach; ?>
+                            <?php endif; ?>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="zona_servicio" class="form-label fw-bold">ZONA</label>
+                        <select name="zona_servicio" id="zona_servicio" class="form-select">
+                            <option value="">Selecciona una zona</option>
+                        </select>
+                    </div>
+
                     <!-- NÚMEROS DE CONTACTOS -->
                     <div class="mb-3">
                         <label class="form-label fw-bold">NUMEROS DE CONTACTOS</label>
@@ -251,6 +273,35 @@
 <script>
     const BASE_URL = '<?= base_url() ?>';
     window.leadCampoSwalSuccess = <?= session()->getFlashdata('swal_success') ? 'true' : 'false' ?>;
+</script>
+<script>
+    const zonasPorDistrito = <?= json_encode($zonas_por_distrito ?? [], JSON_UNESCAPED_UNICODE) ?>;
+    const zonaServicioSelect = document.getElementById('zona_servicio');
+    const distritoCampoSelect = document.getElementById('iddistrito');
+    const zonaAnterior = <?= json_encode(old('zona_servicio') ?? '', JSON_UNESCAPED_UNICODE) ?>;
+
+    function refrescarOpcionesZona() {
+        if (!zonaServicioSelect) return;
+        const distritoId = distritoCampoSelect?.value ?? '';
+        const zonas = zonasPorDistrito[distritoId] ?? [];
+        zonaServicioSelect.innerHTML = '<option value="">Selecciona una zona</option>';
+        zonas.forEach(nombre => {
+            const option = document.createElement('option');
+            option.value = nombre;
+            option.textContent = nombre;
+            if (nombre === zonaAnterior) {
+                option.selected = true;
+            }
+            zonaServicioSelect.appendChild(option);
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        refrescarOpcionesZona();
+        distritoCampoSelect?.addEventListener('change', () => {
+            refrescarOpcionesZona();
+        });
+    });
 </script>
 <script src="<?= base_url('js/leads/mapakey.js') ?>"></script>
 <script src="<?= base_url('js/leads/lead_form.js') ?>"></script>

@@ -294,12 +294,62 @@ class Leads extends BaseController
             $zonasNotificadas = $notificacionModel->getPorTipo($usuarioActual, 'zona_campo');
         }
 
+        $distritosCampo = $this->distritoModel->getDistritosDelafiber();
+        $zonasPorNombre = [
+            'SUNAMPE' => [
+                'San Martin',
+                'Chacarita',
+                'Santa Rosa',
+                'Pilpa',
+                'Paraiso',
+                'Parada de los Amigos',
+                'Colegio',
+                'San Ignacio',
+                'Villa Julia',
+                'Huaca Grande',
+                'Simon Bolivar',
+                'Calle Lima',
+                'Santa Fe',
+                'Mina de Oro'
+            ],
+            'GROCIO PRADO' => [
+                'El Porvenir',
+                'Carrillo',
+                'San Jose',
+                'Mejilloneros',
+                'Botelleros'
+            ],
+            'CHINCHA ALTA' => [
+                'Chincha Alta',
+                'America',
+                'Cruz Blanca',
+                'Condorillo',
+                'Progreso'
+            ],
+            'PUEBLO NUEVO' => [
+                'Techo Propio',
+                'Salvador',
+                'Las Americas',
+                'Satelite'
+            ]
+        ];
+        $zonasPorDistrito = [];
+        foreach ($distritosCampo as $distrito) {
+            $nombreUpper = mb_strtoupper(trim($distrito['nombre'] ?? ''), 'UTF-8');
+            if (isset($zonasPorNombre[$nombreUpper])) {
+                $zonasPorDistrito[$distrito['iddistrito']] = $zonasPorNombre[$nombreUpper];
+            }
+        }
+
         $data = [
             'title' => 'Registro Rápido de Campo - Delafiber CRM',
             'paquetes' => $paquetes,
             'origenes' => $origenes,
             'user_name' => session()->get('user_name'),
             'zonasNotificadas' => $zonasNotificadas
+            ,
+            'distritos_campo' => $distritosCampo,
+            'zonas_por_distrito' => $zonasPorDistrito
         ];
 
         return view('leads/lead_form', $data);
@@ -375,6 +425,14 @@ class Leads extends BaseController
         $db->transStart();
 
         try {
+            $iddistritoSeleccionado = $this->request->getPost('iddistrito') ?: null;
+            $zonaServicio = $this->request->getPost('zona_servicio') ?: null;
+            $nombreDistritoServicio = null;
+
+            if ($iddistritoSeleccionado) {
+                $distritoSeleccionado = $this->distritoModel->find($iddistritoSeleccionado);
+                $nombreDistritoServicio = $distritoSeleccionado['nombre'] ?? null;
+            }
             $dni = $this->request->getPost('dni');
 
             // Buscar persona existente por DNI
@@ -405,7 +463,7 @@ class Leads extends BaseController
                     'correo'      => $this->request->getPost('correo') ?: null,
                     'direccion'   => $this->request->getPost('direccion'),
                     'referencias' => $this->request->getPost('referencias') ?: null,
-                    'iddistrito'  => null,
+                    'iddistrito'  => $iddistritoSeleccionado,
                     'coordenadas' => $this->request->getPost('coordenadas_servicio') ?: null,
                 ];
 
@@ -437,7 +495,8 @@ class Leads extends BaseController
                 'tipo_solicitud' => $this->request->getPost('tipo_solicitud') ?: 'casa',
                 'plan_interes' => $this->request->getPost('plan_interes') ?: null,
                 'direccion_servicio' => $this->request->getPost('direccion'),
-                'distrito_servicio' => null,
+                'distrito_servicio' => $nombreDistritoServicio,
+                'zona_servicio' => $zonaServicio,
                 'coordenadas_servicio' => $this->request->getPost('coordenadas_servicio') ?: null,
                 'estado' => 'activo',
             ];
