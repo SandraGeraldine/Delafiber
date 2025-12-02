@@ -460,6 +460,7 @@ class Leads extends BaseController
                     'nombres'     => $this->request->getPost('nombres'),
                     'apellidos'   => $this->request->getPost('apellidos'),
                     'telefono'    => $telefonoPrincipal,
+                    'tipo_documento' => 'dni',
                     'correo'      => $this->request->getPost('correo') ?: null,
                     'direccion'   => $this->request->getPost('direccion'),
                     'referencias' => $this->request->getPost('referencias') ?: null,
