@@ -495,7 +495,7 @@ class Leads extends BaseController
                 'tipo_solicitud' => $this->request->getPost('tipo_solicitud') ?: 'casa',
                 'plan_interes' => $this->request->getPost('plan_interes') ?: null,
                 'direccion_servicio' => $this->request->getPost('direccion'),
-                'distrito_servicio' => $nombreDistritoServicio,
+                'distrito_servicio' => $iddistritoSeleccionado,
                 'zona_servicio' => $zonaServicio,
                 'coordenadas_servicio' => $this->request->getPost('coordenadas_servicio') ?: null,
                 'estado' => 'activo',
