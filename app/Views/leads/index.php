@@ -100,7 +100,7 @@
                                 <th>Cliente</th>
                                 <th>Teléfono</th>
                                 <th>Distrito</th>
-                                <th>Campaña</th>
+                                <th>Zona</th>
                                 <th>Etapa</th>
                                 <th>Origen</th>
                                 <th>Fecha</th>
@@ -124,8 +124,8 @@
                                     </td>
                                     <td><?= esc($lead['distrito'] ?? '-') ?></td>
                                     <td>
-                                        <?php if (!empty($lead['campania'])): ?>
-                                            <span class="badge-campania"><?= esc($lead['campania']) ?></span>
+                                        <?php if (!empty($lead['zona_servicio'])): ?>
+                                            <span class="badge-campania"><?= esc($lead['zona_servicio']) ?></span>
                                         <?php else: ?>
                                             <span class="text-muted">-</span>
                                         <?php endif; ?>

@@ -133,12 +133,12 @@ class DocumentoLeadModel extends Model
             ];
         }
 
-        // Validar tamaño (máximo 3MB - será comprimido después)
+        // Validar tamaño (máximo 5MB - será comprimido después)
         $tamanoKB = $file->getSizeByUnit('kb');
-        if ($tamanoKB > 3072) {
+        if ($tamanoKB > 5120) {
             return [
                 'success' => false,
-                'message' => 'El archivo es demasiado grande. Tamaño máximo: 3MB'
+                'message' => 'El archivo es demasiado grande. Tamaño máximo: 5MB'
             ];
         }
 

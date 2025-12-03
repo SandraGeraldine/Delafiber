@@ -1,10 +1,11 @@
 import * as turf from "https://esm.sh/@turf/turf@6.5.0";
 
 let Map, Circle, Polygon, AdvancedMarkerElement, mapa, InfoWindow;
+
 let marcador = null;
 let marcadorCoordenada = null;
 let marcadoresCajas = [];
-let marcadoresVisibles = []; // Nuevos marcadores visibles en el mapa
+let marcadoresVisibles = []; 
 
 // Separar por tipo
 let circlesCajas = [];
@@ -40,9 +41,29 @@ let ubicacionMarcador;
 // Exportar mapa para uso externo
 export { mapa };
 
+// Mapa ligero: solo Google Maps básico, sin cargar cajas ni antenas
+export async function iniciarMapaSimple(id = "mapa-preview") {
+  const posicionInicial = { lat: -13.417077, lng: -76.136585 };
+
+  ({ Map, InfoWindow } = await google.maps.importLibrary("maps"));
+  ({ AdvancedMarkerElement } = await google.maps.importLibrary("marker"));
+
+  if (!mapa) {
+    mapa = new Map(document.getElementById(id), {
+      zoom: 14,
+      center: posicionInicial,
+      mapId: "DEMO_MAP_ID",
+    });
+  } else {
+    mapa.setCenter(posicionInicial);
+    mapa.setZoom(14);
+  }
+
+  return mapa;
+}
+
 export async function encontrarMarcadoresCercanos(coordenadaClick, radio = 1000) {
 
-  
   // Usar los puntos del tipo activo
   const puntosMarcador = tipoActivo === "Cajas" ? puntosMarcadorCajas : puntosMarcadorAntenas;
   

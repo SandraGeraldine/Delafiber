@@ -46,6 +46,7 @@ class LeadModel extends Model
             ->select('l.idlead, l.created_at, l.estado, l.idusuario, l.idusuario_registro,
                      CONCAT(p.nombres, " ", p.apellidos) as nombre_completo,
                      p.nombres, p.apellidos, p.telefono, p.correo, p.dni, p.coordenadas,
+                     l.zona_servicio,
                      e.nombre as etapa, e.idetapa,
                      o.nombre as origen,
                      c.nombre as campania,

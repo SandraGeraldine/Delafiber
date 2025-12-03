@@ -175,8 +175,13 @@ document.addEventListener('DOMContentLoaded', function () {
                 mapaModulo = await import(`${BASE_URL}js/api/Mapa.js`);
             }
 
-            // Usamos el mismo tipo base que en create (Cajas por defecto)
-            await mapaModulo.iniciarMapa('Cajas', 'mapa-preview', 'inline');
+            // Mapa ligero para formulario de campo: solo mapa base + click para marcar coordenadas
+            if (typeof mapaModulo.iniciarMapaSimple === 'function') {
+                await mapaModulo.iniciarMapaSimple('mapa-preview');
+            } else {
+                // Fallback: usar iniciarMapa tradicional si no existe la versión simple
+                await mapaModulo.iniciarMapa('Cajas', 'mapa-preview', 'inline');
+            }
             await mapaModulo.eventoMapa(true);
 
             // Si ya hay coordenadas guardadas, centramos y marcamos
@@ -327,45 +332,56 @@ document.addEventListener('DOMContentLoaded', function () {
     // Inicializar el módulo de Zona de Trabajo si existe
     inicializarZonaTrabajo();
 
-    // Botón para capturar foto
-    const btnFoto = document.getElementById('btn-foto');
-    const inputFoto = document.getElementById('foto');
-    const fotoPreview = document.getElementById('foto-preview');
+    // Botones para capturar / elegir foto en cada documento
+    function configurarCapturaFoto(idBtnTomar, idBtnGaleria, idInput, idPreview) {
+        const btnTomar = document.getElementById(idBtnTomar);
+        const btnGaleria = document.getElementById(idBtnGaleria);
+        const input = document.getElementById(idInput);
+        const preview = document.getElementById(idPreview);
 
-    const btnTomarFoto = document.getElementById('btn-tomar-foto');
-    const btnElegirFoto = document.getElementById('btn-elegir-foto');
+        if (!input) return;
 
-    if (btnTomarFoto && inputFoto) {
-        btnTomarFoto.addEventListener('click', function () {
-            inputFoto.setAttribute('capture', 'environment');
-            inputFoto.click();
-        });
-    }
+        if (btnTomar) {
+            btnTomar.addEventListener('click', function () {
+                input.setAttribute('accept', 'image/*');
+                input.setAttribute('capture', 'environment');
+                input.click();
+            });
+        }
 
-    if (btnElegirFoto && inputFoto) {
-        btnElegirFoto.addEventListener('click', function () {
-            inputFoto.removeAttribute('capture');
-            inputFoto.click();
-        });
-    }
-    if (inputFoto) {
-        inputFoto.addEventListener('change', function () {
-            const file = this.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function (e) {
-                    if (fotoPreview) {
-                        fotoPreview.innerHTML = `
-                            <img src="${e.target.result}" class="img-fluid rounded" 
-                                 style="max-height: 200px;" alt="Preview">
-                            <p class="text-success mt-2 mb-0"><small>Foto cargada: ${file.name}</small></p>
-                        `;
-                    }
-                };
-                reader.readAsDataURL(file);
+        if (btnGaleria) {
+            btnGaleria.addEventListener('click', function () {
+                input.setAttribute('accept', 'image/*,.pdf');
+                input.removeAttribute('capture');
+                input.click();
+            });
+        }
+
+        input.addEventListener('change', function () {
+            const file = this.files && this.files[0];
+            if (!file || !preview) return;
+
+            // Solo previsualizar imágenes
+            if (!file.type.startsWith('image/')) {
+                preview.innerHTML = `<p class="text-info mb-0"><small>Archivo seleccionado: ${file.name}</small></p>`;
+                return;
             }
+
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                preview.innerHTML = `
+                    <img src="${e.target.result}" class="img-fluid rounded" 
+                         style="max-height: 200px;" alt="Preview">
+                    <p class="text-success mt-2 mb-0"><small>Foto cargada: ${file.name}</small></p>
+                `;
+            };
+            reader.readAsDataURL(file);
         });
     }
+
+    configurarCapturaFoto('btn-tomar-foto-dni-frontal', 'btn-elegir-foto-dni-frontal', 'foto_dni_frontal', 'preview_dni_frontal');
+    configurarCapturaFoto('btn-tomar-foto-dni-reverso', 'btn-elegir-foto-dni-reverso', 'foto_dni_reverso', 'preview_dni_reverso');
+    configurarCapturaFoto('btn-tomar-foto-fachada', 'btn-elegir-foto-fachada', 'foto_fachada', 'preview_fachada');
 
     // Marcar notificación de zona como leída al abrir el mapa
     document.querySelectorAll('.zona-notificacion-link').forEach(link => {

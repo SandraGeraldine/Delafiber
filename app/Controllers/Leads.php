@@ -515,7 +515,7 @@ class Leads extends BaseController
             // Compatibilidad con posible campo antiguo "foto" (foto de domicilio única)
             $fotoCampo = $this->request->getFile('foto');
             if ($fotoCampo && $fotoCampo->isValid() && !$fotoCampo->hasMoved()) {
-                $documentoModel->guardarDocumento(
+                $resultadoFoto = $documentoModel->guardarDocumento(
                     $fotoCampo,
                     $leadId,
                     $personaId,
@@ -523,6 +523,9 @@ class Leads extends BaseController
                     $usuarioRegistro,
                     'formulario_campo'
                 );
+                if (is_array($resultadoFoto) && empty($resultadoFoto['success'])) {
+                    log_message('error', 'Error guardando foto_domicilio en campoStore: ' . ($resultadoFoto['message'] ?? 'sin mensaje'));
+                }
             }
 
             // Nuevos campos desde lead_form.php: DNI frontal, DNI reverso y foto de fachada
@@ -534,7 +537,7 @@ class Leads extends BaseController
 
             foreach ($archivosCampo as $tipoDocumento => $archivo) {
                 if ($archivo && $archivo->isValid() && !$archivo->hasMoved()) {
-                    $documentoModel->guardarDocumento(
+                    $resultadoDoc = $documentoModel->guardarDocumento(
                         $archivo,
                         $leadId,
                         $personaId,
@@ -542,6 +545,9 @@ class Leads extends BaseController
                         $usuarioRegistro,
                         'formulario_campo'
                     );
+                    if (is_array($resultadoDoc) && empty($resultadoDoc['success'])) {
+                        log_message('error', 'Error guardando documento de campo (' . $tipoDocumento . '): ' . ($resultadoDoc['message'] ?? 'sin mensaje'));
+                    }
                 }
             }
 

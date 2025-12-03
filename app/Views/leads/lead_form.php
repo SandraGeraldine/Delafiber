@@ -240,15 +240,42 @@
                         <div class="row g-3">
                             <div class="col-md-6">
                                 <label for="foto_dni_frontal" class="form-label">DNI - Frontal</label>
+                                <div class="d-flex gap-2 mb-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" id="btn-tomar-foto-dni-frontal">
+                                        <i class="ti-camera"></i> Tomar foto
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" id="btn-elegir-foto-dni-frontal">
+                                        <i class="ti-gallery"></i> Galería
+                                    </button>
+                                </div>
                                 <input type="file" class="form-control form-control-sm" id="foto_dni_frontal" name="foto_dni_frontal" accept="image/*,.pdf">
+                                <div id="preview_dni_frontal" class="mt-2"></div>
                             </div>
                             <div class="col-md-6">
                                 <label for="foto_dni_reverso" class="form-label">DNI - Reverso</label>
+                                <div class="d-flex gap-2 mb-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" id="btn-tomar-foto-dni-reverso">
+                                        <i class="ti-camera"></i> Tomar foto
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" id="btn-elegir-foto-dni-reverso">
+                                        <i class="ti-gallery"></i> Galería
+                                    </button>
+                                </div>
                                 <input type="file" class="form-control form-control-sm" id="foto_dni_reverso" name="foto_dni_reverso" accept="image/*,.pdf">
+                                <div id="preview_dni_reverso" class="mt-2"></div>
                             </div>
                             <div class="col-md-6">
                                 <label for="foto_fachada" class="form-label">Fachada / Acceso</label>
+                                <div class="d-flex gap-2 mb-2">
+                                    <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" id="btn-tomar-foto-fachada">
+                                        <i class="ti-camera"></i> Tomar foto
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary btn-sm flex-fill" id="btn-elegir-foto-fachada">
+                                        <i class="ti-gallery"></i> Galería
+                                    </button>
+                                </div>
                                 <input type="file" class="form-control form-control-sm" id="foto_fachada" name="foto_fachada" accept="image/*,.pdf">
+                                <div id="preview_fachada" class="mt-2"></div>
                             </div>
                         </div>
                         <small class="text-muted">Aceptamos JPG, PNG o PDF menores a 5MB. Cada archivo se comprimirá automáticamente.</small>
