@@ -67,6 +67,7 @@
                 <div class="pipeline-scroll">
                     <?php if (!empty($pipeline)): ?>
                         <?php foreach ($pipeline as $etapa): ?>
+                            <?php if (strtoupper($etapa['etapa_nombre']) === 'COTIZACION') continue; ?>
                             <div class="pipeline-column" data-etapa-id="<?= $etapa['etapa_id'] ?>">
                                 <div class="pipeline-header">
                                     <h5 class="mb-0"><?= esc($etapa['etapa_nombre']) ?></h5>

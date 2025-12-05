@@ -2,6 +2,67 @@
 
 <?= $this->section('content') ?>
 
+<style>
+    .conversion-card .card-header {
+        background: linear-gradient(135deg, #5b0bd6, #b03dfb);
+        color: #fff;
+        border: none;
+        box-shadow: 0 12px 30px rgba(91, 11, 214, 0.35);
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.4);
+    }
+    .conversion-card .card-body {
+        border: 1px solid #dcdcdc;
+        border-radius: 0 0 12px 12px;
+        background: #fff;
+    }
+    .conversion-card .info-block {
+        border-radius: 12px;
+        border: 1px solid #f0f0f0;
+        padding: 18px;
+        background: linear-gradient(180deg, #ffffff, #f7f1ff);
+        color: #2c2c2c;
+        margin-bottom: 1rem;
+    }
+    .conversion-card .step-pill {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 999px;
+        padding: 0.25rem 0.9rem;
+        font-weight: 600;
+        font-size: 0.85rem;
+        color: #fff;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+    .step-pill.primary {
+        background: linear-gradient(135deg, #3c8dbc, #1e90ff);
+    }
+    .step-pill.secondary {
+        background: linear-gradient(135deg, #6c63ff, #d23bed);
+    }
+    .conversion-card .btn-success {
+        background: linear-gradient(135deg, #27ae60, #2ecc71);
+        border-color: transparent;
+        box-shadow: 0 10px 20px rgba(39, 174, 96, 0.35);
+    }
+    .conversion-card .btn-primary {
+        background: #4b1487;
+        border-color: transparent;
+        font-weight: 600;
+    }
+    .conversion-card .details-summary {
+        font-weight: 600;
+        color: #6c63ff;
+    }
+    .conversion-card .map-fallback {
+        border-radius: 8px;
+        border: 1px dashed #bbb;
+        padding: 12px;
+        font-size: 0.85rem;
+        background: #f9f9ff;
+    }
+</style>
+
 <div class="container-fluid">
     <!-- Breadcrumb -->
     <div class="row mb-3">
@@ -65,7 +126,7 @@
                 </div>
             </div>
 
-            <div class="alert alert-info mt-3">
+           <!--  <div class="alert alert-info mt-3">
                 <i class="fas fa-info-circle"></i> <strong>Importante:</strong><br>
                 Al convertir este lead, se creará automáticamente:
                 <ul class="mb-0 mt-2">
@@ -73,7 +134,7 @@
                     <li>Registro en tb_clientes</li>
                     <li>Contrato en tb_contratos</li>
                 </ul>
-            </div>
+            </div> -->
         </div>
 
         <!-- Acción de Conversión -->
@@ -83,20 +144,33 @@
                     <h5 class="mb-0"><i class="fas fa-check-circle"></i> Crear Contrato en Sistema de Gestión</h5>
                 </div>
                 <div class="card-body">
-                    <div class="alert alert-info">
-                        <i class="fas fa-info-circle"></i> <strong>Proceso de Contratación:</strong><br>
-                        Al hacer clic en el botón de abajo, se abrirá el formulario completo de contratos 
-                        en el sistema de gestión con los datos del cliente pre-cargados.
-                    </div>
-
-                    <div class="alert alert-warning">
-                        <i class="fas fa-exclamation-triangle"></i> <strong>Importante:</strong><br>
-                        Deberás completar la información adicional en el sistema de gestión:
-
+                    <div class="mb-4">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <strong>Proceso de contratación</strong>
+                                <p class="mb-1 text-muted small">
+                                    Al abrir el contrato en el sistema de gestión se precargarán tus datos; completa
+                                    la información adicional ahí y regresa para confirmar la conversión.
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <span class="badge rounded-pill bg-primary text-white me-1">Paso 1</span>
+                                <span class="badge rounded-pill bg-secondary text-white">Paso 2</span>
+                            </div>
+                        </div>
+                        <details class="small text-muted mt-2">
+                            <summary class="text-decoration-underline text-primary" role="button">
+                                Más detalles del flujo
+                            </summary>
+                            <p class="mt-2 mb-0">
+                                Completa la información adicional del contrato en el GST. Una vez listo, regresa a esta
+                                pantalla y marca el lead como convertido para que pueda avanzar a cierre.
+                            </p>
+                        </details>
                     </div>
 
                     <!-- Botón para abrir sistema de gestión -->
-                    <div class="text-center p-4">
+                    <div class="text-center p-3 mb-3 bg-light rounded">
                         <?php
                         // Preparar datos para enviar al sistema de gestión
                         $params = http_build_query([
@@ -122,32 +196,27 @@
                             Abrir Formulario de Contrato en Sistema de Gestión
                         </a>
                         
-                        <p class="text-muted mt-3">
-                            <small>
-                                <i class="fas fa-info-circle"></i> 
-                                Se abrirá una nueva pestaña con el formulario completo de contratos.
-                                Los datos del cliente ya estarán pre-cargados.
-                            </small>
+                        <p class="text-muted small mt-2">
+                            <i class="fas fa-info-circle"></i> El formulario se abre en otra pestaña con los datos precargados.
                         </p>
                     </div>
-
-                    <hr>
+                    <div class="mb-2 text-muted small">
+                        <i class="fas fa-info-circle"></i> Después de cerrar el contrato en el GST, vuelve aquí y confirma.
+                    </div>
 
                     <!-- Botón para marcar como convertido manualmente -->
-                    <div class="alert alert-secondary">
-                        <strong><i class="fas fa-check-circle"></i> Después de crear el contrato:</strong><br>
-                        Una vez que hayas completado el contrato en el sistema de gestión, 
-                        regresa aquí y marca el lead como convertido:
-                        
-                        <form action="<?= base_url('leads/marcarConvertido/' . $lead['idlead']) ?>" method="POST" class="mt-3">
-                            <?= csrf_field() ?>
-                            <input type="number" name="id_contrato" class="form-control mb-2" 
-                                   placeholder="Número de contrato creado (opcional)" min="1">
-                            <button type="submit" class="btn btn-primary btn-block">
-                                <i class="fas fa-check"></i> Marcar Lead como Convertido
-                            </button>
-                        </form>
-                    </div>
+                    <form action="<?= base_url('leads/marcarConvertido/' . $lead['idlead']) ?>" method="POST">
+                        <?= csrf_field() ?>
+                        <div class="form-floating mb-3">
+                            <input type="number" name="id_contrato" class="form-control" 
+                                   id="idContrato" placeholder="Contrato #" min="1">
+                            <label for="idContrato">Número de contrato (opcional)</label>
+                        </div>
+                        <button type="submit" class="btn btn-primary btn-lg w-100">
+                            <i class="fas fa-check"></i> Marcar Lead como Convertido
+                        </button>
+                    </form>
+                </div>
 
                     <div class="form-group mt-3">
                         <a href="<?= base_url('leads/view/' . $lead['idlead']) ?>" class="btn btn-secondary btn-lg btn-block">

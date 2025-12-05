@@ -32,6 +32,7 @@ document.addEventListener('DOMContentLoaded', function() {
     initFormCambiarEtapa();
     initFormSeguimiento();
     initFormTarea();
+    initFormDescartar();
     initVisorFotosDocumentos();
 
     // Asegurar cierre correcto de todos los modals de la vista
@@ -353,6 +354,47 @@ function initFormTarea() {
     });
     
     // Formulario de tarea inicializado
+}
+
+function initFormDescartar() {
+    console.log('Inicializando formulario Descartar');
+    const formDescartar = document.getElementById('formDescartar');
+    if (!formDescartar) {
+        console.warn('formDescartar no encontrado');
+        return;
+    }
+
+    formDescartar.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const submitBtn = this.querySelector('button[type="submit"]');
+        if (submitBtn) {
+            submitBtn.disabled = true;
+        }
+
+        const formData = new FormData(this);
+        fetch(this.action, {
+            method: 'POST',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            mostrarNotificacion(data.success ? 'success' : 'error', data.message || (data.success ? 'Lead descartado correctamente' : 'Error al descartar lead'));
+            if (data.success) {
+                $('#modalDescartar').modal('hide');
+                setTimeout(() => location.reload(), 900);
+            }
+        })
+        .catch(error => {
+            console.error('Error al descartar lead:', error);
+            mostrarNotificacion('error', 'No se pudo descartar el lead. Intenta nuevamente.');
+        })
+        .finally(() => {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+            }
+        });
+    });
 }
 
 /**

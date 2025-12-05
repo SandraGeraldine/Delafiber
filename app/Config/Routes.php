@@ -77,6 +77,7 @@ $routes->group('leads', ['filter' => 'auth'], function($routes) {
     $routes->post('convertir/(:num)', 'Leads::convertir/$1');
     $routes->get('convertirACliente/(:num)', 'Leads::convertirACliente/$1');
     $routes->post('convertirACliente/(:num)', 'Leads::convertirACliente/$1');
+    $routes->post('marcarConvertido/(:num)', 'Leads::marcarConvertido/$1');
     $routes->post('descartar/(:num)', 'Leads::descartar/$1');
     $routes->post('agregarSeguimiento', 'Leads::agregarSeguimiento');
     $routes->post('crearTarea', 'Leads::crearTarea');

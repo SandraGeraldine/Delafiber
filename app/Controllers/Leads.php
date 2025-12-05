@@ -1326,6 +1326,13 @@ class Leads extends BaseController
 
         $motivo = trim((string) $this->request->getPost('motivo'));
         if ($motivo === '') {
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'Debes indicar un motivo para descartar el lead.'
+                ]);
+            }
+
             return redirect()->back()
                 ->with('error', 'Debes indicar un motivo para descartar el lead.')
                 ->withInput();
@@ -1374,11 +1381,25 @@ class Leads extends BaseController
                 throw new \Exception('Error al descartar el lead');
             }
 
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => true,
+                    'message' => 'Lead descartado correctamente'
+                ]);
+            }
+
             return redirect()->to('/leads/view/' . $leadId)
                 ->with('success', 'Lead descartado correctamente');
         } catch (\Throwable $e) {
             $db->transRollback();
             log_message('error', 'Error al descartar lead ' . $leadId . ': ' . $e->getMessage());
+
+            if ($this->request->isAJAX()) {
+                return $this->response->setJSON([
+                    'success' => false,
+                    'message' => 'No se pudo descartar el lead: ' . $e->getMessage()
+                ]);
+            }
 
             return redirect()->back()
                 ->with('error', 'No se pudo descartar el lead: ' . $e->getMessage())
@@ -2850,11 +2871,17 @@ public function completarTarea()
         // Obtener ID de contrato si se proporcionó
         $idContrato = $this->request->getPost('id_contrato');
 
-        // Actualizar lead
         $updateData = [
             'estado' => 'convertido',
             'fecha_conversion' => date('Y-m-d H:i:s')
         ];
+
+        $cierreEtapa = $this->etapaModel->where('LOWER(nombre)', 'cierre')->first();
+        if ($cierreEtapa) {
+            $updateData['idetapa'] = $cierreEtapa['idetapa'];
+        } else {
+            log_message('warning', "Etapa 'CIERRE' no encontrada al marcar lead {$idlead} como convertido");
+        }
 
         if ($idContrato) {
             $updateData['id_contrato_gestion'] = $idContrato;

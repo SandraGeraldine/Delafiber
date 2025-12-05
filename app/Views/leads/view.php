@@ -46,7 +46,7 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
                     <i class="icon-arrow-left"></i> Volver a Leads
                 </a>
             </div>
-            <div>
+            <div id="leadActionButtons">
                 <a href="<?= base_url('leads/edit/' . $lead['idlead']) ?>" class="btn btn-warning">
                     <i class="icon-pencil"></i> Editar
                 </a>
@@ -95,7 +95,7 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
                             <div>
                                 <h3 class="mb-1"><?= esc($nombreCompleto) ?></h3>
                                 <p class="text-muted mb-0">DNI: <?= esc($lead['dni'] ?? 'Sin DNI') ?></p>
-                                <span class="badge badge-<?= ($lead['estado'] ?? '') == 'Convertido' ? 'success' : (($lead['estado'] ?? '') == 'Descartado' ? 'danger' : 'info') ?>">
+                                <span id="leadEstadoBadge" class="badge badge-<?= ($lead['estado'] ?? '') == 'Convertido' ? 'success' : (($lead['estado'] ?? '') == 'Descartado' ? 'danger' : 'info') ?>">
                                     <?= $lead['estado'] ?? 'Activo' ?>
                                 </span>
                             </div>
@@ -140,7 +140,6 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
                 $ayudasEtapas = [
                     'CAPTACION'   => 'Cliente recién contactado. Aún se está tomando datos y validando interés.',
                     'INTERES'     => 'Cliente interesado que pidió más información o está evaluando el servicio.',
-                    'COTIZACION'  => 'Cliente con propuesta enviada. Pendiente de respuesta o ajustes.',
                     'NEGOCIACION' => 'Se está conversando condiciones finales (precio, fecha, instalación).',
                     'INSTALADO'   => 'Servicio ya instalado. Lead convertido en cliente.',
                 ];
@@ -764,7 +763,7 @@ if (empty($coordenadasLead) && !empty($lead['coordenadas_servicio'] ?? '')) {
                 <h5 class="modal-title">Descartar Lead</h5>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <form action="<?= base_url('leads/descartar/' . $lead['idlead']) ?>" method="POST">
+            <form id="formDescartar" action="<?= base_url('leads/descartar/' . $lead['idlead']) ?>" method="POST">
                 <?= csrf_field() ?>
                 <div class="modal-body">
                     <div class="form-group">
