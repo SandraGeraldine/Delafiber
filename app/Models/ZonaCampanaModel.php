@@ -74,6 +74,16 @@ class ZonaCampanaModel extends Model
         
         return $builder->get()->getResultArray();
     }
+
+    /**
+     * Obtener zonas activas cuyo inicio coincide con una fecha dada
+     */
+    public function getZonasPorFechaInicio($fecha)
+    {
+        return $this->where('estado', 'Activa')
+                    ->where('DATE(fecha_inicio)', $fecha)
+                    ->findAll();
+    }
     
     /**
      * Obtener zona con detalles completos

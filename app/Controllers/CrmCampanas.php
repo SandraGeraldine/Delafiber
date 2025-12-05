@@ -94,6 +94,23 @@ class CrmCampanas extends BaseController
     }
 
     /**
+     * API: Obtener datos de una zona en JSON.
+     */
+    public function apiZonaDetalle($idZona)
+    {
+        if (!$this->request->isAJAX()) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Solicitud no válida']);
+        }
+
+        $zona = $this->zonaModel->find($idZona);
+        if (!$zona) {
+            return $this->response->setJSON(['success' => false, 'message' => 'Zona no encontrada']);
+        }
+
+        return $this->response->setJSON(['success' => true, 'data' => $zona]);
+    }
+
+    /**
      * Guarda una nueva zona dibujada en el mapa.
      *
      * @return \CodeIgniter\HTTP\Response JSON
@@ -147,6 +164,8 @@ class CrmCampanas extends BaseController
                 $campanaNombre = $campana['nombre'] ?? null;
             }
 
+            $campoMapaUrl = base_url('leads/campo/mapa') . ($datos['id_campana'] ? '?campana=' . $datos['id_campana'] : '');
+            $url = $campoMapaUrl . '#zona-' . $idZona;
             $titulo = 'Zona territorial definida';
             $mensaje = sprintf(
                 'Se ha creado la zona "%s" para la campaña "%s". Revisa el mapa para conocer los límites a recorrer.',
@@ -154,21 +173,17 @@ class CrmCampanas extends BaseController
                 $campanaNombre ?? 'Campaña sin asignar'
             );
 
-            $mapaUrl = base_url('crm-campanas/mapa-campanas/' . ($datos['id_campana'] ?? ''));
-            $url = $mapaUrl . '#zona-' . $idZona;
+            $this->notificarPromotoresCampo($titulo, $mensaje, $url, 'zona_campo');
 
-            $usuarioModel = new UsuarioModel();
-            $promotorCampo = $usuarioModel->getUsuariosActivosPorRol('Promotor Campo');
-            $notificacionModel = new NotificacionModel();
-
-            foreach ($promotorCampo as $usuario) {
-                $notificacionModel->crearNotificacion(
-                    $usuario['idusuario'],
-                    'zona_campo',
-                    $titulo,
-                    $mensaje,
-                    $url
+            $fechaInicio = $datos['fecha_inicio'] ?? null;
+            if ($fechaInicio && $fechaInicio === date('Y-m-d', strtotime('+1 day'))) {
+                $tituloRecordatorio = 'Zona programada para mañana';
+                $mensajeRecordatorio = sprintf(
+                    'Recuerda que mañana (%s) debes recorrer la zona "%s". Confirma el mapa para seguir la ruta correcta.',
+                    date('d/m/Y', strtotime($fechaInicio)),
+                    $datos['nombre_zona'] ?? 'Sin nombre'
                 );
+                $this->notificarPromotoresCampo($tituloRecordatorio, $mensajeRecordatorio, $url, 'zona_programada_recordatorio');
             }
 
             return $this->response->setJSON([
@@ -201,13 +216,36 @@ class CrmCampanas extends BaseController
         $session = session();
         $idUsuario = $session->get('idusuario');
 
+        $zonaActual = $this->zonaModel->find($idZona);
+
+        $input = $this->request->getJSON(true);
+        $datosEntrada = !empty($input) ? $input : $this->request->getPost();
+
+        $fechaInicio = $datosEntrada['fecha_inicio'] ?? null;
+        $fechaFin = $datosEntrada['fecha_fin'] ?? null;
+
+        if ($fechaFin && $fechaInicio && $fechaFin < $fechaInicio) {
+            return $this->response->setJSON([
+                'success' => false,
+                'message' => 'La fecha de fin debe ser igual o posterior a la fecha de inicio'
+            ]);
+        }
+
         $datos = [
-            'nombre_zona' => $this->request->getPost('nombre_zona'),
-            'descripcion' => $this->request->getPost('descripcion'),
-            'color' => $this->request->getPost('color'),
-            'prioridad' => $this->request->getPost('prioridad'),
+            'nombre_zona' => $datosEntrada['nombre_zona'] ?? null,
+            'descripcion' => $datosEntrada['descripcion'] ?? null,
+            'color' => $datosEntrada['color'] ?? null,
+            'prioridad' => $datosEntrada['prioridad'] ?? null,
             'iduser_update' => $idUsuario
         ];
+
+        if ($fechaInicio !== null) {
+            $datos['fecha_inicio'] = $fechaInicio;
+        }
+
+        if ($fechaFin !== null) {
+            $datos['fecha_fin'] = $fechaFin ?: null;
+        }
 
         // Si se actualizó el polígono
         if ($this->request->getPost('coordenadas')) {
@@ -216,6 +254,18 @@ class CrmCampanas extends BaseController
         }
 
         if ($this->zonaModel->update($idZona, $datos)) {
+            if (!empty($datos['fecha_inicio']) && $datos['fecha_inicio'] === date('Y-m-d', strtotime('+1 day')) &&
+                ($zonaActual['fecha_inicio'] ?? null) !== $datos['fecha_inicio']) {
+                $titulo = 'Zona programada para mañana';
+                $mensaje = sprintf(
+                    'Se actualizó la zona "%s" y está programada para mañana (%s). Confirma que la visita se realice correctamente.',
+                    $datos['nombre_zona'] ?? $zonaActual['nombre_zona'],
+                    date('d/m/Y', strtotime($datos['fecha_inicio']))
+                );
+                $url = base_url('leads/campo/mapa') . ($zonaActual['id_campana'] ? '?campana=' . $zonaActual['id_campana'] : '');
+                $this->notificarPromotoresCampo($titulo, $mensaje, $url, 'zona_programada_recordatorio');
+            }
+
             return $this->response->setJSON([
                 'success' => true,
                 'message' => 'Zona actualizada exitosamente'
@@ -603,6 +653,53 @@ class CrmCampanas extends BaseController
             'data' => $zonas,
             'message' => 'Validar con Turf.js en el cliente'
         ]);
+    }
+
+    /**
+     * Enviar notificaciones diarias para zonas que inician en una fecha específica.
+     *
+     * @param string|null $fecha Fecha en formato yyyy-mm-dd (por defecto hoy)
+     */
+    public function notificarZonasProgramadasDelDia($fecha = null)
+    {
+        $fecha = $fecha ?? date('Y-m-d');
+        $zonas = $this->zonaModel->getZonasPorFechaInicio($fecha);
+
+        if (empty($zonas)) {
+            return;
+        }
+
+        foreach ($zonas as $zona) {
+            $titulo = 'Zona programada para hoy';
+            $mensaje = sprintf(
+                'Recuerda que hoy (%s) debes recorrer la zona "%s" de la campaña "%s".',
+                date('d/m/Y', strtotime($zona['fecha_inicio'])),
+                $zona['nombre_zona'] ?? 'Sin nombre',
+                $zona['nombre_campana'] ?? 'Campaña asignada'
+            );
+            $url = base_url('leads/campo/mapa') . ($zona['id_campana'] ? '?campana=' . $zona['id_campana'] : '') . '#zona-' . $zona['id_zona'];
+            $this->notificarPromotoresCampo($titulo, $mensaje, $url, 'zona_programada_recordatorio');
+        }
+    }
+
+    /**
+     * Helper para enviar notificaciones a todos los promotores de campo activos.
+     */
+    protected function notificarPromotoresCampo($titulo, $mensaje, $url = null, $tipo = 'zona_campo')
+    {
+        $usuarioModel = new UsuarioModel();
+        $promotorCampo = $usuarioModel->getUsuariosActivosPorRol('Promotor Campo');
+        $notificacionModel = new NotificacionModel();
+
+        foreach ($promotorCampo as $usuario) {
+            $notificacionModel->crearNotificacion(
+                $usuario['idusuario'],
+                $tipo,
+                $titulo,
+                $mensaje,
+                $url
+            );
+        }
     }
 
 

@@ -263,5 +263,56 @@
 <?= $this->endSection() ?>
 
 <?= $this->section('scripts') ?>
+<!-- Modal de edición de fecha -->
+<div class="modal fade" id="modalEditarZona" tabindex="-1" aria-labelledby="modalEditarZonaLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="modalEditarZonaLabel">Editar Zona programada</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+            </div>
+            <div class="modal-body">
+                <form id="formEditarZona" data-id="<?= esc($zona['id_zona']) ?>">
+                    <div class="mb-3">
+                        <label class="form-label">Nombre de la zona</label>
+                        <input type="text" class="form-control" id="editar-nombre-zona" value="<?= esc($zona['nombre_zona']) ?>" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea class="form-control" id="editar-descripcion" rows="3"><?= esc($zona['descripcion']) ?></textarea>
+                    </div>
+                    <div class="row g-2">
+                        <div class="col-6">
+                            <label class="form-label">Prioridad</label>
+                            <select class="form-select" id="editar-prioridad">
+                                <option value="Alta" <?= $zona['prioridad'] === 'Alta' ? 'selected' : '' ?>>Alta</option>
+                                <option value="Media" <?= $zona['prioridad'] === 'Media' ? 'selected' : '' ?>>Media</option>
+                                <option value="Baja" <?= $zona['prioridad'] === 'Baja' ? 'selected' : '' ?>>Baja</option>
+                            </select>
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Color</label>
+                            <input type="color" class="form-control form-control-color" id="editar-color" value="<?= esc($zona['color'] ?? '#3498db') ?>">
+                        </div>
+                    </div>
+                    <div class="row g-2 mt-3">
+                        <div class="col-6">
+                            <label class="form-label">Fecha de inicio</label>
+                            <input type="date" class="form-control" id="editar-fecha-inicio" value="<?= esc(date('Y-m-d', strtotime($zona['fecha_inicio'] ?? date('Y-m-d')))) ?>">
+                        </div>
+                        <div class="col-6">
+                            <label class="form-label">Fecha de fin</label>
+                            <input type="date" class="form-control" id="editar-fecha-fin" value="<?= esc($zona['fecha_fin'] ? date('Y-m-d', strtotime($zona['fecha_fin'])) : '') ?>">
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                <button type="button" id="btnGuardarCambiosZona" class="btn btn-primary">Guardar cambios</button>
+            </div>
+        </div>
+    </div>
+</div>
 <script src="<?= base_url('js/mapa/zona-detalle.js') ?>"></script>
 <?= $this->endSection() ?>

@@ -18,8 +18,8 @@
                         </a>
                     </div>
                 </div>
-                <div class="row g-2 mt-3">
-                    <div class="col-12 col-md-4">
+                <div class="row g-2 mt-3 align-items-end">
+                    <div class="col-12 col-md-3">
                         <label class="form-label">Campaña activa</label>
                         <select id="campo-campana-select" class="form-select">
                             <option value="">-- Todas las campañas --</option>
@@ -30,7 +30,7 @@
                             <?php endforeach; ?>
                         </select>
                     </div>
-                    <div class="col-6 col-md-3">
+                    <div class="col-6 col-md-2">
                         <label class="form-label">Prioridad</label>
                         <select id="campo-prioridad-select" class="form-select">
                             <option value="">Todas</option>
@@ -39,9 +39,17 @@
                             <option value="Baja">Baja</option>
                         </select>
                     </div>
-                    <div class="col-6 col-md-5">
+                    <div class="col-12 col-md-3">
                         <label class="form-label">Buscar zona</label>
                         <input type="search" id="campo-buscar-zona" class="form-control" placeholder="Nombre o descripción">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label">Fecha desde</label>
+                        <input type="date" id="campo-fecha-desde" class="form-control" aria-label="Fecha desde">
+                    </div>
+                    <div class="col-6 col-md-2">
+                        <label class="form-label">Fecha hasta</label>
+                        <input type="date" id="campo-fecha-hasta" class="form-control" aria-label="Fecha hasta">
                     </div>
                 </div>
             </div>

@@ -119,12 +119,33 @@ function renderizarZonaCampo(zona) {
     }
 }
 
-function obtenerValorFiltrado() {
-    const search = document.getElementById('campo-buscar-zona')?.value ?? '';
+function obtenerFiltrosCampo() {
+    const texto = document.getElementById('campo-buscar-zona')?.value ?? '';
+    const prioridad = document.getElementById('campo-prioridad-select')?.value ?? '';
+    const fechaDesde = document.getElementById('campo-fecha-desde')?.value ?? '';
+    const fechaHasta = document.getElementById('campo-fecha-hasta')?.value ?? '';
+
     return {
-        texto: search.trim().toLowerCase(),
-        prioridad: document.getElementById('campo-prioridad-select')?.value ?? ''
+        texto: texto.trim().toLowerCase(),
+        prioridad,
+        fechaDesde: fechaDesde ? new Date(fechaDesde) : null,
+        fechaHasta: fechaHasta ? new Date(fechaHasta) : null
     };
+}
+
+function zonaCumpleFiltroFecha(zona, filtros) {
+    const inicioZona = zona.fecha_inicio ? new Date(zona.fecha_inicio) : null;
+    const finZona = zona.fecha_fin ? new Date(zona.fecha_fin) : null;
+
+    if (filtros.fechaDesde && finZona && finZona < filtros.fechaDesde) {
+        return false;
+    }
+
+    if (filtros.fechaHasta && inicioZona && inicioZona > filtros.fechaHasta) {
+        return false;
+    }
+
+    return true;
 }
 
 function centrarMapaEnZonas() {
@@ -159,15 +180,16 @@ function centrarMapaEnZonas() {
 }
 
 function filtrarZonasPorTexto(texto = '') {
+    const filtros = obtenerFiltrosCampo();
     const termino = texto.trim().toLowerCase();
-    const prioridad = document.getElementById('campo-prioridad-select')?.value ?? '';
     let coincidencias = 0;
 
     mapaCampoBar.zonas.forEach(zona => {
         const contexto = `${zona.nombre_zona ?? ''} ${zona.nombre_campana ?? ''}`.toLowerCase();
         const coincideTexto = !termino || contexto.includes(termino);
-        const coincidePrioridad = !prioridad || zona.prioridad === prioridad;
-        const visible = coincideTexto && coincidePrioridad;
+        const coincidePrioridad = !filtros.prioridad || zona.prioridad === filtros.prioridad;
+        const coincideFecha = zonaCumpleFiltroFecha(zona, filtros);
+        const visible = coincideTexto && coincidePrioridad && coincideFecha;
 
         if (zona.referenciaMapa && typeof zona.referenciaMapa.setVisible === 'function') {
             zona.referenciaMapa.setVisible(visible);

@@ -2259,7 +2259,8 @@ public function completarTarea()
         
         // Verificar permisos (solo el dueño o supervisor puede completar)
         $userId = session()->get('idusuario');
-        if (!es_supervisor() && $tarea['idusuario'] != $userId) {
+        $permisoCompletarCualquiera = verificar_permiso('tareas.complete_any');
+        if (!es_supervisor() && !$permisoCompletarCualquiera && $tarea['idusuario'] != $userId) {
             return $this->response
                 ->setStatusCode(403)
                 ->setJSON([

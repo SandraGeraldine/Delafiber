@@ -199,34 +199,7 @@
                             <span class="text-muted">Mapa de ubicación</span>
                         </div>
                         <?php if (!empty($zonasNotificadas)): ?>
-                            <div id="zona-trabajo-module" class="zona-trabajo-module mt-3">
-                                <div class="d-flex align-items-center justify-content-between mb-3">
-                                    <h6 class="mb-0">Zona de trabajo</h6>
-                                    <span class="text-muted small"><?= count($zonasNotificadas) > 1 ? 'Actualizada recientemente' : 'Última zona enviada' ?></span>
-                                </div>
-                                <div class="zona-trabajo-items">
-                                    <?php foreach ($zonasNotificadas as $zonaNotif): ?>
-                                        <article class="zona-trabajo-item mb-3" data-notificacion-id="<?= esc($zonaNotif['idnotificacion']) ?>" data-zona-url="<?= esc($zonaNotif['url']) ?>">
-                                            <div class="zona-trabajo-map-holder mb-2">
-                                                <?php if (!empty($zonaNotif['url'])): ?>
-                                                    <iframe class="zona-trabajo-map-iframe" title="Mapa de zona" loading="lazy" frameborder="0" data-zona-url="<?= esc($zonaNotif['url']) ?>" allowfullscreen></iframe>
-                                                <?php else: ?>
-                                                    <div class="zona-trabajo-map-placeholder text-muted">
-                                                        Mapa no disponible
-                                                    </div>
-                                                <?php endif; ?>
-                                            </div>
-                                            <strong><?= esc($zonaNotif['titulo']) ?></strong>
-                                            <p class="mb-2"><small><?= esc($zonaNotif['mensaje']) ?></small></p>
-                                            <?php if (!empty($zonaNotif['url'])): ?>
-                                                <button type="button" class="btn btn-sm btn-outline-primary zona-trabajo-open" data-url="<?= esc($zonaNotif['url']) ?>">
-                                                    Ver mapa completo
-                                                </button>
-                                            <?php endif; ?>
-                                        </article>
-                                    <?php endforeach; ?>
-                                </div>
-                            </div>
+                        <!-- La sección "Zona de trabajo" se oculta para evitar mostrar notificaciones en la vista principal -->
                         <?php endif; ?>
                     </div>
 
